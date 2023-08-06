@@ -6,56 +6,200 @@ body{
     height: 430px;
     width: 380px;
     text-align: center;
-    position: relative;
+    position: absolute;
     background-color: white;
     border-radius: 15px;
     margin-top: 120px;
 
-}
-
-.image{
-padding-left: 12px;
-
-}
-.pr{
-    width: 140px;
-    height: 35px;
-    border: 1px solid rgb(122, 56, 56);
-    position: relative;
-    display: flex;
-    margin-left: 132px;
-    justify-content: center;
-    padding-top:12px;
-    border-radius: 10px;
     
 }
-
-/* Styles pour les écrans de taille inférieure à 600px (téléphones) */
-@media (max-width: 600px) {
-    .connexion {
-        width: 90%; /* Utilise 90% de la largeur disponible */
-        max-width: 300px; /* Limite la largeur maximale à 300px */
-        margin: 50px auto; /* Centre horizontalement et ajoute un peu d'espace en haut */
-        padding: 20px; /* Ajoute un peu d'espace autour */
-    }
+.pri{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+.image{
+    height: 90px;
+}
+input{
+    height: 30px;
+    width: 250px;
+    margin-top: 30px;
+    position: relative;
+    
+}
+input[type="submit"] {
+    background-color: rgb(236, 224, 248);
+    border: none;
+    border-radius: 3px;
+}
+.conn{
+    width: 100Px;
+    margin-left: 30px;
+    position: absolute;
+    margin-top: 10px;
+}
+.id{
+    margin-top: 10px;
+    position: absolute;
+}
+.idd{
+    margin-top: 28px;
+    position: absolute;
+    margin-left: -125px;
 }
 
-/* Styles pour les écrans de taille entre 601px et 1024px (tablettes) */
-@media (min-width: 601px) and (max-width: 1024px) {
-    .connexion {
-        width: 70%; /* Utilise 70% de la largeur disponible */
-        max-width: 500px; /* Limite la largeur maximale à 500px */
-        margin: 80px auto; /* Centre horizontalement et ajoute un peu d'espace en haut */
-        padding: 40px; /* Ajoute un peu d'espace autour */
-    }
+.oublié{
+    margin-top: 20px;
+    margin-left: -130px;
+    position: absolute;
+
+}
+.dev{
+    position: absolute;
+    margin-top: 50px;
+    margin-left: 40px;
 }
 
-/* Styles pour les écrans de taille supérieure à 1024px (ordinateurs) */
-@media (min-width: 1025px) {
-    .connexion {
-        width: 380px; /* Utilise une largeur fixe de 380px */
-        margin: 120px auto; /* Centre horizontalement et ajoute un peu d'espace en haut */
-        padding: 60px; /* Ajoute un peu d'espace autour */
-    }
-}
 
+
+
+
+
+/*reponsive pour 16 pouces */
+@media (min-width: 1600px)  {
+    .connexion{
+        height: 430px;
+        width: 380px;
+        margin-top: 120px;
+    }
+ 
+}
+/* Pour les écrans de 14 pouces */
+@media (max-width: 1600px) {
+    .connexion {
+      height: 380px;
+      width: 340px;
+      margin-top: 100px;
+    }
+  }
+  
+  /* Pour les téléphones */
+  @media (max-width: 600px) {
+    body {
+      background-color: rgb(178, 164, 240);
+    }
+  
+    .connexion {
+      height: auto;
+      width: 90%;
+      margin-top: 50px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  
+    .pri {
+      display: block;
+    }
+  
+    .image {
+      height: 70px;
+    }
+  
+    input {
+      width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 20px;
+    }
+  
+    .conn {
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 10px;
+    }
+  
+    .id {
+      margin-top: 10px;
+    }
+  
+    .idd {
+      margin-top: 28px;
+      margin-left: 0;
+    }
+  
+    .oublié {
+      margin-top: 20px;
+      margin-left: 0;
+    }
+  
+    .dev {
+      margin-top: 40px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+  /* Pour les écrans de 14 pouces */
+@media (max-width: 1600px) {
+    .connexion {
+      height: 380px;
+      width: 340px;
+      margin-top: 100px;
+    }
+  }
+  
+  /* Pour les téléphones */
+  @media (max-width: 600px) {
+    body {
+      background-color: rgb(178, 164, 240);
+    }
+  
+    .connexion {
+      height: auto;
+      width: 90%;
+      margin-top: 50px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  
+    .pri {
+      display: block;
+    }
+  
+    .image {
+      height: 70px;
+    }
+  
+    input {
+      width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 20px;
+    }
+  
+    .conn {
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 10px;
+    }
+  
+    .id {
+      margin-top: 10px;
+    }
+  
+    .idd {
+      margin-top: 28px;
+      margin-left: 0;
+    }
+  
+    .oublié {
+      margin-top: 20px;
+      margin-left: 0;
+    }
+  
+    .dev {
+      margin-top: 40px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
