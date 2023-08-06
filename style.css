@@ -1,0 +1,61 @@
+body{
+    background-color: rgb(178, 164, 240);
+}
+
+.connexion{
+    height: 430px;
+    width: 380px;
+    text-align: center;
+    position: relative;
+    background-color: white;
+    border-radius: 15px;
+    margin-top: 120px;
+
+}
+
+.image{
+padding-left: 12px;
+
+}
+.pr{
+    width: 140px;
+    height: 35px;
+    border: 1px solid rgb(122, 56, 56);
+    position: relative;
+    display: flex;
+    margin-left: 132px;
+    justify-content: center;
+    padding-top:12px;
+    border-radius: 10px;
+    
+}
+
+/* Styles pour les écrans de taille inférieure à 600px (téléphones) */
+@media (max-width: 600px) {
+    .connexion {
+        width: 90%; /* Utilise 90% de la largeur disponible */
+        max-width: 300px; /* Limite la largeur maximale à 300px */
+        margin: 50px auto; /* Centre horizontalement et ajoute un peu d'espace en haut */
+        padding: 20px; /* Ajoute un peu d'espace autour */
+    }
+}
+
+/* Styles pour les écrans de taille entre 601px et 1024px (tablettes) */
+@media (min-width: 601px) and (max-width: 1024px) {
+    .connexion {
+        width: 70%; /* Utilise 70% de la largeur disponible */
+        max-width: 500px; /* Limite la largeur maximale à 500px */
+        margin: 80px auto; /* Centre horizontalement et ajoute un peu d'espace en haut */
+        padding: 40px; /* Ajoute un peu d'espace autour */
+    }
+}
+
+/* Styles pour les écrans de taille supérieure à 1024px (ordinateurs) */
+@media (min-width: 1025px) {
+    .connexion {
+        width: 380px; /* Utilise une largeur fixe de 380px */
+        margin: 120px auto; /* Centre horizontalement et ajoute un peu d'espace en haut */
+        padding: 60px; /* Ajoute un peu d'espace autour */
+    }
+}
+
