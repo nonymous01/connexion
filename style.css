@@ -149,15 +149,15 @@ input[type="submit"] {
   }
   
   /* Pour les téléphones */
-  @media (max-width: 600px) {
+  @media (max-width: 400px) {
     body {
       background-color: rgb(178, 164, 240);
     }
   
     .connexion {
-      height: auto;
-      width: 90%;
-      margin-top: 50px;
+      height: 350px;
+      width: 95%;
+      margin-top: 70px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -167,39 +167,123 @@ input[type="submit"] {
     }
   
     .image {
-      height: 70px;
+      height: 30px;
     }
   
     input {
-      width: 80%;
+      width: 50%;
+      height: 8%;
       margin-left: auto;
       margin-right: auto;
-      margin-top: 20px;
+      margin-top: 21px;
+
     }
   
     .conn {
-      margin-left: auto;
+      margin-left: -12px;
       margin-right: auto;
       margin-top: 10px;
+      height: 20px;
+      padding-left: -20px;
+      width: 70px;
+      font-size: 10px;
     }
   
     .id {
       margin-top: 10px;
+      margin-left: -2px;
+      font-size: 10px;
     }
   
     .idd {
-      margin-top: 28px;
-      margin-left: 0;
+      margin-top: 25px;
+      margin-left: -50px;
+      font-size: 10px;
+
     }
   
     .oublié {
-      margin-top: 20px;
-      margin-left: 0;
+      margin-top: 10px;
+      margin-left: -70px;
+      width: 60px;
+      font-size: 10px;
     }
   
     .dev {
       margin-top: 40px;
       margin-left: auto;
       margin-right: auto;
+      font-size: 13px;
+    }
+  }
+
+   /* Pour les téléphones */
+   @media (max-width: 601px) {
+    body {
+      background-color: rgb(178, 164, 240);
+    }
+  
+    .connexion {
+      height: 300px;
+      width: 50%;
+      margin-top: 70px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  
+    .pri {
+      justify-content: center;
+      text-align: center;
+      display: flex;
+    }
+  
+    .image {
+      height: 30px;
+    }
+  
+    input {
+      width: 50%;
+      height: 8%;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 21px;
+
+    }
+  
+    .conn {
+      margin-left: 10px;
+      margin-right: auto;
+      margin-top: 10px;
+      height: 20px;
+      padding-left: -20px;
+      width: 70px;
+      font-size: 10px;
+    }
+  
+    .id {
+      margin-top: 10px;
+      margin-left: -2px;
+      font-size: 10px;
+    }
+  
+    .idd {
+      margin-top: 25px;
+      margin-left: -80px;
+      font-size: 10px;
+
+    }
+  
+    .oublié {
+      margin-top: 10px;
+      margin-left: -80px;
+      width: 60px;
+      font-size: 10px;
+    }
+  
+    .dev {
+      margin-top: 40px;
+      margin-left: 32px;
+      margin-right: auto;
+      font-size: 13px;
     }
   }
