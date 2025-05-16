@@ -1,16 +1,11 @@
-Status: Succeeded
-Test Event Name: testlambda
-
-Response:
 {
-  "success": false,
-  "error": "No action specified in event"
+  "action": "describe_model_registry",
+  "client_parameters": {
+    "model_name": "elasticwine",
+    "model_version": "10"
+  },
+  "deployment_parameters": {
+    "workspace_url": "https://votre-workspace.cloud.databricks.com",
+    "token": "dapi123456789abcdef"
+  }
 }
-
-Function Logs:
-START RequestId: 684f71a8-b466-48a8-bd8c-9fb822f20174 Version: $LATEST
-[INFO]	2025-05-16T19:51:14.031Z	684f71a8-b466-48a8-bd8c-9fb822f20174	Invokation params: {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
-END RequestId: 684f71a8-b466-48a8-bd8c-9fb822f20174
-REPORT RequestId: 684f71a8-b466-48a8-bd8c-9fb822f20174	Duration: 1.58 ms	Billed Duration: 2 ms	Memory Size: 128 MB	Max Memory Used: 92 MB
-
-Request ID: 684f71a8-b466-48a8-bd8c-9fb822f20174
