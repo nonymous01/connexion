@@ -1,16 +1,24 @@
-Status: Succeeded
-Test Event Name: Test
-
-Response:
 {
-  "success": false,
-  "error": "No action specified in event"
+  "action": "describe_model_registry",
+  "client_parameters": {
+    "model_name": "elasticwine",
+    "model_version": "10"
+  },
+  "deployment_parameters": {
+    "workspace_url": "https://votre-workspace.cloud.databricks.com",
+    "token": "votre-token-databricks"
+  }
 }
 
-Function Logs:
-START RequestId: ee34e85f-82fc-486d-9d5b-d5979662d2c1 Version: $LATEST
-[INFO]	2025-05-16T19:44:41.401Z	ee34e85f-82fc-486d-9d5b-d5979662d2c1	Invokation params: {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
-END RequestId: ee34e85f-82fc-486d-9d5b-d5979662d2c1
-REPORT RequestId: ee34e85f-82fc-486d-9d5b-d5979662d2c1	Duration: 1.31 ms	Billed Duration: 2 ms	Memory Size: 128 MB	Max Memory Used: 91 MB
-
-Request ID: ee34e85f-82fc-486d-9d5b-d5979662d2c1
+{
+  "action": "promote_model_registration",
+  "client_parameters": {
+    "model_name": "elasticwine",
+    "model_version": "10",
+    "model_registry": "databricks_registry"
+  },
+  "deployment_parameters": {
+    "workspace_url": "https://votre-workspace.cloud.databricks.com",
+    "token": "votre-token-databricks"
+  }
+}
