@@ -1,0 +1,31 @@
+Status: Failed
+Test Event Name: Test
+
+Response:
+{
+  "errorMessage": "Invalid event, no requestContext provided",
+  "errorType": "RuntimeError",
+  "requestId": "7a30296b-26d2-47da-9d11-0c4995ff2b7b",
+  "stackTrace": [
+    "  File \"/var/task/model_function.py\", line 148, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 119, in dispatch_method\n    authorizer = _get_request_context_authorizer(event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 47, in _get_request_context_authorizer\n    raise RuntimeError(\"Invalid event, no requestContext provided\")\n"
+  ]
+}
+
+Function Logs:
+START RequestId: 7a30296b-26d2-47da-9d11-0c4995ff2b7b Version: $LATEST
+[INFO]	2025-05-16T19:39:07.190Z	7a30296b-26d2-47da-9d11-0c4995ff2b7b	Invokation params: {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
+[WARNING]	2025-05-16T19:39:07.197Z	7a30296b-26d2-47da-9d11-0c4995ff2b7b	LAMBDA_WARNING: Unhandled exception. The most likely cause is an issue in the function code. However, in rare cases, a Lambda runtime update can cause unexpected function behavior. For functions using managed runtimes, runtime updates can be triggered by a function change, or can be applied automatically. To determine if the runtime has been updated, check the runtime version in the INIT_START log entry. If this error correlates with a change in the runtime version, you may be able to mitigate this error by temporarily rolling back to the previous runtime version. For more information, see https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html
+[ERROR] RuntimeError: Invalid event, no requestContext provided
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 148, in lambda_handler
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
+    authorizer = _get_request_context_authorizer(event)
+  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
+    raise RuntimeError("Invalid event, no requestContext provided")
+END RequestId: 7a30296b-26d2-47da-9d11-0c4995ff2b7b
+REPORT RequestId: 7a30296b-26d2-47da-9d11-0c4995ff2b7b	Duration: 8.87 ms	Billed Duration: 9 ms	Memory Size: 128 MB	Max Memory Used: 92 MB	Init Duration: 1817.39 ms
+
+Request ID: 7a30296b-26d2-47da-9d11-0c4995ff2b7b
