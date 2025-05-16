@@ -1,36 +1,3 @@
-Status: Failed
-Test Event Name: TestModel
-
-Response:
-{
-  "errorMessage": "Invalid event, no requestContext provided",
-  "errorType": "RuntimeError",
-  "requestId": "af39e3e0-701f-438a-b54c-c78eb8ae2e9b",
-  "stackTrace": [
-    "  File \"/var/task/model_function.py\", line 128, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 119, in dispatch_method\n    authorizer = _get_request_context_authorizer(event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 47, in _get_request_context_authorizer\n    raise RuntimeError(\"Invalid event, no requestContext provided\")\n"
-  ]
-}
-
-Function Logs:
-START RequestId: af39e3e0-701f-438a-b54c-c78eb8ae2e9b Version: $LATEST
-[INFO]	2025-05-16T21:43:41.313Z	af39e3e0-701f-438a-b54c-c78eb8ae2e9b	Invokation params: {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
-[WARNING]	2025-05-16T21:43:41.318Z	af39e3e0-701f-438a-b54c-c78eb8ae2e9b	LAMBDA_WARNING: Unhandled exception. The most likely cause is an issue in the function code. However, in rare cases, a Lambda runtime update can cause unexpected function behavior. For functions using managed runtimes, runtime updates can be triggered by a function change, or can be applied automatically. To determine if the runtime has been updated, check the runtime version in the INIT_START log entry. If this error correlates with a change in the runtime version, you may be able to mitigate this error by temporarily rolling back to the previous runtime version. For more information, see https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html
-[ERROR] RuntimeError: Invalid event, no requestContext provided
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 128, in lambda_handler
-    result = dispatcher_helper.dispatch_method(dispatch_table, event)
-  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
-    authorizer = _get_request_context_authorizer(event)
-  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
-    raise RuntimeError("Invalid event, no requestContext provided")
-END RequestId: af39e3e0-701f-438a-b54c-c78eb8ae2e9b
-REPORT RequestId: af39e3e0-701f-438a-b54c-c78eb8ae2e9b	Duration: 7.77 ms	Billed Duration: 8 ms	Memory Size: 128 MB	Max Memory Used: 91 MB	Init Duration: 1880.47 ms
-
-Request ID: af39e3e0-701f-438a-b54c-c78eb8ae2e9b
-
-
 import ast
 import json
 import traceback
@@ -151,17 +118,56 @@ def get_latest_model_registration(
     return result
 
 def lambda_handler(event, context):
-    start = time.perf_counter()  
+    start = time.perf_counter()
     dispatch_table = {
         "describe_model_registry": describe_model_registration,
         "get_latest_model_registration": get_latest_model_registration,
         "promote_model_registration": promote_model_registration,
     }
 
-    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+    # Log incoming event for debugging
+    logger.info(f"Invokation params: {event}")
+
+    # Check if this is a direct Lambda invocation or API Gateway event
+    if "requestContext" not in event:
+        # Direct invocation handling
+        action = event.get("action")
+        if not action:
+            return {
+                "success": False,
+                "error": "No action specified in event"
+            }
+            
+        if action not in dispatch_table:
+            return {
+                "success": False,
+                "error": f"Unknown action: {action}"
+            }
+            
+        # Call the appropriate function
+        handler_func = dispatch_table[action]
+        result = handler_func(
+            client_parameters=event.get("client_parameters", {}),
+            deployment_parameters=event.get("deployment_parameters", {})
+        )
+    else:
+        # API Gateway request handling
+        result = dispatcher_helper.dispatch_method(dispatch_table, event)
+    
     duration = time.perf_counter() - start
-    logger.info(f"handler completed in {duration:3f} seconds")
-     
-   
+    logger.info(f"handler completed in {duration:.3f} seconds")
 
     return result
+
+
+{
+  "action": "describe_model_registry",
+  "client_parameters": {
+    "model_name": "elasticwine",
+    "model_version": "10"
+  },
+  "deployment_parameters": {
+    "workspace_url": "https://votre-workspace.databricks.com",
+    "token": "dapi123456789"
+  }
+}
