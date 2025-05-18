@@ -1,17 +1,19 @@
 Status: Succeeded
-Test Event Name: TestModel
+Test Event Name: testlambda
 
 Response:
 {
   "success": false,
-  "error": "KeyError('deployment_environment')"
+  "error": "KeyError('deployment_automation_environment')"
 }
 
 Function Logs:
-START RequestId: 186038dd-3c31-45c1-8bfe-466a83047e70 Version: $LATEST
-[INFO]	2025-05-18T15:57:43.827Z	186038dd-3c31-45c1-8bfe-466a83047e70	Invokation params: {'action': 'describe_model_registry', 'client_parameters': {'model_name': 'elasticwine', 'model_version': '10'}, 'deployment_parameters': {'workspace_url': 'https://votre-workspace.databricks.com', 'token': 'dapi123456789'}}
-[INFO]	2025-05-18T15:57:43.859Z	186038dd-3c31-45c1-8bfe-466a83047e70	request_databricks_api:  api_endpoint='/2.0/mlflow/model-versions/get' method='GET' payload={'name': 'elasticwine', 'version': '10'} request_id=None 
-[ERROR]	2025-05-18T15:57:43.859Z	186038dd-3c31-45c1-8bfe-466a83047e70	Error retrieving model information
+START RequestId: 28a77251-f348-44cd-83ea-b2c91dd8cf48 Version: $LATEST
+Event_Test : {'action': 'describe_model_registry', 'client_parameters': {'model_name': 'elasticwine', 'model_version': '10'}, 'deployment_parameters': {'workspace_url': 'https://formulaone-us-east-1-qa-ai-workspace.cloud.databricks.com/', 'token': 'dapi72fef67f0c8c0e3025577c5dd9e7389f', 'deployment_environment': 'qa'}}
+[INFO]	2025-05-18T16:07:48.916Z	28a77251-f348-44cd-83ea-b2c91dd8cf48	Invokation params: {'action': 'describe_model_registry', 'client_parameters': {'model_name': 'elasticwine', 'model_version': '10'}, 'deployment_parameters': {'workspace_url': 'https://formulaone-us-east-1-qa-ai-workspace.cloud.databricks.com/', 'token': 'dapi72fef67f0c8c0e3025577c5dd9e7389f', 'deployment_environment': 'qa'}}
+[INFO]	2025-05-18T16:07:49.047Z	28a77251-f348-44cd-83ea-b2c91dd8cf48	Found credentials in environment variables.
+[INFO]	2025-05-18T16:07:50.505Z	28a77251-f348-44cd-83ea-b2c91dd8cf48	request_databricks_api:  api_endpoint='/2.0/mlflow/model-versions/get' method='GET' payload={'name': 'elasticwine', 'version': '10'} request_id=None 
+[ERROR]	2025-05-18T16:07:50.505Z	28a77251-f348-44cd-83ea-b2c91dd8cf48	Error retrieving model information
 Traceback (most recent call last):
   File "/var/task/model_function.py", line 55, in describe_model_registration
     databricks_model_registry_helper.get_model_registration(
@@ -19,11 +21,11 @@ Traceback (most recent call last):
     model_registration = databricks_api_helper.get_model_registration(
   File "/var/task/utils/databricks_api_helper.py", line 174, in get_model_registration
     response = request_databricks_api(
-  File "/var/task/utils/databricks_api_helper.py", line 111, in request_databricks_api
-    deployment_environment = DEPLOYMENT_PARAMETERS["deployment_environment"]
-KeyError: 'deployment_environment'
-[INFO]	2025-05-18T15:57:43.859Z	186038dd-3c31-45c1-8bfe-466a83047e70	handler completed in 0.032 seconds
-END RequestId: 186038dd-3c31-45c1-8bfe-466a83047e70
-REPORT RequestId: 186038dd-3c31-45c1-8bfe-466a83047e70	Duration: 52.32 ms	Billed Duration: 53 ms	Memory Size: 128 MB	Max Memory Used: 106 MB
+  File "/var/task/utils/databricks_api_helper.py", line 112, in request_databricks_api
+    automation_environment = DEPLOYMENT_PARAMETERS["deployment_automation_environment"]
+KeyError: 'deployment_automation_environment'
+[INFO]	2025-05-18T16:07:50.525Z	28a77251-f348-44cd-83ea-b2c91dd8cf48	handler completed in 1.608 seconds
+END RequestId: 28a77251-f348-44cd-83ea-b2c91dd8cf48
+REPORT RequestId: 28a77251-f348-44cd-83ea-b2c91dd8cf48	Duration: 1628.71 ms	Billed Duration: 1629 ms	Memory Size: 128 MB	Max Memory Used: 102 MB	Init Duration: 1771.89 ms
 
-Request ID: 186038dd-3c31-45c1-8bfe-466a83047e70
+Request ID: 28a77251-f348-44cd-83ea-b2c91dd8cf48
