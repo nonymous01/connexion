@@ -1,1 +1,43 @@
-https://formulaone-us-east-1-qa-ai-workspace.cloud.databricks.com/editor/notebooks/4154948127927012?o=3584117843083876#command/7034795084264551
+Status: Succeeded
+Test Event Name: TestModel
+
+Response:
+{
+  "success": false,
+  "error": "KeyError('deployment_environment')"
+}
+
+Function Logs:
+START RequestId: 137f05d9-95aa-4142-a72a-6730f5babdeb Version: $LATEST
+[INFO]	2025-05-18T15:25:30.761Z	137f05d9-95aa-4142-a72a-6730f5babdeb	Invokation params: {'action': 'describe_model_registry', 'client_parameters': {'model_name': 'elasticwine', 'model_version': '10'}, 'deployment_parameters': {'workspace_url': 'https://votre-workspace.databricks.com', 'token': 'dapi123456789'}}
+[INFO]	2025-05-18T15:25:30.765Z	137f05d9-95aa-4142-a72a-6730f5babdeb	request_databricks_api:  api_endpoint='/2.0/mlflow/model-versions/get' method='GET' payload={'name': 'elasticwine', 'version': '10'} request_id=None 
+[ERROR]	2025-05-18T15:25:30.765Z	137f05d9-95aa-4142-a72a-6730f5babdeb	Error retrieving model information
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 55, in describe_model_registration
+    databricks_model_registry_helper.get_model_registration(
+  File "/var/task/utils/databricks_model_registry_helper.py", line 153, in get_model_registration
+    model_registration = databricks_api_helper.get_model_registration(
+  File "/var/task/utils/databricks_api_helper.py", line 174, in get_model_registration
+    response = request_databricks_api(
+  File "/var/task/utils/databricks_api_helper.py", line 111, in request_databricks_api
+    deployment_environment = DEPLOYMENT_PARAMETERS["deployment_environment"]
+KeyError: 'deployment_environment'
+[INFO]	2025-05-18T15:25:30.765Z	137f05d9-95aa-4142-a72a-6730f5babdeb	handler completed in 0.004 seconds
+END RequestId: 137f05d9-95aa-4142-a72a-6730f5babdeb
+REPORT RequestId: 137f05d9-95aa-4142-a72a-6730f5babdeb	Duration: 42.69 ms	Billed Duration: 43 ms	Memory Size: 128 MB	Max Memory Used: 104 MB
+
+Request ID: 137f05d9-95aa-4142-a72a-6730f5babdeb
+
+
+VOICI MA CONFIG
+{
+  "action": "describe_model_registry",
+  "client_parameters": {
+    "model_name": "elasticwine",
+    "model_version": "10"
+  },
+  "deployment_parameters": {
+    "workspace_url": "https://formulaone-us-east-1-qa-ai-workspace.cloud.databricks.com/",
+    "token": "dapi72fef67f0c8c0e3025577c5dd9e7389f"
+  }
+}
