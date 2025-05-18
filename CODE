@@ -1,33 +1,199 @@
-Status: Succeeded
-Test Event Name: TestModel
+import os
+import json
+import logging
 
-Response:
-{
-  "success": false,
-  "error": "KeyError('deployment_environment')"
-}
+import mlflow
 
-Function Logs:
-START RequestId: 137f05d9-95aa-4142-a72a-6730f5babdeb Version: $LATEST
-[INFO]	2025-05-18T15:25:30.761Z	137f05d9-95aa-4142-a72a-6730f5babdeb	Invokation params: {'action': 'describe_model_registry', 'client_parameters': {'model_name': 'elasticwine', 'model_version': '10'}, 'deployment_parameters': {'workspace_url': 'https://votre-workspace.databricks.com', 'token': 'dapi123456789'}}
-[INFO]	2025-05-18T15:25:30.765Z	137f05d9-95aa-4142-a72a-6730f5babdeb	request_databricks_api:  api_endpoint='/2.0/mlflow/model-versions/get' method='GET' payload={'name': 'elasticwine', 'version': '10'} request_id=None 
-[ERROR]	2025-05-18T15:25:30.765Z	137f05d9-95aa-4142-a72a-6730f5babdeb	Error retrieving model information
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 55, in describe_model_registration
-    databricks_model_registry_helper.get_model_registration(
-  File "/var/task/utils/databricks_model_registry_helper.py", line 153, in get_model_registration
+import utils.databricks_api_helper as databricks_api_helper
+#from mlflow_export_import.copy.copy_model_version import copy
+import utils.aws_secrets_manager_helper as aws_secrets_manager_helper
+from utils.common_entities import SubEnvironment, Environment, DeploymentMode, DatabricksMlflowStages
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+os.environ['MLFLOW_TRACKING_URI'] = 'databricks://src'
+
+DEPLOYMENT_PARAMETERS = {}
+SRC_REGISTRY_URI = "databricks-uc://src"
+DST_REGISTRY_URI = "databricks-uc://target"
+
+# TODO: Read mlops-common-librairies lambda layer => arn:aws:lambda:us-east-1:417854772506:layer:mlops_common_libraries:9
+
+
+def init(deployment_parameters: dict) -> None:
+    global DEPLOYMENT_PARAMETERS
+    DEPLOYMENT_PARAMETERS = deployment_parameters
+
+    databricks_api_helper.init(deployment_parameters)    
+
+
+def set_databricks_environment(region,environment,automation_environment):
+    '''Used to establish connection with databricks'''
+    databricks_host = f'https://formulaone-{region}-{environment.lower()}-ai-workspace.cloud.databricks.com'
+    os.environ["DATABRICKS_HOST"] = databricks_host
+    secret_name = f"f1ai/{automation_environment.lower()}"
+    secret_key = f"databricks_token_{environment.lower()}"
+    databricks_token = aws_secrets_manager_helper.get_secret_value_by_key(
+    secret_name=secret_name, secret_key=secret_key)
+    os.environ["DATABRICKS_TOKEN"] = databricks_token
+    logger.info('credentials received')
+    mlflow.set_tracking_uri("databricks")
+
+
+
+def promote_model_registration(model_name, model_version, model_source):
+    """
+    Promote model from a lower databricks workspace to a higher databricks workspace.
+
+    :param model_name: Name of source model from Unity Catalog.
+    :param model_version: Version of source model to be promoted.
+    :param model_source: Address of registry where to save model.
+    """
+    src_workspace = model_source # should be workspace name or url
+    target_workspace = ""
+    workspace_id = DEPLOYMENT_PARAMETERS["deployment_workspace_id"]
+    databricks_catalog = "f1aiplat" # TODO: derive from deployment parameters
+    user_id= "ahidjch1@novartis.net" # TODO: derive from deployment parameters
+
+    create_cfg_file(
+        src_host="https://formulaone-us-east-1-dev-ai-workspace.cloud.databricks.com",
+        src_token="925ce47638853b1c13d7d3",
+        target_host="https://formulaone-us-east-1-qa-ai-workspace.cloud.databricks.com",
+        target_token="4b84e91a61b9ca3f981efda04"
+    )
+    promote_model(
+        src_model=f"{databricks_catalog}.{workspace_id}.{model_name}",
+        src_version=model_version,
+        src_registry_uri=SRC_REGISTRY_URI,
+        dst_model=f"{databricks_catalog}.{workspace_id}.{model_name}",
+        dst_registry_uri=DST_REGISTRY_URI,
+        dst_experiment_name=f"/Users/{user_id}/{model_name}",
+    )
+
+    return {'status': 'SUCCESS'}
+
+
+def promote_model(
+    src_model,
+    src_version,
+    src_registry_uri,
+    dst_model,
+    dst_registry_uri,
+    dst_experiment_name=None,
+    copy_permissions=False,
+    copy_stages_and_aliases=False,
+    copy_lineage_tags=False,
+    verbose=False
+):
+    def make_tracking_uri(registry_uri):
+        if not registry_uri:
+            return None
+        if registry_uri.startswith("databricks-uc"):
+            return registry_uri.replace("databricks-uc", "databricks")
+        else:
+            return registry_uri
+
+    # TODO: can we ommit dst_expirment_name?
+    logger.info(f"#model info model: {src_model}, version: {src_version}, source: {src_registry_uri}, target: {dst_registry_uri}")
+    src_tracking_uri = make_tracking_uri(src_registry_uri)
+    dst_tracking_uri = make_tracking_uri(dst_registry_uri)
+
+    logger.info("Initialize copying the model to the target workspace...")
+    return copy(
+        src_model,
+        src_version,
+        dst_model,
+        dst_experiment_name,
+        src_tracking_uri,
+        dst_tracking_uri,
+        src_registry_uri,
+        dst_registry_uri,
+        copy_permissions,
+        copy_stages_and_aliases,
+        copy_lineage_tags,
+        verbose
+    )
+
+
+def create_cfg_file(src_host, src_token, target_host, target_token):
+    logger.info("Composing cfg file...")
+    content = f"""
+    [src]
+    host={src_host.strip()}
+    token={src_token.strip()}
+    [target]
+    host={target_host.strip()}
+    token={target_token.strip()}
+    """
+    config_path = "/tmp/.databrickscfg"
+    os.environ['DATABRICKS_CONFIG_FILE'] = config_path
+
+    with open(config_path, 'w') as f:
+        f.write(content)
+        logger.info(f"Config file created at: {config_path}")
+
+    return config_path
+
+
+
+def get_model_registration(model_name, model_version):
     model_registration = databricks_api_helper.get_model_registration(
-  File "/var/task/utils/databricks_api_helper.py", line 174, in get_model_registration
-    response = request_databricks_api(
-  File "/var/task/utils/databricks_api_helper.py", line 111, in request_databricks_api
-    deployment_environment = DEPLOYMENT_PARAMETERS["deployment_environment"]
-KeyError: 'deployment_environment'
-[INFO]	2025-05-18T15:25:30.765Z	137f05d9-95aa-4142-a72a-6730f5babdeb	handler completed in 0.004 seconds
-END RequestId: 137f05d9-95aa-4142-a72a-6730f5babdeb
-REPORT RequestId: 137f05d9-95aa-4142-a72a-6730f5babdeb	Duration: 42.69 ms	Billed Duration: 43 ms	Memory Size: 128 MB	Max Memory Used: 104 MB
+        model_name, model_version
+    )
 
-Request ID: 137f05d9-95aa-4142-a72a-6730f5babdeb
+    if model_registration:
+        return model_registration
 
+    return None
+
+              
+
+def get_model_registration(model_name, model_version):
+    model_registration = databricks_api_helper.get_model_registration(
+        model_name, model_version
+    )
+
+    if model_registration:
+        return model_registration
+
+    return None
+
+
+def get_latest_model_registration(model_name, stage=None):
+    registered_versions = databricks_api_helper.get_latest_model_registrations(
+        model_name
+    )
+
+    if not registered_versions or len(registered_versions) == 0:
+        return None
+
+    max_version = 0
+
+    max_model_item = None
+
+    def to_int(s):
+        try:
+            return int(s)
+        except:
+            return 0
+
+    for model_item in registered_versions:
+        if stage:
+            if model_item["current_stage"] == stage:
+                return model_item
+
+        elif model_item["current_stage"] != "Archived":
+            logger.info(f" model_item {model_item} ")
+
+            current_version = to_int(model_item["version"])
+
+            if current_version > max_version:
+                max_version = current_version
+
+                max_model_item = model_item
+
+    return max_model_item
 
 VOICI MA CONFIG
 {
