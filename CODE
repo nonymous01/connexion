@@ -1,31 +1,487 @@
-Status: Succeeded
-Test Event Name: testlambda
+import datetime
+import logging
+import requests
+import json
+import utils.aws_secrets_manager_helper as aws_secrets_manager_helper
 
-Response:
-{
-  "success": false,
-  "error": "KeyError('deployment_automation_environment')"
-}
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
-Function Logs:
-START RequestId: 28a77251-f348-44cd-83ea-b2c91dd8cf48 Version: $LATEST
-Event_Test : {'action': 'describe_model_registry', 'client_parameters': {'model_name': 'elasticwine', 'model_version': '10'}, 'deployment_parameters': {'workspace_url': 'https://formulaone-us-east-1-qa-ai-workspace.cloud.databricks.com/', 'token': 'dapi72fef67f0c8c0e3025577c5dd9e7389f', 'deployment_environment': 'qa'}}
-[INFO]	2025-05-18T16:07:48.916Z	28a77251-f348-44cd-83ea-b2c91dd8cf48	Invokation params: {'action': 'describe_model_registry', 'client_parameters': {'model_name': 'elasticwine', 'model_version': '10'}, 'deployment_parameters': {'workspace_url': 'https://formulaone-us-east-1-qa-ai-workspace.cloud.databricks.com/', 'token': 'dapi72fef67f0c8c0e3025577c5dd9e7389f', 'deployment_environment': 'qa'}}
-[INFO]	2025-05-18T16:07:49.047Z	28a77251-f348-44cd-83ea-b2c91dd8cf48	Found credentials in environment variables.
-[INFO]	2025-05-18T16:07:50.505Z	28a77251-f348-44cd-83ea-b2c91dd8cf48	request_databricks_api:  api_endpoint='/2.0/mlflow/model-versions/get' method='GET' payload={'name': 'elasticwine', 'version': '10'} request_id=None 
-[ERROR]	2025-05-18T16:07:50.505Z	28a77251-f348-44cd-83ea-b2c91dd8cf48	Error retrieving model information
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 55, in describe_model_registration
-    databricks_model_registry_helper.get_model_registration(
-  File "/var/task/utils/databricks_model_registry_helper.py", line 153, in get_model_registration
-    model_registration = databricks_api_helper.get_model_registration(
-  File "/var/task/utils/databricks_api_helper.py", line 174, in get_model_registration
-    response = request_databricks_api(
-  File "/var/task/utils/databricks_api_helper.py", line 112, in request_databricks_api
+DEPLOYMENT_PARAMETERS = {}
+
+class DatabricksApi:
+    POLICY_LIST = "/2.0/policies/clusters/list"
+    REPO = "/2.0/repos"
+    WORKSPACE_STATUS = "/2.0/workspace/get-status"
+    JOB_CREATE = "/2.1/jobs/create"
+    JOB_RESET = "/2.1/jobs/reset"
+    JOB_DELETE = "/2.1/jobs/delete"
+    JOB_UPDATE = "/2.1/jobs/update"
+    JOB_RUN_NOW = "/2.0/jobs/run-now"
+    JOBS_LIST = "/2.1/jobs/list"
+    PROMOTE_MODEL = "/2.0/mlflow/databricks/model-versions/transition-stage"
+    DESCRIBE_MODEL = "/2.0/mlflow/model-versions/get"
+    GET_LATEST_VERSIONS = "/2.0/mlflow/registered-models/get-latest-versions"
+    GENERATE_TOKEN = "/2.0/token-management/on-behalf-of/tokens"
+    GET_MODEL_STAGE = "/2.0/mlflow/model-versions/get"
+    PERMISSIONS = '/2.0/permissions/jobs'
+
+
+class RestMethod:
+    GET = "GET"
+    POST = "POST"
+    PATCH = "PATCH"
+    DELETE = "DELETE"
+
+
+class DatabricksClusterType:
+    SINGLE_NODE = "SINGLE_NODE"
+    STANDARD = "STANDARD"
+
+
+class DatabricksPermission:
+    NONE = "NONE"
+    CAN_VIEW = "CAN_VIEW"
+    CAN_MANAGE_RUN = "CAN_MANAGE_RUN"
+    CAN_MANAGE = "CAN_MANAGE"
+
+
+class PipelineAction:
+    CREATE = "CREATE"
+    UPDATE = "UPDATE"
+    DELETE = "DELETE"
+
+
+DATABRICKS_SECRET_KEY = "databricks_token"
+
+
+def init(deployment_parameters: dict) -> None:
+    global DEPLOYMENT_PARAMETERS
+    DEPLOYMENT_PARAMETERS = deployment_parameters
+
+    aws_secrets_manager_helper.init()
+
+
+def _get_databricks_token(automation_environment, deployment_environment):
+    		
+    secret_name = f"f1ai/{automation_environment.lower()}"
+         
+    logger.info(f"secret name {secret_name} ")
+    
+    secret_key = "databricks_token"
+    
+    if (automation_environment.lower() == 'prod') and (deployment_environment.lower() in ['dev','qa']):
+      secret_key += f"_{deployment_environment.lower()}"    
+
+    logger.info(f"secret key {secret_key} ")
+      
+    databricks_token = aws_secrets_manager_helper.get_secret_value_by_key(
+        secret_name=secret_name, secret_key=secret_key
+    )
+
+    return databricks_token
+
+
+def _get_databricks_api_url(deployment_environment, region_name):
+    api_url = f"https://formulaone-{region_name.lower()}-{deployment_environment.lower()}-ai-workspace.cloud.databricks.com/api"
+
+    return api_url
+
+
+def _generate_databricks_permissions(deployment_permissions_str):
+    permissions_matrix = dict(
+        itm.split(":") for itm in deployment_permissions_str.split(",") if len(itm) > 0
+    )
+    return [
+        {"group_name": k, "permission_level": v}
+        for (k, v) in permissions_matrix.items()
+    ]
+
+
+def request_databricks_api(
+    api_endpoint,
+    method,
+    payload=None,
+    request_id=None,
+):
+    logger.info(
+        f"request_databricks_api:  {api_endpoint=} {method=} {payload=} {request_id=} "
+    )
+
+    deployment_environment = DEPLOYMENT_PARAMETERS["deployment_environment"]
     automation_environment = DEPLOYMENT_PARAMETERS["deployment_automation_environment"]
-KeyError: 'deployment_automation_environment'
-[INFO]	2025-05-18T16:07:50.525Z	28a77251-f348-44cd-83ea-b2c91dd8cf48	handler completed in 1.608 seconds
-END RequestId: 28a77251-f348-44cd-83ea-b2c91dd8cf48
-REPORT RequestId: 28a77251-f348-44cd-83ea-b2c91dd8cf48	Duration: 1628.71 ms	Billed Duration: 1629 ms	Memory Size: 128 MB	Max Memory Used: 102 MB	Init Duration: 1771.89 ms
+    #automation_environment='predev'
+    region = DEPLOYMENT_PARAMETERS["deployment_region"]
 
-Request ID: 28a77251-f348-44cd-83ea-b2c91dd8cf48
+    databricks_token = _get_databricks_token(
+        automation_environment, deployment_environment
+    )
+
+    databricks_api = _get_databricks_api_url(deployment_environment, region)
+
+    request_url = databricks_api + api_endpoint
+
+    logger.info(request_url)
+
+    if request_id is not None:
+        request_url = f"{request_url}/{request_id}"
+
+    headers = {"Authorization": "Bearer %s" % databricks_token}
+
+    if method == RestMethod.GET:
+        return requests.get(request_url, verify=True, headers=headers, json=payload)
+
+    elif method == RestMethod.POST:
+        return requests.post(request_url, verify=True, headers=headers, json=payload)
+
+    elif method == RestMethod.PATCH:
+        return requests.patch(request_url, verify=True, headers=headers, json=payload)
+
+    elif method == RestMethod.DELETE:
+        return requests.delete(request_url, verify=True, headers=headers)
+
+    return None
+
+
+### API Calls for Model Registry ###
+
+
+def get_latest_model_registrations(model_name):
+    logger.info(f"get_latest_model_registration {model_name=}")
+
+    payload_json = {
+        "name": model_name,
+    }
+
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.GET_LATEST_VERSIONS,
+        method=RestMethod.POST,
+        payload=payload_json,
+    )
+
+    logger.info(f"get_latest_model_registration {response.content=}")
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to get latest model registration, {response=}")
+
+    registered_versions = json.loads(response.content)["model_versions"]
+
+    return registered_versions
+
+
+def get_model_registration(model_name, model_version):
+    payload_json = {"name": model_name, "version": model_version}
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.DESCRIBE_MODEL,
+        method=RestMethod.GET,
+        payload=payload_json,
+    )
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to describe model registration, {response=}")
+
+    print(f"{response.content=}")
+
+    response = json.loads(response.content)["model_version"]
+
+    return response
+    
+def get_model_stage(model_name, model_version):
+    payload_json = {"name": model_name, "version": model_version}
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.GET_MODEL_STAGE,
+        method=RestMethod.GET,
+        payload=payload_json,
+    )
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to get model stage, {response=}")
+
+    print(f"{response.content=}")
+
+    response = json.loads(response.content)["model_version"]['current_stage']
+    
+    return response
+
+def promote_model_registration(model_name, model_version, target_stage):
+    payload_json = {
+        "name": model_name,
+        "version": model_version,
+        "stage": target_stage,
+        "archive_existing_versions": True,
+    }
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.PROMOTE_MODEL,
+        method=RestMethod.POST,
+        payload=payload_json,
+    )
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to promote model registration, {response.text=}")
+
+    logger.info(f"{response=}")
+
+
+### API Calls for Databricks Pipelines ###
+
+
+def filter_pipelines_by_name(pipeline_name):
+    logger.info(f"list_jobs_by_name {pipeline_name=}")
+
+    query = {"name": pipeline_name, "expand_tasks": True}
+
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.JOBS_LIST, method=RestMethod.GET, payload=query
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed search jobs , {response.text=}")
+
+    response = json.loads(response.text)
+
+    logger.info(f"{response=}")
+    return response
+
+
+def create_pipeline(json_definition):
+    logger.info(f"create_pipeline {json_definition=}")
+
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.JOB_CREATE,
+        method=RestMethod.POST,
+        payload=json_definition,
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to create pipeline: {response.text=}")
+
+    response = json.loads(response.text)
+
+    logger.info(f"{response=}")
+    return response
+
+
+def reset_pipeline(job_id, json_definition):
+    update_settings_json = {"job_id": job_id, "new_settings": json_definition}
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.JOB_RESET,
+        method=RestMethod.POST,
+        payload=update_settings_json,
+    )
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to reset pipeline: {response.text=}")
+
+    response = json.loads(response.text)
+
+    logger.info(f"{response=}")
+    return response
+
+def update_permissions(job_id, permissions):
+
+    update_settings_json = {"access_control_list": permissions}
+    response = request_databricks_api(
+        api_endpoint=f"{DatabricksApi.PERMISSIONS}/{job_id}",
+        method=RestMethod.PATCH,
+        payload=update_settings_json,
+    )
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to update job permissions, {response.text=}")
+
+    response = json.loads(response.text)
+
+    logger.info(f"{response=}")
+    return response
+    
+def update_pipeline(job_id, json_changes, fields_to_remove):
+    update_settings_json = {"job_id": job_id}
+
+    if json_changes:
+        update_settings_json["new_settings"] = json_changes
+
+    if fields_to_remove:
+        update_settings_json["fields_to_remove"] = fields_to_remove
+
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.JOB_UPDATE,
+        method=RestMethod.POST,
+        payload=update_settings_json,
+    )
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to update pipeline: {response.text=}")
+
+    response = json.loads(response.text)
+
+    logger.info(f"{response=}")
+    return response
+
+
+def run_pipeline(job_id):
+    job_id_json = {"job_id": job_id}
+
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.JOB_RUN_NOW,
+        method=RestMethod.POST,
+        payload=job_id_json
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to run pipeline: {response.text=}")
+
+    response = json.loads(response.text)
+
+    logger.info(f"{response=}")
+    return response
+
+
+def delete_pipeline(job_id):
+
+    job_id_json = {"job_id": job_id}
+
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.JOB_DELETE,
+        method=RestMethod.POST,
+        payload=job_id_json
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to delete pipeline: {response.text=}")
+
+    return response.json()
+
+
+def get_policy_list():
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.POLICY_LIST,
+        method=RestMethod.GET,
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to get policy list: {response.text=}")
+
+    response = json.loads(response.text)["policies"]
+
+    logger.info(f"{response=}")
+    return response
+
+
+### API Calls for Databricks Repos ###
+
+
+def get_repo_id(repo_path):
+    repo_status_payload = {"path": repo_path}
+
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.WORKSPACE_STATUS,
+        method=RestMethod.GET,
+        payload=repo_status_payload,
+    )
+
+    # Repository not found returns status 404
+    if response.status_code == 404:
+
+        # Exit if the Repo doesn't exist
+        return None
+    
+    else:
+        response.raise_for_status()
+        return json.loads(response.text)["object_id"]
+
+
+def get_repo(repo_id):
+
+    response = request_databricks_api(
+        api_endpoint=f"{DatabricksApi.REPO}/{repo_id}",
+        method=RestMethod.GET,
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to get repo , {response.text=}")
+
+    response = json.loads(response.text)
+
+    logger.info(f"{response=}")
+    return response
+
+
+def create_repo(repo_url, repo_path):
+    create_payload = {
+        "url": repo_url,
+        "provider": "bitbucketServer",
+        "path": repo_path,
+    }
+
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.REPO, method=RestMethod.POST, payload=create_payload
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to create a repo , {response.text=}")
+
+    response = json.loads(response.text)["id"]
+
+    logger.info(f"{response=}")
+    return response
+
+
+def pull_repo(repo_id, repo_branch):
+    pull_branch_payload = {"branch": repo_branch}
+
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.REPO,
+        method=RestMethod.PATCH,
+        payload=pull_branch_payload,
+        request_id=str(repo_id),
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to pull a repo , {response.text=}")
+
+    response = json.loads(response.text)
+
+    logger.info(f"{response=}")
+    return response
+
+
+def delete_repo(repo_id):
+    response = request_databricks_api(
+        api_endpoint=DatabricksApi.REPO,
+        method=RestMethod.DELETE,
+        request_id=str(repo_id),
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to delete a repo , {response.text=}")
+
+    response = json.loads(response.text)
+
+    logger.info(f"{response=}")
+    return response
+
+
+### API Calls for Databricks credentials ###
+
+
+def create_token(databricks_application_id):
+    
+    workspace_id = DEPLOYMENT_PARAMETERS["deployment_workspace_id"]
+
+    #Set token duration
+    lifetime_seconds = 3600    
+    #Generate the comment
+    datetime_stamp = str(datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))
+    comment = f"{workspace_id} {datetime_stamp}"
+
+    payload = {"application_id": databricks_application_id,
+                "lifetime_seconds": lifetime_seconds,
+                "comment": comment} 
+
+    response = request_databricks_api( 
+        api_endpoint=DatabricksApi.GENERATE_TOKEN,
+        method=RestMethod.POST,
+        payload=payload     
+    )
+
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to create a token , {response.text=}")
+
+    response = json.loads(response.text)['token_value']
+
+    logger.info(f"{response=}")
+    return response
