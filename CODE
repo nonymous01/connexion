@@ -8,11 +8,10 @@ Response:
 }
 
 Function Logs:
-START RequestId: 03224ea5-1c70-464d-99c9-15a00051bf3e Version: $LATEST
-[INFO]	2025-05-18T15:52:43.185Z	03224ea5-1c70-464d-99c9-15a00051bf3e	Invokation params: {'action': 'describe_model_registry', 'client_parameters': {'model_name': 'elasticwine', 'model_version': '10'}, 'deployment_parameters': {'workspace_url': 'https://votre-workspace.databricks.com', 'token': 'dapi123456789'}}
-[INFO]	2025-05-18T15:52:43.358Z	03224ea5-1c70-464d-99c9-15a00051bf3e	Found credentials in environment variables.
-[INFO]	2025-05-18T15:52:44.799Z	03224ea5-1c70-464d-99c9-15a00051bf3e	request_databricks_api:  api_endpoint='/2.0/mlflow/model-versions/get' method='GET' payload={'name': 'elasticwine', 'version': '10'} request_id=None 
-[ERROR]	2025-05-18T15:52:44.799Z	03224ea5-1c70-464d-99c9-15a00051bf3e	Error retrieving model information
+START RequestId: 186038dd-3c31-45c1-8bfe-466a83047e70 Version: $LATEST
+[INFO]	2025-05-18T15:57:43.827Z	186038dd-3c31-45c1-8bfe-466a83047e70	Invokation params: {'action': 'describe_model_registry', 'client_parameters': {'model_name': 'elasticwine', 'model_version': '10'}, 'deployment_parameters': {'workspace_url': 'https://votre-workspace.databricks.com', 'token': 'dapi123456789'}}
+[INFO]	2025-05-18T15:57:43.859Z	186038dd-3c31-45c1-8bfe-466a83047e70	request_databricks_api:  api_endpoint='/2.0/mlflow/model-versions/get' method='GET' payload={'name': 'elasticwine', 'version': '10'} request_id=None 
+[ERROR]	2025-05-18T15:57:43.859Z	186038dd-3c31-45c1-8bfe-466a83047e70	Error retrieving model information
 Traceback (most recent call last):
   File "/var/task/model_function.py", line 55, in describe_model_registration
     databricks_model_registry_helper.get_model_registration(
@@ -23,8 +22,8 @@ Traceback (most recent call last):
   File "/var/task/utils/databricks_api_helper.py", line 111, in request_databricks_api
     deployment_environment = DEPLOYMENT_PARAMETERS["deployment_environment"]
 KeyError: 'deployment_environment'
-[INFO]	2025-05-18T15:52:44.800Z	03224ea5-1c70-464d-99c9-15a00051bf3e	handler completed in 1.615 seconds
-END RequestId: 03224ea5-1c70-464d-99c9-15a00051bf3e
-REPORT RequestId: 03224ea5-1c70-464d-99c9-15a00051bf3e	Duration: 1634.12 ms	Billed Duration: 1635 ms	Memory Size: 128 MB	Max Memory Used: 105 MB	Init Duration: 1725.63 ms
+[INFO]	2025-05-18T15:57:43.859Z	186038dd-3c31-45c1-8bfe-466a83047e70	handler completed in 0.032 seconds
+END RequestId: 186038dd-3c31-45c1-8bfe-466a83047e70
+REPORT RequestId: 186038dd-3c31-45c1-8bfe-466a83047e70	Duration: 52.32 ms	Billed Duration: 53 ms	Memory Size: 128 MB	Max Memory Used: 106 MB
 
-Request ID: 03224ea5-1c70-464d-99c9-15a00051bf3e
+Request ID: 186038dd-3c31-45c1-8bfe-466a83047e70
