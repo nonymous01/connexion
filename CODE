@@ -160,14 +160,19 @@ def lambda_handler(event, context):
     return result
 
 
+Status: Succeeded
+Test Event Name: TestModel
+
+Response:
 {
-  "action": "describe_model_registry",
-  "client_parameters": {
-    "model_name": "elasticwine",
-    "model_version": "10"
-  },
-  "deployment_parameters": {
-    "workspace_url": "https://votre-workspace.databricks.com",
-    "token": "dapi123456789"
-  }
+  "success": false,
+  "error": "No action specified in event"
 }
+
+Function Logs:
+START RequestId: 72616a21-1751-4d3a-b616-b2f6099cd8fc Version: $LATEST
+[INFO]	2025-05-18T14:01:23.005Z	72616a21-1751-4d3a-b616-b2f6099cd8fc	Invokation params: {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
+END RequestId: 72616a21-1751-4d3a-b616-b2f6099cd8fc
+REPORT RequestId: 72616a21-1751-4d3a-b616-b2f6099cd8fc	Duration: 15.50 ms	Billed Duration: 16 ms	Memory Size: 128 MB	Max Memory Used: 91 MB	Init Duration: 1737.39 ms
+
+Request ID: 72616a21-1751-4d3a-b616-b2f6099cd8fc
