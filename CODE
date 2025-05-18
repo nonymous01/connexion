@@ -3,15 +3,21 @@ import json
 import traceback
 from datetime import date
 from dateutil.relativedelta import relativedelta
+
 import time
+
 import logging
 
 import utils.dispatcher_helper as dispatcher_helper
 import utils.databricks_model_registry_helper as databricks_model_registry_helper
 import utils.databricks_pipeline_helper as databricks_pipeline_helper
 
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+
+
 
 def promote_model_registration(client_parameters: dict, deployment_parameters: dict):
     result = {}
@@ -25,30 +31,39 @@ def promote_model_registration(client_parameters: dict, deployment_parameters: d
         response = databricks_model_registry_helper.promote_model_registration(
             model_name, model_version, model_source
         )
-       
+        
         if response is not None:
             if 'message' in response:
                 result["message"] = response["message"]
                 result["success"] = False
             else:
                 result["success"] = True
-                result["status"] = "SUCCESS"
 
     except Exception as e:
         logger.error(f"Error promoting model", exc_info=True)
         result["success"] = False
         result["error"] = repr(e)
-        result["status"] = "FAILURE"
-    
-    return result
+
+    # return result
+    response_json = client.promote_model_registration( 
+                    model_name="elasticwine",
+                    model_version=10,
+                    model_source='databricks_registry'|'databricks_uc'|'aws_model_registry'
+              )
+{
+  'status':'SUCCESS' | 'FAILURE', 
+  'message':'...'
+}
+
 
 def describe_model_registration(client_parameters: dict, deployment_parameters: dict):
     result = {}
-    
-    try:
-        model_name = client_parameters["model_name"]
-        model_version = client_parameters["model_version"]
+    print("# Describe model")
 
+    model_name = client_parameters["model_name"]
+    model_version = client_parameters["model_version"]
+
+    try:
         databricks_model_registry_helper.init(deployment_parameters)
 
         model_version_response = (
@@ -67,6 +82,7 @@ def describe_model_registration(client_parameters: dict, deployment_parameters: 
             result["model_version"] = model_version
             result["model_source"] = model_version_response["source"]
             result["model_stage"] = model_version_response["current_stage"]
+
             result["success"] = True
 
         else:
@@ -82,15 +98,18 @@ def describe_model_registration(client_parameters: dict, deployment_parameters: 
 
     return result
 
+
 def get_latest_model_registration(
     client_parameters: dict, deployment_parameters: dict
 ):
     result = {}
-    
-    try:
-        model_name = client_parameters["model_name"]
-        stage = client_parameters.get("stage")
+    print("# Get model registration")
 
+    model_name = client_parameters["model_name"]
+
+    stage = client_parameters.get("stage")
+
+    try:
         databricks_model_registry_helper.init(deployment_parameters)
 
         result["model_name"] = model_name
@@ -103,8 +122,11 @@ def get_latest_model_registration(
 
         if model_version_response:
             result["model_version"] = model_version_response["version"]
+
             result["model_stage"] = model_version_response["current_stage"]
+
             result["model_source"] = model_version_response["source"]
+
         else:
             result["model_version"] = 0
 
@@ -117,62 +139,17 @@ def get_latest_model_registration(
 
     return result
 
+
 def lambda_handler(event, context):
-    start = time.perf_counter()
+    start = time.perf_counter()  
     dispatch_table = {
         "describe_model_registry": describe_model_registration,
         "get_latest_model_registration": get_latest_model_registration,
         "promote_model_registration": promote_model_registration,
     }
 
-    # Log incoming event for debugging
-    logger.info(f"Invokation params: {event}")
-
-    # Check if this is a direct Lambda invocation or API Gateway event
-    if "requestContext" not in event:
-        # Direct invocation handling
-        action = event.get("action")
-        if not action:
-            return {
-                "success": False,
-                "error": "No action specified in event"
-            }
-            
-        if action not in dispatch_table:
-            return {
-                "success": False,
-                "error": f"Unknown action: {action}"
-            }
-            
-        # Call the appropriate function
-        handler_func = dispatch_table[action]
-        result = handler_func(
-            client_parameters=event.get("client_parameters", {}),
-            deployment_parameters=event.get("deployment_parameters", {})
-        )
-    else:
-        # API Gateway request handling
-        result = dispatcher_helper.dispatch_method(dispatch_table, event)
-    
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
     duration = time.perf_counter() - start
-    logger.info(f"handler completed in {duration:.3f} seconds")
+    logger.info(f"handler completed in {duration:3f} seconds")
 
     return result
-
-
-Status: Succeeded
-Test Event Name: TestModel
-
-Response:
-{
-  "success": false,
-  "error": "No action specified in event"
-}
-
-Function Logs:
-START RequestId: 72616a21-1751-4d3a-b616-b2f6099cd8fc Version: $LATEST
-[INFO]	2025-05-18T14:01:23.005Z	72616a21-1751-4d3a-b616-b2f6099cd8fc	Invokation params: {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
-END RequestId: 72616a21-1751-4d3a-b616-b2f6099cd8fc
-REPORT RequestId: 72616a21-1751-4d3a-b616-b2f6099cd8fc	Duration: 15.50 ms	Billed Duration: 16 ms	Memory Size: 128 MB	Max Memory Used: 91 MB	Init Duration: 1737.39 ms
-
-Request ID: 72616a21-1751-4d3a-b616-b2f6099cd8fc
