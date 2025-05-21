@@ -1,3 +1,4 @@
-venv) sagemaker-user@default:~$ find . -type d -name "f1ai_client"
-./f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client
-(venv) sagemaker-user@default:~$ 
+import sys
+sys.path.append("f1_ai_mlops_baseline/venv/lib/python3.12/site-packages"):contentReference[oaicite:24]{index=24}
+
+from f1ai_client import f1ai_client
