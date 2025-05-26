@@ -1,11 +1,5 @@
-default:~$ cd f1_ai_mlops_baseline/python_scripts/utils/
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline/python_scripts/utils$ python3 f1ai_model_promoter.py 
-Traceback (most recent call last):
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 2, in <module>
-    from f1ai_client import f1ai_client
-ModuleNotFoundError: No module named 'f1ai_client'
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline/python_scripts/utils$ whitch f1ai_client
-bash: whitch: command not found
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline/python_scripts/utils$ which f1ai_client
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline/python_scripts/utils$ who f1ai_client
-(venv) sagemaker-user@default:~/f1_ai_mlops
+(venv) sagemaker-user@default:~$ ls
+f1_ai_mlops_baseline  sagemaker-code-editor-server-data  user-default-efs  venv
+(venv) sagemaker-user@default:~$ find . -name 'f1ai_client.py'
+./f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py
+(venv) sagemaker-user@default:~$ 
