@@ -1,15 +1,33 @@
- File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/utils/databricks_utils.py", line 1108, in _get_databricks_creds_config
-    _fail_malformed_databricks_auth(tracking_uri)
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/utils/databricks_utils.py", line 682, in _fail_malformed_databricks_auth
-    raise MlflowException(
-mlflow.exceptions.MlflowException: Reading Databricks credential configuration failed with MLflow registry URI 'databricks-uc'. Please ensure that the 'databricks-sdk' PyPI library is installed, the tracking URI is set correctly, and Databricks authentication is properly configured. The registry URI can be either 'databricks-uc' (using 'DEFAULT' authentication profile) or 'databricks-uc://{profile}'. You can configure Databricks authentication in several ways, for example by specifying environment variables (e.g. DATABRICKS_HOST + DATABRICKS_TOKEN) or logging in using 'databricks auth login'. 
-For details on configuring Databricks authentication, please refer to 'https://docs.databricks.com/en/dev-tools/auth/index.html#unified-auth'.
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
+from dotenv import dotenv_values
+from f1ai_client import f1ai_client
+
+# Load environment variables from the .env file
+config = dotenv_values('.env')
+
+# Retrieve the API token from environment variables
+TOKEN = config.get("EU_WEST_1_TOKEN")
 
 
-import mlflow
+def process():
+    # Initialize the F1AI client with the API token
+    client = f1ai_client.init(TOKEN)
 
-mlflow.set_registry_uri("databricks-uc")
-client = mlflow.tracking.MlflowClient()
-model = client.get_model_version(name="f1aiplat.dwsa0004067.irisclassifier", version=1)
-print(model)
+    try:
+        # Attempt to promote the model registration
+        response_json = client.promote_model_registration(
+            model_name="irisclassifier",         # Name of the model to promote
+            model_version=1,                     # Version number of the model
+            model_source="databricks_uc"         # Source of the model ('databricks_registry', 'databricks_uc', or 'aws_model_registry')
+        )
+
+        # Print the response for debugging or verification
+        print(response_json)
+
+    except Exception as e:
+        # Handle any exception that occurs during the API call
+        print(f"An error occurred while promoting the model: {e}")
+
+
+# Run the script only if it's the main file being executed
+if __name__ == "__main__":
+    process()
