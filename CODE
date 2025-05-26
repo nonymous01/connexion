@@ -1,4 +1,13 @@
-venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
-Promotion response: {'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
-(venv) sagemaker-user@d
+print("📦 Promoting model:")
+print("src_model:", f"{src_schema}.{model_name}")
+print("src_version:", model_version)
+print("src_registry_uri:", SRC_REGISTRY_URI)
+print("dst_model:", f"{target_schema}.{model_name}")
+print("dst_registry_uri:", DST_REGISTRY_URI)
+
+import mlflow
+
+mlflow.set_registry_uri("databricks-uc")
+client = mlflow.tracking.MlflowClient()
+model = client.get_model_version(name="f1aiplat.dwsa0004067.irisclassifier", version=1)
+print(model)
