@@ -1,25 +1,23 @@
-v) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
-{'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
-{'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
-Traceback (most recent call last):
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 22, in <module>
-    process() 
-    ^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 13, in process
-    response_json = client.promote_model_registration(
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 1405, in promote_model_registration
-    return _transform_response(response)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 26, in _transform_response
-    raise RuntimeError(f"{response.reason=}, {response.content=}")
-RuntimeError: response.reason='Gateway Timeout', response.content=b'{"message": "Endpoint request timed out"}'
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
-{'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
+) sagemaker-user@default:~/f1_ai_mlops_baseline$ aws sts get-caller-identify
+
+usage: aws [options] <command> <subcommand> [<subcommand> ...] [parameters]
+To see help text, you can run:
+
+  aws help
+  aws <command> help
+  aws <command> <subcommand> help
+
+aws: error: argument operation: Invalid choice, valid choices are:
+
+assume-role                              | assume-role-with-saml                   
+assume-role-with-web-identity            | assume-root                             
+decode-authorization-message             | get-access-key-info                     
+get-caller-identity                      | get-federation-token                    
+get-session-token                        | help                                    
+
+
+Invalid choice: 'get-caller-identify', maybe you meant:
+
+  * get-caller-identity
+
+(venv) sagemaker-us
