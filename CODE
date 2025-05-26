@@ -37,6 +37,7 @@ def set_databricks_environment(region,environment,automation_environment):
     databricks_token = aws_secrets_manager_helper.get_secret_value_by_key(
     secret_name=secret_name, secret_key=secret_key)
     os.environ["DATABRICKS_TOKEN"] = databricks_token
+    print(f"alien {os.environ["DATABRICKS_TOKEN"]}")
     logger.info('credentials received')
     mlflow.set_tracking_uri("databricks")
 
@@ -75,6 +76,7 @@ def promote_model_registration(model_name, model_version, model_source):
 
 
     return {'status': 'SUCCESS'}
+
 
 
 def get_envs_names(deployment_env) -> str:
@@ -213,3 +215,10 @@ def get_latest_model_registration(model_name, stage=None):
                 max_model_item = model_item
 
     return max_model_item
+
+
+et mon erreur
+nv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
+Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
+{'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$
