@@ -1,18 +1,211 @@
-venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
-INFO:__main__:F1AI client initialized successfully
-INFO:__main__:Attempting to promote model: irisclassifier, version: 1
-ERROR:__main__:Model promotion failed: {'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
-==================================================
-MODEL PROMOTION RESULT:
-==================================================
-Status: FAILURE
-Message: RuntimeError('Failed to get model stage, response=<Response [404]>')
-❌ Model promotion failed!
+from dotenv import dotenv_values
+from f1ai_client import f1ai_client
+import logging
 
-Troubleshooting suggestions:
-1. Verify the model exists in the specified source
-2. Check AWS credentials and permissions
-3. Ensure the token has proper permissions
-4. Verify the model_source parameter is correct
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def load_config():
+    """Load environment configuration from .env file"""
+    try:
+        config = dotenv_values('.env')
+        token = config.get("EU_WEST_1_TOKEN")
+        
+        if not token:
+            raise ValueError("EU_WEST_1_TOKEN not found in .env file")
+        
+        return token
+    except Exception as e:
+        logger.error(f"Error loading configuration: {e}")
+        raise
+
+def initialize_client(token):
+    """Initialize F1AI client with proper error handling"""
+    try:
+        client = f1ai_client.init(token)
+        logger.info("F1AI client initialized successfully")
+        return client
+    except Exception as e:
+        logger.error(f"Error initializing F1AI client: {e}")
+        raise
+
+def list_available_models(client):
+    """List all available models to help with debugging"""
+    try:
+        # Try different methods to list models
+        methods_to_try = [
+            'list_models',
+            'get_models',
+            'list_registered_models',
+            'get_all_models'
+        ]
+        
+        for method_name in methods_to_try:
+            if hasattr(client, method_name):
+                try:
+                    method = getattr(client, method_name)
+                    models = method()
+                    logger.info(f"Available models using {method_name}: {models}")
+                    return models
+                except Exception as e:
+                    logger.debug(f"Method {method_name} failed: {e}")
+                    continue
+        
+        logger.warning("No method found to list available models")
+        return None
+        
+    except Exception as e:
+        logger.error(f"Error listing models: {e}")
+        return None
+
+def check_model_exists(client, model_name, model_version=None):
+    """Check if model exists before promoting"""
+    try:
+        # First, try to list all available models
+        logger.info("Checking available models...")
+        available_models = list_available_models(client)
+        
+        # Try different methods to get model information
+        methods_to_try = [
+            ('get_model_info', {'model_name': model_name, 'model_version': model_version}),
+            ('get_model', {'model_name': model_name, 'model_version': model_version}),
+            ('describe_model', {'model_name': model_name}),
+            ('get_registered_model', {'name': model_name})
+        ]
+        
+        for method_name, kwargs in methods_to_try:
+            if hasattr(client, method_name):
+                try:
+                    method = getattr(client, method_name)
+                    # Filter out None values from kwargs
+                    filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
+                    response = method(**filtered_kwargs)
+                    logger.info(f"Model {model_name} found using {method_name}: {response}")
+                    return True
+                except Exception as e:
+                    logger.debug(f"Method {method_name} failed: {e}")
+                    continue
+        
+        logger.warning(f"Model {model_name} not found using any available method")
+        return False
+        
+    except Exception as e:
+        logger.warning(f"Error checking if model exists: {e}")
+        return False
+
+def promote_model(client, model_name, model_version, model_source):
+    """Promote model with proper error handling and validation"""
+    try:
+        # Validate inputs
+        valid_sources = ['databricks_registry', 'databricks_uc', 'aws_model_registry']
+        if model_source not in valid_sources:
+            raise ValueError(f"Invalid model_source. Must be one of: {valid_sources}")
+        
+        logger.info(f"Attempting to promote model: {model_name}, version: {model_version}, source: {model_source}")
+        
+        # Check if model exists first
+        logger.info("Checking if model exists...")
+        model_exists = check_model_exists(client, model_name, model_version)
+        
+        if not model_exists:
+            logger.error(f"Model {model_name} version {model_version} not found in {model_source}")
+            return {
+                'status': 'FAILURE', 
+                'message': f"Model {model_name} version {model_version} not found in {model_source}. Please check the model name, version, and source."
+            }
+        
+        # Try promotion with different parameter combinations
+        promotion_attempts = [
+            # Standard attempt
+            {
+                'model_name': model_name,
+                'model_version': model_version,
+                'model_source': model_source
+            },
+            # Without version (in case it's not needed)
+            {
+                'model_name': model_name,
+                'model_source': model_source
+            }
+        ]
+        
+        for i, params in enumerate(promotion_attempts):
+            try:
+                logger.info(f"Promotion attempt {i+1} with params: {params}")
+                response_json = client.promote_model_registration(**params)
+                
+                # Check response status
+                if response_json.get('status') == 'SUCCESS':
+                    logger.info(f"Model promotion successful: {response_json}")
+                    return response_json
+                else:
+                    logger.warning(f"Promotion attempt {i+1} failed: {response_json}")
+                    if i == len(promotion_attempts) - 1:  # Last attempt
+                        return response_json
+                    
+            except Exception as e:
+                logger.warning(f"Promotion attempt {i+1} failed with exception: {e}")
+                if i == len(promotion_attempts) - 1:  # Last attempt
+                    raise e
+        
+        return {'status': 'FAILURE', 'message': 'All promotion attempts failed'}
+        
+    except Exception as e:
+        logger.error(f"Error promoting model: {e}")
+        return {'status': 'FAILURE', 'message': str(e)}
+
+def process():
+    """Main processing function"""
+    try:
+        # Load configuration
+        token = load_config()
+        
+        # Initialize client
+        client = initialize_client(token)
+        
+        # Model configuration
+        model_config = {
+            'model_name': 'irisclassifier',
+            'model_version': 1,
+            'model_source': 'databricks_uc'  # Options: 'databricks_registry'|'databricks_uc'|'aws_model_registry'
+        }
+        
+        # Promote model
+        response = promote_model(
+            client=client,
+            **model_config
+        )
+        
+        # Print results
+        print("=" * 50)
+        print("MODEL PROMOTION RESULT:")
+        print("=" * 50)
+        print(f"Status: {response.get('status', 'UNKNOWN')}")
+        print(f"Message: {response.get('message', 'No message')}")
+        
+        if response.get('status') == 'SUCCESS':
+            print("✅ Model promotion completed successfully!")
+        else:
+            print("❌ Model promotion failed!")
+            print("\nTroubleshooting suggestions:")
+            print("1. Check if the model 'irisclassifier' exists in Databricks Unity Catalog")
+            print("2. Verify the model version (try without specifying version)")
+            print("3. Try different model_source: 'databricks_registry' instead of 'databricks_uc'")
+            print("4. Check AWS credentials and permissions")
+            print("5. Ensure the F1AI token has proper permissions")
+            print("6. Contact your administrator to verify model registration in the source system")
+            print("\nTo debug further:")
+            print("- Check Databricks Unity Catalog for registered models")
+            print("- Verify model naming conventions in your organization")
+            print("- Try listing all available models first")
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"Process failed: {e}")
+        print(f"❌ Process failed with error: {e}")
+        return {'status': 'FAILURE', 'message': str(e)}
+
+if __name__ == "__main__":
+    result = process()
