@@ -1,3 +1,186 @@
-print(model_name, model_version)
-model_info = get_model_registration(model_name, model_version)
-print("Model info:", model_info)
+import os
+import logging
+
+import mlflow
+
+import utils.databricks_api_helper as databricks_api_helper
+import utils.aws_secrets_manager_helper as aws_secrets_manager_helper
+from utils.common_entities import SubEnvironment, Environment, DeploymentMode, DatabricksMlflowStages
+from mlflow_export_import.copy.copy_model_version import copy
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+os.environ['MLFLOW_TRACKING_URI'] = 'databricks://src'
+
+DEPLOYMENT_PARAMETERS = {}
+SRC_REGISTRY_URI = "databricks-uc://src"
+DST_REGISTRY_URI = "databricks-uc://target"
+
+
+def init(deployment_parameters: dict) -> None:
+    global DEPLOYMENT_PARAMETERS
+    DEPLOYMENT_PARAMETERS = deployment_parameters
+    databricks_api_helper.init(deployment_parameters)
+
+
+def set_databricks_environment(region, environment, automation_environment):
+    '''Used to establish connection with Databricks'''
+    databricks_host = f'https://formulaone-{region}-{environment.lower()}-ai-workspace.cloud.databricks.com'
+    os.environ["DATABRICKS_HOST"] = databricks_host
+    secret_name = f"f1ai/{automation_environment.lower()}"
+    secret_key = f"databricks_token_{environment.lower()}"
+    
+    databricks_token = aws_secrets_manager_helper.get_secret_value_by_key(
+        secret_name=secret_name, secret_key=secret_key
+    )
+    
+    if not databricks_token:
+        raise RuntimeError(f"Failed to retrieve Databricks token for secret {secret_name}:{secret_key}")
+    
+    os.environ["DATABRICKS_TOKEN"] = databricks_token
+    logger.info("Databricks credentials received.")
+    mlflow.set_tracking_uri("databricks")
+
+
+def promote_model_registration(model_name, model_version, model_source):
+    logger.info(f"Starting promotion of model: {model_name}, version: {model_version}")
+    
+    workspace_id = DEPLOYMENT_PARAMETERS["deployment_workspace_id"]
+    src_host = DEPLOYMENT_PARAMETERS["deployment_databricks_host_lower_env"]
+    src_schema = DEPLOYMENT_PARAMETERS["deployment_databricks_schema_lower_env"] or "f1aiplat.dwsa0004067"
+    target_host = DEPLOYMENT_PARAMETERS["deployment_databricks_host"]
+    target_schema = DEPLOYMENT_PARAMETERS["deployment_databricks_schema"] or "f1aiplat.dwsa0004067"
+    src_env, target_env = get_envs_names(DEPLOYMENT_PARAMETERS["deployment_environment"])
+    user_id = DEPLOYMENT_PARAMETERS["deployment_databricks_user"]
+
+    logger.info("Creating Databricks config file...")
+    create_cfg_file(
+        src_host=src_host,
+        src_token=get_dbs_token(src_env),
+        target_host=target_host,
+        target_token=get_dbs_token(target_env)
+    )
+
+    logger.info("Calling promote_model...")
+    promote_model(
+        src_model=f"{src_schema}.{model_name}",
+        src_version=model_version,
+        src_registry_uri=SRC_REGISTRY_URI,
+        dst_model=f"{target_schema}.{model_name}",
+        dst_registry_uri=DST_REGISTRY_URI,
+        dst_experiment_name=f"/Users/{user_id}/{model_name}",
+    )
+
+    return {'status': 'SUCCESS'}
+
+
+def get_envs_names(deployment_env) -> tuple:
+    src_env = 'dev'
+    if deployment_env == 'prod':
+        src_env = 'qa'
+    return src_env, deployment_env
+
+
+def get_dbs_token(environment):
+    secret_name = f"f1ai/{environment.lower()}"
+    secret_key = f"databricks_token_{environment.lower()}"
+    token = aws_secrets_manager_helper.get_secret_value_by_key(secret_name, secret_key)
+    
+    if not token:
+        raise RuntimeError(f"Failed to get Databricks token from AWS Secrets for {secret_name}:{secret_key}")
+    
+    return token
+
+
+def create_cfg_file(src_host, src_token, target_host, target_token):
+    logger.info("Writing Databricks config file...")
+    content = f"""
+[src]
+host={src_host.strip()}
+token={src_token.strip()}
+[target]
+host={target_host.strip()}
+token={target_token.strip()}
+"""
+    config_path = "/tmp/.databrickscfg"
+    os.environ['DATABRICKS_CONFIG_FILE'] = config_path
+
+    with open(config_path, 'w') as f:
+        f.write(content)
+        logger.info(f"Config file written to {config_path}")
+
+    return config_path
+
+
+def promote_model(
+    src_model,
+    src_version,
+    src_registry_uri,
+    dst_model,
+    dst_registry_uri,
+    dst_experiment_name=None,
+    copy_permissions=False,
+    copy_stages_and_aliases=False,
+    copy_lineage_tags=False,
+    verbose=False
+):
+    def make_tracking_uri(registry_uri):
+        if not registry_uri:
+            return None
+        return registry_uri.replace("databricks-uc", "databricks") if registry_uri.startswith("databricks-uc") else registry_uri
+
+    logger.info(f"Copying model: {src_model} version: {src_version}")
+    src_tracking_uri = make_tracking_uri(src_registry_uri)
+    dst_tracking_uri = make_tracking_uri(dst_registry_uri)
+
+    return copy(
+        src_model,
+        src_version,
+        dst_model,
+        dst_experiment_name,
+        src_tracking_uri,
+        dst_tracking_uri,
+        src_registry_uri,
+        dst_registry_uri,
+        copy_permissions,
+        copy_stages_and_aliases,
+        copy_lineage_tags,
+        verbose
+    )
+
+
+def get_model_registration(model_name, model_version):
+    logger.info(f"Fetching model registration: {model_name} v{model_version}")
+    model_registration = databricks_api_helper.get_model_registration(model_name, model_version)
+    return model_registration or None
+
+
+def get_latest_model_registration(model_name, stage=None):
+    logger.info(f"Fetching latest model registration for: {model_name}")
+    registered_versions = databricks_api_helper.get_latest_model_registrations(model_name)
+
+    if not registered_versions:
+        logger.warning("No registered versions found.")
+        return None
+
+    max_version = 0
+    max_model_item = None
+
+    def to_int(s):
+        try:
+            return int(s)
+        except:
+            return 0
+
+    for model_item in registered_versions:
+        if stage:
+            if model_item["current_stage"] == stage:
+                return model_item
+        elif model_item["current_stage"] != "Archived":
+            current_version = to_int(model_item["version"])
+            if current_version > max_version:
+                max_version = current_version
+                max_model_item = model_item
+
+    return max_model_item
