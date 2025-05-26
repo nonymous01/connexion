@@ -1,11 +1,4 @@
-(venv) sagemaker-user@default:~$ ls
-f1_ai_mlops_baseline  sagemaker-code-editor-server-data  user-default-efs  venv
-(venv) sagemaker-user@default:~$ find . -name 'f1ai_client.py'
-./f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py
-(venv) sagemaker-user@default:~$ python3
-Python 3.12.9 | packaged by conda-forge | (main, Feb 14 2025, 08:00:06) [GCC 13.3.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> from f1ai_client import f1ai_client
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-ModuleNotFoundError: No module named 'f1ai_client'
+env) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
+Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
+{'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
+(venv) sagemaker-user@default:~/f1_ai_mlops_baselin
