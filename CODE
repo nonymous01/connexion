@@ -1,4 +1,11 @@
-import sys
-sys.path.append("f1_ai_mlops_baseline/venv/lib/python3.12/site-packages"):contentReference[oaicite:24]{index=24}
-
-from f1ai_client import f1ai_client
+default:~$ cd f1_ai_mlops_baseline/python_scripts/utils/
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline/python_scripts/utils$ python3 f1ai_model_promoter.py 
+Traceback (most recent call last):
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 2, in <module>
+    from f1ai_client import f1ai_client
+ModuleNotFoundError: No module named 'f1ai_client'
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline/python_scripts/utils$ whitch f1ai_client
+bash: whitch: command not found
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline/python_scripts/utils$ which f1ai_client
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline/python_scripts/utils$ who f1ai_client
+(venv) sagemaker-user@default:~/f1_ai_mlops
