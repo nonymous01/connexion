@@ -1,36 +1,4 @@
-from dotenv import dotenv_values
-from f1ai_client import f1ai_client
-
-# Load environment variables from the .env file
-config = dotenv_values('.env')
-
-# Retrieve the token from the environment configuration
-TOKEN = config.get("EU_WEST_1_TOKEN")
-
-def process():
-    """
-    Initialize the F1AI client and promote the model from one environment to another.
-    """
-    if not TOKEN:
-        print("Error: Token not found. Please make sure EU_WEST_1_TOKEN is set in the .env file.")
-        return
-
-    # Initialize the client using the token
-    client = f1ai_client.init(TOKEN)
-
-    try:
-        # Attempt to promote the model using the client
-        response_json = client.promote_model_registration(
-            model_name="irisclassifier",
-            model_version=1,
-            model_source="databricks_uc"  # Options: 'databricks_registry' | 'databricks_uc' | 'aws_model_registry'
-        )
-        print("Promotion response:", response_json)
-
-    except Exception as e:
-        # Handle any exception during promotion
-        print("Model promotion failed with exception:", str(e))
-
-
-if __name__ == "__main__":
-    process()
+venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
+Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
+Promotion response: {'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
+(venv) sagemaker-user@d
