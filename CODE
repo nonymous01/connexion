@@ -1,9 +1,11 @@
-print("📦 Promoting model:")
-print("src_model:", f"{src_schema}.{model_name}")
-print("src_version:", model_version)
-print("src_registry_uri:", SRC_REGISTRY_URI)
-print("dst_model:", f"{target_schema}.{model_name}")
-print("dst_registry_uri:", DST_REGISTRY_URI)
+ File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/utils/databricks_utils.py", line 1108, in _get_databricks_creds_config
+    _fail_malformed_databricks_auth(tracking_uri)
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/utils/databricks_utils.py", line 682, in _fail_malformed_databricks_auth
+    raise MlflowException(
+mlflow.exceptions.MlflowException: Reading Databricks credential configuration failed with MLflow registry URI 'databricks-uc'. Please ensure that the 'databricks-sdk' PyPI library is installed, the tracking URI is set correctly, and Databricks authentication is properly configured. The registry URI can be either 'databricks-uc' (using 'DEFAULT' authentication profile) or 'databricks-uc://{profile}'. You can configure Databricks authentication in several ways, for example by specifying environment variables (e.g. DATABRICKS_HOST + DATABRICKS_TOKEN) or logging in using 'databricks auth login'. 
+For details on configuring Databricks authentication, please refer to 'https://docs.databricks.com/en/dev-tools/auth/index.html#unified-auth'.
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
+
 
 import mlflow
 
