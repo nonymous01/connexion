@@ -2,3 +2,14 @@
 Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
 {'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
 (venv) sagemaker-user
+
+
+
+import mlflow
+
+# Définir l'URI du registre en fonction de votre configuration
+mlflow.set_registry_uri("databricks-uc")  # ou "databricks" ou l'URI approprié
+
+# Lister les modèles enregistrés
+for rm in mlflow.search_registered_models():
+    print(rm.name)
