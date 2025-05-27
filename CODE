@@ -1,25 +1,4 @@
-from dotenv import dotenv_values
-from f1ai_client import f1ai_client
-
-# import sys
-# sys.path.append("f1_ai_mlops_baseline/venv/lib/python3.12/site-packages")
-
-from f1ai_client import f1ai_client
-
-# Load token from .env file
-config = dotenv_values('.env')
-TOKEN = config.get("EU_WEST_1_TOKEN")
-
-def process():
-    client = f1ai_client.init(TOKEN)  # Add the token obtained from the F1 portal
-
-    response_json = client.promote_model_registration(
-        model_name="irisclassifier",
-        model_version=1,
-        model_source="databricks_uc"  # 'databricks_registry' | 'databricks_uc' | 'aws_model_registry'
-    )
-
-    print(response_json)
-
-if __name__ == "__main__":
-    process()
+ sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
+Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
+{'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
+(venv) sagemaker-user
