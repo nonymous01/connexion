@@ -1,32 +1,25 @@
 from dotenv import dotenv_values
 from f1ai_client import f1ai_client
 
-# Load environment variables
+# import sys
+# sys.path.append("f1_ai_mlops_baseline/venv/lib/python3.12/site-packages")
+
+from f1ai_client import f1ai_client
+
+# Load token from .env file
 config = dotenv_values('.env')
-
-# Convert token to bytes as required by f1ai_client
-TOKEN = config.get("EU_WEST_1_TOKEN").encode()
-
+TOKEN = config.get("EU_WEST_1_TOKEN")
 
 def process():
-    try:
-        # Initialize client with token (must be bytes)
-        client = f1ai_client.init(TOKEN)
+    client = f1ai_client.init(TOKEN)  # Add the token obtained from the F1 portal
 
-        # Promote model registration
-        response_json = client.promote_model_registration(
-            model_name="irisclassifier",
-            model_version=1,
-            model_source="databricks_uc"  # Options: 'databricks_registry', 'databricks_uc', 'aws_model_registry'
-        )
+    response_json = client.promote_model_registration(
+        model_name="irisclassifier",
+        model_version=1,
+        model_source="databricks_uc"  # 'databricks_registry' | 'databricks_uc' | 'aws_model_registry'
+    )
 
-        # Print the response
-        print(response_json)
-
-    except Exception as e:
-        # Handle any exception during client usage
-        print(f"Error occurred: {e}")
-
+    print(response_json)
 
 if __name__ == "__main__":
     process()
