@@ -1,36 +1,29 @@
-ker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Traceback (most recent call last):
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 26, in <module>
-    for rm in mlflow.search_registered_models():
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/tracking/_model_registry/fluent.py", line 227, in search_registered_models
-    return get_results_from_paginated_fn(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/utils/__init__.py", line 237, in get_results_from_paginated_fn
-    page_results = paginated_fn(max_results_per_page, next_page_token)
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/tracking/_model_registry/fluent.py", line 220, in pagination_wrapper_func
-    return MlflowClient().search_registered_models(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/tracking/client.py", line 3829, in search_registered_models
-    return self._get_registry_client().search_registered_models(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/tracking/_model_registry/client.py", line 136, in search_registered_models
-    return self.store.search_registered_models(filter_string, max_results, order_by, page_token)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/store/model_registry/rest_store.py", line 158, in search_registered_models
-    response_proto = self._call_endpoint(SearchRegisteredModels, req_body)
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/store/model_registry/base_rest_store.py", line 45, in _call_endpoint
-    self.get_host_creds(), endpoint, method, json_body, response_proto, extra_headers
-    ^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/utils/databricks_utils.py", line 819, in get_databricks_host_creds
-    config = _get_databricks_creds_config(server_uri)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/utils/databricks_utils.py", line 1108, in _get_databricks_creds_config
-    _fail_malformed_databricks_auth(tracking_uri)
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/utils/databricks_utils.py", line 682, in _fail_malformed_databricks_auth
-    raise MlflowException(
-mlflow.exceptions.MlflowException: Reading Databricks credential configuration failed with MLflow tracking URI 'databricks'. Please ensure that the 'databricks-sdk' PyPI library is installed, the tracking URI is set correctly, and Databricks authentication is properly configured. The tracking URI can be either 'databricks' (using 'DEFAULT' authentication profile) or 'databricks://{profile}'. You can configure Databricks authentication in several ways, for example by specifying environment variables (e.g. DATABRICKS_HOST + DATABRICKS_TOKEN) or logging in using 'databricks auth login'. 
-For details on configuring Databricks authentication, please refer to 'https://docs.databricks.com/en/dev-tools/auth/index.html#unified-auth'.
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$
+mon code
+
+from dotenv import dotenv_values
+from f1ai_client import f1ai_client
+# import sys
+# sys.path.append("f1_ai_mlops_baseline/venv/lib/python3.12/site-packages"):contentReference[oaicite:24]{index=24}
+
+config = dotenv_values('.env')
+TOKEN = config.get("EU_WEST_1_TOKEN")
+
+def process():
+    client = f1ai_client.init(TOKEN) # add token obtained from F1 Portal
+    response_json = client.promote_model_registration(
+                    model_name="irisclassifier",
+                    model_version=1,
+                    model_source="databricks_uc" # 'databricks_registry'|'databricks_uc'|'aws_model_registry'
+    )
+    
+    print(response_json)
+    
+if __name__=="__main__":
+    process() 
+
+et mon erreur 
+env) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
+Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
+{'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
+comment corrigé cella
