@@ -1,14 +1,32 @@
-v) sagemaker-user@default:~/f1_ai_mlops_baseline/python_scripts/utils$ python3 f1ai_model_promoter.py 
-Error when trying to initialize the client: Invalid token type. Token must be a <class 'bytes'> 
-Traceback (most recent call last):
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 21, in <module>
-    process() 
-    ^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 13, in process
-    response_json = client.promote_model_registration(
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 1399, in promote_model_registration
-    f"{self.APIGW_MODELS_URL}/promote",
-       ^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'client' object has no attribute 'APIGW_MODELS_URL'
-(venv) sagemaker-user@default:~/f1_ai
+from dotenv import dotenv_values
+from f1ai_client import f1ai_client
+
+# Load environment variables
+config = dotenv_values('.env')
+
+# Convert token to bytes as required by f1ai_client
+TOKEN = config.get("EU_WEST_1_TOKEN").encode()
+
+
+def process():
+    try:
+        # Initialize client with token (must be bytes)
+        client = f1ai_client.init(TOKEN)
+
+        # Promote model registration
+        response_json = client.promote_model_registration(
+            model_name="irisclassifier",
+            model_version=1,
+            model_source="databricks_uc"  # Options: 'databricks_registry', 'databricks_uc', 'aws_model_registry'
+        )
+
+        # Print the response
+        print(response_json)
+
+    except Exception as e:
+        # Handle any exception during client usage
+        print(f"Error occurred: {e}")
+
+
+if __name__ == "__main__":
+    process()
