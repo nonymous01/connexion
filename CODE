@@ -1,4 +1,4 @@
-nv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
+ker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
 Traceback (most recent call last):
   File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 26, in <module>
     for rm in mlflow.search_registered_models():
@@ -18,9 +18,9 @@ Traceback (most recent call last):
   File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/tracking/_model_registry/client.py", line 136, in search_registered_models
     return self.store.search_registered_models(filter_string, max_results, order_by, page_token)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/store/_unity_catalog/registry/rest_store.py", line 429, in search_registered_models
-    response_proto = self._call_endpoint(SearchRegisteredModelsRequest, req_body)
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/store/model_registry/rest_store.py", line 158, in search_registered_models
+    response_proto = self._call_endpoint(SearchRegisteredModels, req_body)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/store/model_registry/base_rest_store.py", line 45, in _call_endpoint
     self.get_host_creds(), endpoint, method, json_body, response_proto, extra_headers
     ^^^^^^^^^^^^^^^^^^^^^
@@ -31,6 +31,6 @@ Traceback (most recent call last):
     _fail_malformed_databricks_auth(tracking_uri)
   File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/mlflow/utils/databricks_utils.py", line 682, in _fail_malformed_databricks_auth
     raise MlflowException(
-mlflow.exceptions.MlflowException: Reading Databricks credential configuration failed with MLflow registry URI 'databricks-uc'. Please ensure that the 'databricks-sdk' PyPI library is installed, the tracking URI is set correctly, and Databricks authentication is properly configured. The registry URI can be either 'databricks-uc' (using 'DEFAULT' authentication profile) or 'databricks-uc://{profile}'. You can configure Databricks authentication in several ways, for example by specifying environment variables (e.g. DATABRICKS_HOST + DATABRICKS_TOKEN) or logging in using 'databricks auth login'. 
+mlflow.exceptions.MlflowException: Reading Databricks credential configuration failed with MLflow tracking URI 'databricks'. Please ensure that the 'databricks-sdk' PyPI library is installed, the tracking URI is set correctly, and Databricks authentication is properly configured. The tracking URI can be either 'databricks' (using 'DEFAULT' authentication profile) or 'databricks://{profile}'. You can configure Databricks authentication in several ways, for example by specifying environment variables (e.g. DATABRICKS_HOST + DATABRICKS_TOKEN) or logging in using 'databricks auth login'. 
 For details on configuring Databricks authentication, please refer to 'https://docs.databricks.com/en/dev-tools/auth/index.html#unified-auth'.
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$
