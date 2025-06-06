@@ -1,6 +1,1 @@
-@default:~/f1_ai_mlops_baseline$ cd layer/
-sagemaker-user@default:~/f1_ai_mlops_baseline/layer$ ls
-python
-sagemaker-user@default:~/f1_ai_mlops_baseline/layer$ ls python/
-google  protobuf-3.20.3-nspkg.pth  protobuf-3.20.3.dist-info
-sagemaker-user@default:~/f1_ai_mlops_base
+python3 -c "import shutil; shutil.make_archive('../protobuf-layer', 'zip', 'python')"
