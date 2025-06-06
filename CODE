@@ -1,29 +1,25 @@
-mon code
+Status: Failed
+Test Event Name: test
 
-from dotenv import dotenv_values
-from f1ai_client import f1ai_client
-# import sys
-# sys.path.append("f1_ai_mlops_baseline/venv/lib/python3.12/site-packages"):contentReference[oaicite:24]{index=24}
+Response:
+{
+  "errorMessage": "Unable to import module 'model_function': No module named 'google.protobuf'",
+  "errorType": "Runtime.ImportModuleError",
+  "requestId": "",
+  "stackTrace": []
+}
 
-config = dotenv_values('.env')
-TOKEN = config.get("EU_WEST_1_TOKEN")
+Function Logs:
+[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'google.protobuf'
+Traceback (most recent call last):
+INIT_REPORT Init Duration: 2343.46 ms	Phase: init	Status: error	Error Type: Runtime.ImportModuleError
+[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'google.protobuf'
+Traceback (most recent call last):
+INIT_REPORT Init Duration: 32939.28 ms	Phase: invoke	Status: error	Error Type: Runtime.ImportModuleError
+START RequestId: de7f8b1f-42d5-46ab-999d-a53a29e0f1ea Version: $LATEST
+Unknown application error occurred
+Runtime.ImportModuleError
+END RequestId: de7f8b1f-42d5-46ab-999d-a53a29e0f1ea
+REPORT RequestId: de7f8b1f-42d5-46ab-999d-a53a29e0f1ea	Duration: 32959.45 ms	Billed Duration: 32960 ms	Memory Size: 128 MB	Max Memory Used: 85 MB
 
-def process():
-    client = f1ai_client.init(TOKEN) # add token obtained from F1 Portal
-    response_json = client.promote_model_registration(
-                    model_name="irisclassifier",
-                    model_version=1,
-                    model_source="databricks_uc" # 'databricks_registry'|'databricks_uc'|'aws_model_registry'
-    )
-    
-    print(response_json)
-    
-if __name__=="__main__":
-    process() 
-
-et mon erreur 
-env) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
-{'status': 'FAILURE', 'message': "RuntimeError('Failed to get model stage, response=<Response [404]>')"}
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
-comment corrigé cella
+Request ID: de7f8b1f-42d5-46ab-999d-a53a29e0f1ea
