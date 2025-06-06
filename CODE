@@ -1,14 +1,13 @@
-[--no-deps]https://github.com/mlflow/mlflow-export-import/archive/refs/heads/master.zip
-[--upgrade]mlflow-skinny
-[--upgrade]databricks-cli==0.18.0
-[--upgrade]pandas
-[--upgrade]numpy
-[--upgrade]tabulate==0.9.0
-[--upgrade]databricks-sdk
-[--upgrade]wheel
-[--upgrade]numpy
-[--upgrade]google-cloud
-[--upgrade]google
-[--upgrade]protobuf
-
-
+er@default:~$ cd layer/python/
+sagemaker-user@default:~/layer/python$ pip install protobuf -t .
+Collecting protobuf
+  Downloading protobuf-6.31.1-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+Downloading protobuf-6.31.1-cp39-abi3-manylinux2014_x86_64.whl (321 kB)
+Installing collected packages: protobuf
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+mlflow 2.21.0 requires protobuf<6,>=3.12.0, but you have protobuf 6.31.1 which is incompatible.
+mlflow-skinny 2.21.0 requires protobuf<6,>=3.12.0, but you have protobuf 6.31.1 which is incompatible.
+sagemaker 2.242.0 requires protobuf<6.0,>=3.12, but you have protobuf 6.31.1 which is incompatible.
+tensorflow 2.18.0 requires protobuf!=4.21.0,!=4.21.1,!=4.21.2,!=4.21.3,!=4.21.4,!=4.21.5,<6.0.0dev,>=3.20.3, but you have protobuf 6.31.1 which is incompatible.
+Successfully installed protobuf-6.31.1
+sagemaker-user@default:~/layer/python$ 
