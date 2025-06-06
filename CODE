@@ -1,25 +1,14 @@
-Status: Failed
-Test Event Name: test
+[--no-deps]https://github.com/mlflow/mlflow-export-import/archive/refs/heads/master.zip
+[--upgrade]mlflow-skinny
+[--upgrade]databricks-cli==0.18.0
+[--upgrade]pandas
+[--upgrade]numpy
+[--upgrade]tabulate==0.9.0
+[--upgrade]databricks-sdk
+[--upgrade]wheel
+[--upgrade]numpy
+[--upgrade]google-cloud
+[--upgrade]google
+[--upgrade]protobuf
 
-Response:
-{
-  "errorMessage": "Unable to import module 'model_function': No module named 'google.protobuf'",
-  "errorType": "Runtime.ImportModuleError",
-  "requestId": "",
-  "stackTrace": []
-}
 
-Function Logs:
-[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'google.protobuf'
-Traceback (most recent call last):
-INIT_REPORT Init Duration: 2343.46 ms	Phase: init	Status: error	Error Type: Runtime.ImportModuleError
-[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'google.protobuf'
-Traceback (most recent call last):
-INIT_REPORT Init Duration: 32939.28 ms	Phase: invoke	Status: error	Error Type: Runtime.ImportModuleError
-START RequestId: de7f8b1f-42d5-46ab-999d-a53a29e0f1ea Version: $LATEST
-Unknown application error occurred
-Runtime.ImportModuleError
-END RequestId: de7f8b1f-42d5-46ab-999d-a53a29e0f1ea
-REPORT RequestId: de7f8b1f-42d5-46ab-999d-a53a29e0f1ea	Duration: 32959.45 ms	Billed Duration: 32960 ms	Memory Size: 128 MB	Max Memory Used: 85 MB
-
-Request ID: de7f8b1f-42d5-46ab-999d-a53a29e0f1ea
