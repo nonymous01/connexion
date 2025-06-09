@@ -1,147 +1,33 @@
-import ast
-import json
-import traceback
-from datetime import date
-from dateutil.relativedelta import relativedelta
+Status: Failed
+Test Event Name: test
 
-import time
+Response:
+{
+  "errorMessage": "Invalid event, no requestContext provided",
+  "errorType": "RuntimeError",
+  "requestId": "1d13f302-3da2-4e89-8bfc-b4fbcb375392",
+  "stackTrace": [
+    "  File \"/var/task/model_function.py\", line 143, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 119, in dispatch_method\n    authorizer = _get_request_context_authorizer(event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 47, in _get_request_context_authorizer\n    raise RuntimeError(\"Invalid event, no requestContext provided\")\n"
+  ]
+}
 
-import pandas as pd
-import numpy
+Function Logs:
+09-Jun-25 20:13:56 - INFO - Using default logging config without output log file
+START RequestId: 1d13f302-3da2-4e89-8bfc-b4fbcb375392 Version: $LATEST
+09-Jun-25 20:13:57 - INFO - Invokation params: {'key1': 'value1', 'key2': 'value2', 'key3': 'value3'}
+09-Jun-25 20:13:57 - WARNING - LAMBDA_WARNING: Unhandled exception. The most likely cause is an issue in the function code. However, in rare cases, a Lambda runtime update can cause unexpected function behavior. For functions using managed runtimes, runtime updates can be triggered by a function change, or can be applied automatically. To determine if the runtime has been updated, check the runtime version in the INIT_START log entry. If this error correlates with a change in the runtime version, you may be able to mitigate this error by temporarily rolling back to the previous runtime version. For more information, see https://docs.aws.amazon.com/lambda/latest/dg/runtimes-update.html
+[ERROR] RuntimeError: Invalid event, no requestContext provided
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 143, in lambda_handler
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
+    authorizer = _get_request_context_authorizer(event)
+  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
+    raise RuntimeError("Invalid event, no requestContext provided")
+END RequestId: 1d13f302-3da2-4e89-8bfc-b4fbcb375392
+REPORT RequestId: 1d13f302-3da2-4e89-8bfc-b4fbcb375392	Duration: 88.54 ms	Billed Duration: 89 ms	Memory Size: 128 MB	Max Memory Used: 128 MB	Init Duration: 6593.30 ms
 
-import logging
+Request ID: 1d13f302-3da2-4e89-8bfc-b4fbcb375392
 
-import utils.dispatcher_helper as dispatcher_helper
-import utils.databricks_model_registry_helper as databricks_model_registry_helper
-import utils.databricks_pipeline_helper as databricks_pipeline_helper
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-
-
-def promote_model_registration(client_parameters: dict, deployment_parameters: dict):
-    result = {}
-    model_name = client_parameters["model_name"]
-    model_version = client_parameters["model_version"]
-    model_source = client_parameters["model_source"]
-
-    try:
-        databricks_model_registry_helper.init(deployment_parameters)
-
-        response = databricks_model_registry_helper.promote_model_registration(
-            model_name, model_version, model_source
-        )
-        
-        if response is not None:
-            if 'message' in response:
-                result["message"] = response["message"]
-                result["success"] = False
-            else:
-                result["success"] = True
-
-    except Exception as e:
-        logger.error(f"Error promoting model", exc_info=True)
-        result["success"] = False
-        result["error"] = repr(e)
-
-    return result
-
-
-def describe_model_registration(client_parameters: dict, deployment_parameters: dict):
-    result = {}
-    print("# Describe model")
-
-    model_name = client_parameters["model_name"]
-    model_version = client_parameters["model_version"]
-
-    try:
-        databricks_model_registry_helper.init(deployment_parameters)
-
-        model_version_response = (
-            databricks_model_registry_helper.get_model_registration(
-                model_name, model_version
-            )
-        )
-
-        if model_version_response:
-            if model_version_response["status"] == "READY":
-                result["status"] = "AVAILABLE"
-            else:
-                result["status"] = "UNAVAILABLE"
-
-            result["model_name"] = model_name
-            result["model_version"] = model_version
-            result["model_source"] = model_version_response["source"]
-            result["model_stage"] = model_version_response["current_stage"]
-
-            result["success"] = True
-
-        else:
-            result["success"] = False
-            result[
-                "error"
-            ] = f"Model {model_name} and {model_version} is not registered"
-
-    except Exception as e:
-        logger.error(f"Error retrieving model information", exc_info=True)
-        result["success"] = False
-        result["error"] = repr(e)
-
-    return result
-
-
-def get_latest_model_registration(
-    client_parameters: dict, deployment_parameters: dict
-):
-    result = {}
-    print("# Get model registration")
-
-    model_name = client_parameters["model_name"]
-
-    stage = client_parameters.get("stage")
-
-    try:
-        databricks_model_registry_helper.init(deployment_parameters)
-
-        result["model_name"] = model_name
-
-        model_version_response = (
-            databricks_model_registry_helper.get_latest_model_registration(
-                model_name, stage
-            )
-        )
-
-        if model_version_response:
-            result["model_version"] = model_version_response["version"]
-
-            result["model_stage"] = model_version_response["current_stage"]
-
-            result["model_source"] = model_version_response["source"]
-
-        else:
-            result["model_version"] = 0
-
-        result["success"] = True
-
-    except Exception as e:
-        logger.error(f"Error retrieving model information", exc_info=True)
-        result["success"] = False
-        result["error"] = repr(e)
-
-    return result
-
-
-def lambda_handler(event, context):
-    start = time.perf_counter()  
-    dispatch_table = {
-        "describe_model_registry": describe_model_registration,
-        "get_latest_model_registration": get_latest_model_registration,
-        "promote_model_registration": promote_model_registration,
-    }
-
-    result = dispatcher_helper.dispatch_method(dispatch_table, event)
-    duration = time.perf_counter() - start
-    logger.info(f"handler completed in {duration:3f} seconds")
-
-    return result
