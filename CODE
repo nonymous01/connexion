@@ -1,2 +1,151 @@
-grep -rn --exclude-dir="__pycache__" --exclude=*.pyc "copy\.deepcopy" .
-
+env) sagemaker-user@default:~/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages$ grep -rn --exclude-dir="__pycache__" --exclude=*.pyc "copy\.deepcopy" .
+./greenlet/tests/test_greenlet.py:386:        self.assertRaises(TypeError, copy.deepcopy, RawGreenlet())
+./urllib3/util/timeout.py:197:        # We can't use copy.deepcopy because that will also create a new object
+./markdown/extensions/footnotes.py:344:                    sib_link = copy.deepcopy(link)
+./bs4/tests/__init__.py:583:        copy.deepcopy(self.default_builder)
+./bs4/tests/test_pageelement.py:304:        copied = copy.deepcopy(self.tree)
+./bs4/tests/test_pageelement.py:317:        copy.deepcopy(soup)
+./numpy/_core/_add_newdocs.py:3043:    Used if :func:`copy.deepcopy` is called on an array.
+./numpy/_core/_add_newdocs.py:3422:    use `copy.deepcopy`:
+./numpy/_core/_add_newdocs.py:3426:    >>> c = copy.deepcopy(a)
+./numpy/_core/tests/test_regression.py:1409:        copy.deepcopy(a1)
+./numpy/_core/tests/test_regression.py:2103:        c = copy.deepcopy(a)
+./numpy/_core/tests/test_regression.py:2134:        arr_cp = copy.deepcopy(arr)
+./numpy/_core/tests/test_regression.py:2147:        arr_cp = copy.deepcopy(arr)
+./numpy/_core/tests/test_regression.py:2162:        b = copy.deepcopy(a)
+./numpy/_core/tests/test_stringdtype.py:413:    assert_array_equal(copy.deepcopy(arr), arr)
+./numpy/_core/tests/test_stringdtype.py:1739:        for c in [self.a.copy(), copy.copy(self.a), copy.deepcopy(self.a)]:
+./numpy/ma/tests/test_core.py:5470:            copy.deepcopy(np.ma.masked) is np.ma.masked)
+./numpy/ma/tests/test_core.py:5740:    deepcopy = copy.deepcopy(source)
+./numpy/ma/tests/test_core.py:5753:    copy.deepcopy(array)
+./numpy/ma/tests/test_core.py:5754:    copy.deepcopy(result)
+./numpy/ma/tests/test_core.py:5765:    deepcopy = copy.deepcopy(source)
+./numpy/ma/tests/test_core.py:5776:    deepcopy = copy.deepcopy(source)
+./numpy/f2py/tests/test_array_from_pyobj.py:259:        self.obj_copy = copy.deepcopy(obj)
+./numpy/f2py/capi_maps.py:134:f2cmap_default = copy.deepcopy(f2cmap_all)
+./numpy/f2py/capi_maps.py:141:    f2cmap_all = copy.deepcopy(f2cmap_default)
+./numpy/f2py/crackfortran.py:1150:            groupcache[groupcounter]['vars'] = copy.deepcopy(
+./numpy/f2py/rules.py:1280:                nb1 = copy.deepcopy(nb)
+./joblib/test/test_numpy_pickle.py:121:    if member == copy.deepcopy(member):
+./pip/_vendor/urllib3/util/timeout.py:193:        # We can't use copy.deepcopy because that will also create a new object
+./sklearn/base.py:108:            return copy.deepcopy(estimator)
+./sklearn/base.py:131:        new_object._metadata_request = copy.deepcopy(estimator._metadata_request)
+./sklearn/base.py:150:        new_object._sklearn_output_config = copy.deepcopy(
+./sklearn/metrics/_scorer.py:284:        _kwargs = copy.deepcopy(kwargs)
+./sklearn/metrics/_scorer.py:440:                scorer = copy.deepcopy(_SCORERS[scoring])
+./sklearn/metrics/_scorer.py:461:            requests.score = copy.deepcopy(estimator._metadata_request.score)
+./sklearn/metrics/_scorer.py:464:                requests.score = copy.deepcopy(estimator._get_default_requests().score)
+./sklearn/metrics/tests/test_dist_metrics.py:264:            vals = copy.deepcopy(vals)
+./sklearn/tests/test_metaestimators_metadata_routing.py:621:    assert a is copy.deepcopy(a)
+./sklearn/tree/_classes.py:387:            criterion = copy.deepcopy(criterion)
+./sklearn/tree/tests/test_tree.py:1773:    for copy_func in [copy.copy, copy.deepcopy, _pickle_copy]:
+./sklearn/mixture/tests/test_bayesian_mixture.py:419:        bgmm2 = copy.deepcopy(bgmm1)
+./sklearn/mixture/tests/test_gaussian_mixture.py:569:        f = copy.deepcopy(g)
+./pandas/io/formats/style.py:1656:            setattr(styler, attr, copy.deepcopy(val) if deepcopy else val)
+./pandas/io/json/_normalize.py:95:        new_d = copy.deepcopy(d)
+./pandas/tests/io/formats/style/test_style.py:267:    s2 = copy.deepcopy(styler) if deepcopy else copy.copy(styler)  # make copy and check
+./pandas/tests/io/formats/style/test_style.py:323:        copy.deepcopy(custom_styler) if deepcopy else copy.copy(custom_styler)
+./pandas/core/generic.py:6707:        This is in contrast to `copy.deepcopy` in the Standard Library,
+./botocore/configprovider.py:480:        config_store = ConfigValueStore(copy.deepcopy(self._mapping, memo))
+./botocore/configprovider.py:634:            chain_provider_copy = copy.deepcopy(original_provider)
+./botocore/configprovider.py:646:        section_provider_copy = copy.deepcopy(
+./botocore/configprovider.py:707:            copy.deepcopy(self._providers, memo), self._conversion_func
+./botocore/configprovider.py:768:            copy.deepcopy(self._instance_var, memo), self._session
+./botocore/configprovider.py:800:            copy.deepcopy(self._config_var_name, memo), self._session
+./botocore/configprovider.py:834:            copy.deepcopy(self._name, memo), copy.deepcopy(self._env, memo)
+./botocore/configprovider.py:866:            copy.deepcopy(self._section_name, memo),
+./botocore/configprovider.py:868:            copy.deepcopy(self._override_providers, memo),
+./botocore/configprovider.py:915:        return ConstantProvider(copy.deepcopy(self._value, memo))
+./botocore/translate.py:32:        '__default__': copy.deepcopy(retry_model.get('__default__', {}))
+./botocore/configloader.py:265:    parsed_config = copy.deepcopy(parsed_ini_config)
+./botocore/handlers.py:492:    request_dict_copy = copy.deepcopy(request_dict)
+./botocore/hooks.py:649:        # We can't use copy.deepcopy because we actually only want to copy
+./boto3/dynamodb/transform.py:27:    `copy.deepcopy()` when every instance of a repeated object in the deepcopied
+./boto3/dynamodb/transform.py:36:    return copy.deepcopy(params, memo=_ForgetfulDict())
+./boto3/resources/collection.py:51:        self._params = copy.deepcopy(kwargs)
+./boto3/resources/collection.py:106:        params = copy.deepcopy(self._params)
+./boto3/session.py:466:                config = copy.deepcopy(config)
+./matplotlib/path.py:285:        p = copy.deepcopy(super(), memo)
+./matplotlib/markers.py:323:            self.__dict__ = copy.deepcopy(marker.__dict__)
+./matplotlib/transforms.py:202:        known state of a transform where ``copy.deepcopy()`` might normally be
+./matplotlib/backends/qt_editor/_formlayout.py:232:        self.data = copy.deepcopy(data)
+./matplotlib/tests/test_textpath.py:8:    assert copy.deepcopy(tp).vertices is not tp.vertices
+./matplotlib/tests/test_textpath.py:9:    assert (copy.deepcopy(tp).vertices == tp.vertices).all()
+./matplotlib/tests/test_transforms.py:332:        s1 = copy.deepcopy(s)
+./matplotlib/tests/test_transforms.py:339:        b1 = copy.deepcopy(b)
+./matplotlib/tests/test_figure.py:1667:    fig2 = copy.deepcopy(fig1)
+./matplotlib/tests/test_colors.py:1546:    norm2 = copy.deepcopy(norm)
+./matplotlib/tests/test_colors.py:1551:    norm2 = copy.deepcopy(norm)
+./matplotlib/tests/test_scale.py:221:    sc2 = copy.deepcopy(sc)
+./matplotlib/tests/test_rcparams.py:139:            copy.deepcopy(mpl.rcParams)
+./scipy/_lib/_docscrape.py:145:        self._parsed_data = copy.deepcopy(self.sections)
+./scipy/sparse/linalg/_eigen/tests/test_svds.py:414:        rng_2 = copy.deepcopy(rng)
+./scipy/stats/_qmc.py:947:        self.rng_seed = copy.deepcopy(self.rng)
+./scipy/stats/_qmc.py:1091:        rng = copy.deepcopy(self.rng_seed)
+./scipy/stats/tests/test_multicomp.py:368:        samples_ = copy.deepcopy(samples)
+./scipy/stats/tests/test_multicomp.py:374:        control_ = copy.deepcopy(control)
+./scipy/stats/tests/test_multicomp.py:380:        samples_ = copy.deepcopy(samples)
+./scipy/signal/_ltisys.py:658:        return copy.deepcopy(self)
+./scipy/signal/_ltisys.py:1065:        return copy.deepcopy(self)
+./scipy/signal/_ltisys.py:1622:        return copy.deepcopy(self)
+./scipy/signal/tests/test_peak_finding.py:58:    gaps = copy.deepcopy(gaps)
+./scipy/signal/tests/test_peak_finding.py:59:    distances = copy.deepcopy(distances)
+./scipy/spatial/tests/test_qhull.py:131:        xd = copy.deepcopy(x.get_voronoi_diagram())
+./scipy/spatial/tests/test_qhull.py:136:        yd = copy.deepcopy(y.get_voronoi_diagram())
+./scipy/spatial/tests/test_qhull.py:138:        xd2 = copy.deepcopy(x.get_voronoi_diagram())
+./scipy/spatial/tests/test_qhull.py:140:        yd2 = copy.deepcopy(y.get_voronoi_diagram())
+./scipy/spatial/transform/tests/test_rotation.py:1792:    r1 = copy.deepcopy(r)
+./pyarrow/vendored/docscrape.py:151:        self._parsed_data = copy.deepcopy(self.sections)
+./google/protobuf/internal/containers.py:205:        copy.deepcopy(self._message_listener), self._type_checker)
+./google/auth/_refresh_worker.py:58:                self._worker = RefreshThread(cred=cred, request=copy.deepcopy(request))
+./google/auth/external_account.py:226:            "service_account_impersonation_options": copy.deepcopy(
+./google/auth/external_account.py:230:            "credential_source": copy.deepcopy(self._credential_source),
+./google/auth/jwt.py:514:        new_additional_claims = copy.deepcopy(self._additional_claims)
+./google/auth/jwt.py:748:        new_additional_claims = copy.deepcopy(self._additional_claims)
+./google/oauth2/service_account.py:366:        new_additional_claims = copy.deepcopy(self._additional_claims)
+./google/cloud/storage/blob.py:4464:        return copy.deepcopy(self._properties.get("metadata"))
+./google/cloud/storage/blob.py:4506:        return copy.deepcopy(self._properties.get("owner"))
+./google/cloud/storage/bucket.py:1793:            query_params = copy.deepcopy(blob._query_params)
+./google/cloud/storage/bucket.py:2498:        return [copy.deepcopy(policy) for policy in self._properties.get("cors", ())]
+./google/cloud/storage/bucket.py:2581:        return copy.deepcopy(labels)
+./google/cloud/storage/bucket.py:2601:        self._patch_property("labels", copy.deepcopy(mapping))
+./google/cloud/storage/bucket.py:2846:        return copy.deepcopy(info)
+./google/cloud/storage/bucket.py:2893:        return copy.deepcopy(self._properties.get("owner"))
+./google/api_core/path_template.py:294:        leftovers = copy.deepcopy(transcoded_value)
+./google/api_core/protobuf_helpers.py:307:        original = copy.deepcopy(modified)
+./google/api_core/protobuf_helpers.py:311:        modified = copy.deepcopy(original)
+./fontTools/designspaceLib/__init__.py:3312:            res = copy.deepcopy(self)
+./fontTools/feaLib/builder.py:1601:                            location, copy.deepcopy(markClassDef.anchor)
+./fontTools/otlLib/builder.py:385:        table = self.buildLookup_(copy.deepcopy(subtables))
+./fontTools/varLib/merger.py:581:                class2Records.append(copy.deepcopy(rec2))
+./fontTools/varLib/merger.py:907:                new.Value[i] = copy.deepcopy(val_rec)
+./fontTools/varLib/merger.py:912:                new.Value[i] = copy.deepcopy(val_rec)
+./fontTools/varLib/merger.py:1526:                            layer = copy.deepcopy(layer)
+./werkzeug/local.py:647:    __deepcopy__ = _ProxyLookup(copy.deepcopy)
+./pydantic/_internal/_utils.py:337:    Use copy.deepcopy() for non-empty collections and unknown objects.
+./pydantic/v1/dataclasses.py:274:        return DataclassProxy(copy.deepcopy(self.__dataclass__, memo))
+./pydantic/v1/utils.py:680:    Use copy.deepcopy() for non-empty collections and unknown objects
+./databricks/sdk/config.py:536:        cpy._user_agent_other_info = copy.deepcopy(self._user_agent_other_info)
+./databricks/sdk/config.py:541:        return copy.deepcopy(self)
+./databricks/sdk/useragent.py:91:    return copy.deepcopy(_extra)
+./mlflow/models/evaluation/default_evaluator.py:482:            eval_fn_args.append(copy.deepcopy(self.aggregate_metrics))
+./mlflow/models/evaluation/default_evaluator.py:503:                    eval_fn_args.append(copy.deepcopy(self.metrics_values))
+./mlflow/models/evaluation/default_evaluator.py:568:                    copy.deepcopy(self.metrics_values),
+./mlflow/models/evaluation/default_evaluator.py:648:        eval_df = pd.DataFrame({"prediction": copy.deepcopy(prediction)})
+./mlflow/models/evaluation/default_evaluator.py:996:                return copy.deepcopy(self._data)
+./mlflow/pyspark/optuna/storage.py:342:            frozen = copy.deepcopy(template_trial)
+./mlflow/transformers/__init__.py:1850:        model_config = copy.deepcopy(dict(self.model_config))
+./mlflow/utils/gorilla.py:258:                    self.settings = copy.deepcopy(value)
+./mlflow/utils/gorilla.py:406:        settings_ = copy.deepcopy(settings)
+./proto/message.py:689:            mapping = copy.deepcopy(mapping)
+./proto/marshal/collections/repeated.py:117:        canary = copy.deepcopy(self.pb).add()
+./azure/core/pipeline/policies/_base.py:137:        self.http_request: HTTPRequestType = copy.deepcopy(http_request)
+./azure/core/pipeline/transport/_base.py:219:            data = copy.deepcopy(self.body, memo)
+./azure/core/pipeline/transport/_base.py:220:            files = copy.deepcopy(self.files, memo)
+./azure/core/rest/_helpers.py:421:        request._multipart_mixed_info = copy.deepcopy(  # pylint: disable=protected-access
+./azure/core/rest/_rest_py3.py:180:            request._data = copy.deepcopy(self._data, memo)
+./azure/core/rest/_rest_py3.py:181:            request._files = copy.deepcopy(self._files, memo)
+./oauthlib/oauth2/rfc6749/endpoints/metadata.py:214:        claims = copy.deepcopy(self.initial_claims)
+./databricks_cli/pipelines/api.py:90:        settings = copy.deepcopy(settings)
+./databricks_cli/sdk/api_client.py:147:            tmp_headers = copy.deepcopy(self.default_headers)
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages$
