@@ -1,31 +1,31 @@
 from dotenv import dotenv_values
 from f1ai_client import f1ai_client
-import pprint
+# import sys
+# sys.path.append("f1_ai_mlops_baseline/venv/lib/python3.12/site-packages"):contentReference[oaicite:24]{index=24}
 
-# Load environment variables from .env file
-config = dotenv_values(".env")
+from f1ai_client import f1ai_client
+config = dotenv_values('.env')
 TOKEN = config.get("US_EAST_1_TOKEN")
 
+
 def process():
-    # Initialize F1AI client with token from the F1 portal
-    client = f1ai_client.init(TOKEN, region="us-east-1", verbose=True)
+    client = f1ai_client.init(TOKEN) # add token obtained from F1 Portal
+    response_json = client.promote_model_registration(
+                    model_name="irisclassifier",
+                    model_version=1,
+                    model_source="databricks_registry" # 'databricks_registry'|'databricks_uc'|'aws_model_registry'
+    )
+    print(response_json)
 
-    try:
-        print(">> Sending promote_model_registration request ...")
-        response_json = client.promote_model_registration(
-            model_name="irisclassifier",
-            model_version=1,
-            model_source="databricks_uc"  # 'databricks_registry' | 'databricks_uc' | 'aws_model_registry'
-        )
-        pprint.pprint(response_json)
-    except Exception as e:
-        # If an error occurs, try to print details from the last HTTP response
-        if hasattr(client, "last_response"):
-            print("=== Dumping last HTTP response ===")
-            print(f"Status : {client.last_response.status_code}")
-            print(f"Headers: {client.last_response.headers}")
-            print(f"Body   : {client.last_response.text}")
-        raise  # Re-raise the exception after logging
 
-if __name__ == "__main__":
-    process()
+if __name__=="__main__":
+    process() 
+
+
+
+erreur
+sagemaker-user@default:~/f1_ai_mlops_baseline$ source venv/bin/activate
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
+Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
+{'status': 'FAILURE', 'message': 'NameError("name \'copy\' is not defined")'}
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseli
