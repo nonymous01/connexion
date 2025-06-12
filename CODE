@@ -1,1 +1,1 @@
-!pip install -q f1ai_client==19.0.0 --extra-index-url https://artifactory.f1.novartis.net:443/artifactory/api/pypi/f1-all-all-ai-lab-mlops-pypi/simple
+!pip install flai_client --extra-index-url https://artifactory.f1.novartis.net:443/artifactory/api/pypi/f1-all-all-ai-lab-mlops-pypi/simple --no-deps --dry-run
