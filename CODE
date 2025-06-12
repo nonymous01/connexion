@@ -1,5 +1,6 @@
 from dotenv import dotenv_values
 from f1ai_client import f1ai_client
+import copy
 # import sys
 # sys.path.append("f1_ai_mlops_baseline/venv/lib/python3.12/site-packages"):contentReference[oaicite:24]{index=24}
 
@@ -19,13 +20,4 @@ def process():
 
 
 if __name__=="__main__":
-    process() 
-
-
-
-erreur
-sagemaker-user@default:~/f1_ai_mlops_baseline$ source venv/bin/activate
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
-{'status': 'FAILURE', 'message': 'NameError("name \'copy\' is not defined")'}
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseli
+    process()  
