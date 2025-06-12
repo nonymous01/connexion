@@ -1,4 +1,10 @@
-nv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
-{'status': 'FAILURE', 'message': 'NameError("name \'copy\' is not defined")'}
-(venv) sagemaker-user@default:~
+Uninstalling f1ai_client-19.0.0:
+  Would remove:
+    /home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client-19.0.0.dist-info/*
+    /home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/*
+Proceed (Y/n)? y
+  Successfully uninstalled f1ai_client-19.0.0
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ pip install f1ai_client
+ERROR: Could not find a version that satisfies the requirement f1ai_client (from versions: none)
+ERROR: No matching distribution found for f1ai_client
+(venv) sagemaker-user@default:~/f1_
