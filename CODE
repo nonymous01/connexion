@@ -9,3 +9,7 @@ subprocess.check_call([
     requirement,
     extra
 ])
+
+
+script returned exit code 1
+See stage logs for more detail.
