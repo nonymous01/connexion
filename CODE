@@ -1,45 +1,91 @@
-le code 
-from dotenv import dotenv_values
-from f1ai_client import f1ai_client
+import re
+import boto3
+from datetime import datetime
+import cfnresponse
+import os
+import shutil
+import subprocess
+import sys
+import zipfile
 
-config = dotenv_values('.env')
-TOKEN = config.get("US_EAST_1_TOKEN")
-
-
-def process():
-    client = f1ai_client.init(TOKEN) # add token obtained from F1 Portal
-    response_json = client.promote_model_registration(
-                    model_name="irisclassifier",
-                    model_version=1,
-                    model_source="databricks_registry" # 'databricks_registry'|'databricks_uc'|'aws_model_registry'
-    )
-    print(response_json)
+requirements = os.environ['REQUIREMENTS']
+s3_bucket = os.environ['S3_BUCKET']
 
 
-if __name__=="__main__":
-    process()
-
-erreur corrige
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
-Traceback (most recent call last):
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 19, in <module>
-    process()
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 10, in process
-    response_json = client.promote_model_registration(
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 1405, in promote_model_registration
-    return _transform_response(response)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 26, in _transform_response
-    raise RuntimeError(f"{response.reason=}, {response.content=}")
-RuntimeError: response.reason='Gateway Timeout', response.content=b'{"message": "Endpoint request timed out"}'
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
+def upload_file_to_s3(file_path, bucket, key):
+    s3 = boto3.client('s3')
+    s3.upload_file(file_path, bucket, key)
+    print(f"Upload successful. {file_path} uploaded to {bucket}/{key}")
 
 
+def make_zip_filename():
+    now = datetime.now()
+    timestamp = now.strftime('%Y%m%d_%H%M%S')
+    filename = f'LambdaLayer_{timestamp}.zip'
+    return filename
 
 
+def zipdir(path, zipname):
+    zipf = zipfile.ZipFile(zipname, 'w', zipfile.ZIP_DEFLATED)
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            zipf.write(os.path.join(root, file),
+                       os.path.relpath(os.path.join(root, file),
+                                       os.path.join(path, '..')))
+    zipf.close()
 
-the best way to do deploy your changes is just to deploy your stack with out deploying other stacks. 
-for example if you want to deploy only aws_baseline_automation_env make action DEPLOY and make token_generation action NO_ACTION so that it will deploy only aws_baseline_automation_env and skips token_generation stack deployment.
- 
+
+def empty_bucket(bucket_name):
+    s3_client = boto3.client('s3')
+    response = s3_client.list_objects_v2(Bucket=bucket_name)
+    if 'Contents' in response:
+        keys = [{'Key': obj['Key']} for obj in response['Contents']]
+        s3_client.delete_objects(Bucket=bucket_name, Delete={'Objects': keys})
+    return
+
+
+def lambda_handler(event, context):
+    print("Event: ", event)
+    responseData = {}
+    reason = ""
+    status = cfnresponse.SUCCESS
+
+    def get_requirement_with_extras(requirement):
+        requirement_match = re.match(r"\[(.+)\](.+)", requirement)
+        if requirement_match:
+            extra_instruction = requirement_match.group(1)
+            package = requirement_match.group(2)
+            return package, extra_instruction
+        return requirement, None
+
+    try:
+        if event['RequestType'] != 'Delete':
+            os.chdir('/tmp')
+            # download Bedrock SDK
+            requirements_list = requirements.split(" ")
+
+            if os.path.exists("python"):
+                shutil.rmtree("python")
+
+            for requirement in requirements_list:
+                requirement, extra = get_requirement_with_extras(requirement)
+
+                if extra:
+                    subprocess.check_call([sys.executable, "-m", "pip", "install", "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "-t", "python", requirement, extra])
+                else:
+                    subprocess.check_call([sys.executable, "-m", "pip", "install", "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "-t", "python", requirement])
+            
+            boto3_zip_name = make_zip_filename()
+            zipdir("python", boto3_zip_name)
+
+            print(f"uploading {boto3_zip_name} to s3 bucket {s3_bucket}")
+            upload_file_to_s3(boto3_zip_name, s3_bucket, boto3_zip_name)
+            responseData = {"Bucket": s3_bucket, "Key": boto3_zip_name}
+        else:
+            # delete - empty the bucket so it can be deleted by the stack.
+            empty_bucket(s3_bucket)
+    except Exception as e:
+        print(e)
+        status = cfnresponse.FAILED
+        reason = f"Exception thrown: {e}"
+    cfnresponse.send(event, context, status, responseData, reason=reason)
