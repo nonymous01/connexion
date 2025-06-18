@@ -35,3 +35,11 @@ Traceback (most recent call last):
     raise RuntimeError(f"{response.reason=}, {response.content=}")
 RuntimeError: response.reason='Gateway Timeout', response.content=b'{"message": "Endpoint request timed out"}'
 (venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
+
+
+
+
+
+the best way to do deploy your changes is just to deploy your stack with out deploying other stacks. 
+for example if you want to deploy only aws_baseline_automation_env make action DEPLOY and make token_generation action NO_ACTION so that it will deploy only aws_baseline_automation_env and skips token_generation stack deployment.
+ 
