@@ -1,46 +1,37 @@
-##  See http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
-##  This template will pass through all parameters including path, querystring, header, stage variables, and context through to the integration endpoint via the body/payload
-#set($allParams = $input.params())
-{
-"body-json" : $input.json('$'),
-"params" : {
-#foreach($type in $allParams.keySet())
-    #set($params = $allParams.get($type))
-"$type" : {
-    #foreach($paramName in $params.keySet())
-    "$paramName" : "$util.escapeJavaScript($params.get($paramName))"
-        #if($foreach.hasNext),#end
-    #end
-}
-    #if($foreach.hasNext),#end
-#end
-},
-"stage-variables" : {
-#foreach($key in $stageVariables.keySet())
-"$key" : "$util.escapeJavaScript($stageVariables.get($key))"
-    #if($foreach.hasNext),#end
-#end
-},
-"context" : {
-    "account-id" : "$context.identity.accountId",
-    "api-id" : "$context.apiId",
-    "api-key" : "$context.identity.apiKey",
-    "authorizer-principal-id" : "$context.authorizer.principalId",
-    "caller" : "$context.identity.caller",
-    "http-method" : "$context.httpMethod",
-    "stage" : "$context.stage",
-    "source-ip" : "$context.identity.sourceIp",
-    "user" : "$context.identity.user",
-    "user-agent" : "$context.identity.userAgent",
-    "user-arn" : "$context.identity.userArn",
-    "request-id" : "$context.requestId",
-    "resource-id" : "$context.resourceId",
-    "resource-path" : "$context.resourcePath",
-    "requestContext": {"authorizer" : {
-        #foreach($key in $context.authorizer.keySet())
-        "$key" : "$context.authorizer.get($key)"
-            #if($foreach.hasNext),#end
-        #end
-        }}
-    }
-}
+le code 
+from dotenv import dotenv_values
+from f1ai_client import f1ai_client
+
+config = dotenv_values('.env')
+TOKEN = config.get("US_EAST_1_TOKEN")
+
+
+def process():
+    client = f1ai_client.init(TOKEN) # add token obtained from F1 Portal
+    response_json = client.promote_model_registration(
+                    model_name="irisclassifier",
+                    model_version=1,
+                    model_source="databricks_registry" # 'databricks_registry'|'databricks_uc'|'aws_model_registry'
+    )
+    print(response_json)
+
+
+if __name__=="__main__":
+    process()
+
+erreur corrige
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
+Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
+Traceback (most recent call last):
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 19, in <module>
+    process()
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 10, in process
+    response_json = client.promote_model_registration(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 1405, in promote_model_registration
+    return _transform_response(response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 26, in _transform_response
+    raise RuntimeError(f"{response.reason=}, {response.content=}")
+RuntimeError: response.reason='Gateway Timeout', response.content=b'{"message": "Endpoint request timed out"}'
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
