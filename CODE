@@ -98,3 +98,30 @@ subprocess.check_call([
 # Optional: Clean up
 os.remove(zip_path)
 shutil.rmtree(extract_dir, ignore_errors=True)
+----------------------------------corectio
+
+
+
+def install_zip_package(url, target="python"):
+    # Step 1: Download the repository as a zip file
+    zip_path = os.path.join(tempfile.gettempdir(), "mlflow-export-import.zip")
+    urlretrieve(url, zip_path)
+
+    # Step 2: Unzip the downloaded file
+    extract_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(tempfile.gettempdir())
+
+    # Step 3: Install the package into the target directory (e.g. 'python')
+    target_dir = os.path.abspath(target)
+    os.makedirs(target_dir, exist_ok=True)
+
+    package_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
+    subprocess.check_call([
+        sys.executable, "-m", "pip", "install", package_dir, "--target", target_dir
+    ])
+
+    # Optional: Clean up
+    os.remove(zip_path)
+    shutil.rmtree(package_dir, ignore_errors=True)
+
