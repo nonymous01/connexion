@@ -16,31 +16,33 @@ for requirement in requirements_list:
 ----------------------------------------------------------------------------for-----------------------------------------------------
 
 
-
-
 def install_zip_package(url, target="python"):
     """
-    Télécharge un .zip depuis une URL, extrait et installe avec pip dans le dossier cible (ex: python/).
+    Downloads a .zip package from a given URL, extracts it, and installs it using pip into the target directory.
+    This is useful for packaging Python dependencies into a folder (e.g. 'python/') to be zipped and uploaded as a Lambda Layer.
     """
+    import tempfile
+
+    # Create a temporary working directory
     with tempfile.TemporaryDirectory() as tmp_dir:
         zip_path = os.path.join(tmp_dir, "package.zip")
 
-        print(f" Téléchargement de {url}")
+        print(f" Downloading from {url}")
         urlretrieve(url, zip_path)
 
+        # Extract the zip archive
         extract_path = os.path.join(tmp_dir, "extracted")
         os.makedirs(extract_path, exist_ok=True)
 
-        print(f" Extraction de l'archive dans {extract_path}")
+        print(f" Extracting archive to {extract_path}")
         with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(extract_path)
 
-        print(f" Installation du package extrait dans {target}")
+        # Install the extracted package using pip into the target directory
+        print(f" Installing extracted package into {target}")
         subprocess.check_call([
             sys.executable, "-m", "pip", "install", extract_path, "-t", target
         ])
-
-
 
 
 
