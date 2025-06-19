@@ -1,3 +1,23 @@
+for requirement in requirements_list:
+    requirement, extra = get_requirement_with_extras(requirement)
+    is_zip_url = requirement.startswith("http") and requirement.endswith(".zip")
+
+    if is_zip_url:
+        install_zip_package(requirement, target="python")
+    else:
+        install_cmd = [sys.executable, "-m", "pip", "install", requirement, "-t", "python"]
+        
+        if extra:
+            install_cmd.append(extra)
+        
+        print(f"Installing: {' '.join(install_cmd)}")
+        subprocess.check_call(install_cmd)
+
+----------------------------------------------------------------------------for-----------------------------------------------------
+
+
+
+
 def install_zip_package(url, target="python"):
     """
     Télécharge un .zip depuis une URL, extrait et installe avec pip dans le dossier cible (ex: python/).
