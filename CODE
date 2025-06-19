@@ -32,3 +32,47 @@ for requirement in requirements_list:
         subprocess.check_call([
             sys.executable, "-m", "pip", "install", requirement, "-t", "python"
         ])
+
+
+
+
+
+
+
+
+
+
+voici la solution que tu dois mettre en place. J’ai commence a le faire avec la fonction install_zip_package je sais pas si tu as vu.
+
+import os
+import zipfile
+import shutil
+import subprocess
+import sys
+import tempfile
+from urllib.request import urlretrieve
+
+# Step 1: Download the repository as a zip file
+zip_url = "https://github.com/mlflow/mlflow-export-import/archive/refs/heads/master.zip"
+zip_path = os.path.join(tempfile.gettempdir(), "mlflow-export-import.zip")
+urlretrieve(zip_url, zip_path)
+
+# Step 2: Unzip the downloaded file
+extract_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
+with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+    zip_ref.extractall(tempfile.gettempdir())
+
+# Step 3: Install the package into the 'python' directory
+target_dir = os.path.abspath("python")
+os.makedirs(target_dir, exist_ok=True)
+package_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master", "mlflow-export-import-master")
+if not os.path.isdir(package_dir):
+    # Sometimes the extracted folder may not be nested
+    package_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
+subprocess.check_call([
+    sys.executable, "-m", "pip", "install", package_dir, "--target", target_dir
+])
+
+# Optional: Clean up
+os.remove(zip_path)
+shutil.rmtree(extract_dir, ignore_errors=True)
