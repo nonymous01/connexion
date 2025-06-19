@@ -1,15 +1,22 @@
-tu vois mon erreur
-
-aws-mlops-model-endpoints/CurrentVersion (awsmlopsmodelendpointsCurrentVersion32CC17B5f756daba5026bdf72a9b38f91a652e40) 
-APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |  17/101 | 4:56:48 PM | DELETE_COMPLETE      | AWS::Lambda::Version                | aws-mlops-model-endpoints/CurrentVersion (awsmlopsmodelendpointsCurrentVersion32CC17B5f756daba5026bdf72a9b38f91a652e40) 
-APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |  16/101 | 4:56:50 PM | DELETE_COMPLETE      | AWS::CloudFormation::CustomResource | aws-mlops_lambda_layer/aws-mlops_lambda_layer_model_promotion_libraries_custom_resource/Default (awsmlopslambdalayerawsmlopslambdalayermodelpromotionlibrariescustomresource7AC4EEF3) 
-APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |  17/101 | 4:56:50 PM | UPDATE_ROLLBACK_COMP | AWS::CloudFormation::Stack          | APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV 
+AWS::Logs::SubscriptionFilter       | f1ai_client_token_generation-filter-sub-cid (f1aiclienttokengenerationfiltersubcidD2968139) 
+[17:24:14] Stack APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV has an ongoing operation in progress and is not stable (UPDATE_ROLLBACK_IN_PROGRESS)
+[17:24:19] Stack APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV has an ongoing operation in progress and is not stable (UPDATE_ROLLBACK_IN_PROGRESS)
+[17:24:24] Stack APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV has an ongoing operation in progress and is not stable (UPDATE_ROLLBACK_IN_PROGRESS)
+[17:24:30] Stack APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV has an ongoing operation in progress and is not stable (UPDATE_ROLLBACK_IN_PROGRESS)
+APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |  18/101 | 5:24:30 PM | UPDATE_COMPLETE      | AWS::Lambda::Alias                  | aws-mlops-model-endpoints-alias (awsmlopsmodelendpointsalias03C4F81B) 
+[17:24:35] Stack APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV has an ongoing operation in progress and is not stable (UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS)
+APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |  19/101 | 5:24:32 PM | UPDATE_ROLLBACK_COMP | AWS::CloudFormation::Stack          | APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV 
+APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |  19/101 | 5:24:33 PM | DELETE_IN_PROGRESS   | AWS::Lambda::Version                | aws-mlops-model-endpoints/CurrentVersion (awsmlopsmodelendpointsCurrentVersion32CC17B5c87d8fe870595162191147bdb3ef4e50) 
+APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |  19/101 | 5:24:34 PM | DELETE_IN_PROGRESS   | AWS::CloudFormation::CustomResource | aws-mlops_lambda_layer/aws-mlops_lambda_layer_model_promotion_libraries_custom_resource/Default (awsmlopslambdalayerawsmlopslambdalayermodelpromotionlibrariescustomresource7AC4EEF3) 
+APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |  18/101 | 5:24:34 PM | DELETE_COMPLETE      | AWS::Lambda::Version                | aws-mlops-model-endpoints/CurrentVersion (awsmlopsmodelendpointsCurrentVersion32CC17B5c87d8fe870595162191147bdb3ef4e50) 
+APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |  17/101 | 5:24:35 PM | DELETE_COMPLETE      | AWS::CloudFormation::CustomResource | aws-mlops_lambda_layer/aws-mlops_lambda_layer_model_promotion_libraries_custom_resource/Default (awsmlopslambdalayerawsmlopslambdalayermodelpromotionlibrariescustomresource7AC4EEF3) 
+APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |  18/101 | 5:24:35 PM | UPDATE_ROLLBACK_COMP | AWS::CloudFormation::Stack          | APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV 
 
 Failed resources:
-APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV | 4:55:58 PM | UPDATE_FAILED        | AWS::CloudFormation::CustomResource | aws-mlops_lambda_layer/aws-mlops_lambda_layer_model_promotion_libraries_custom_resource/Default (awsmlopslambdalayerawsmlopslambdalayermodelpromotionlibrariescustomresource7AC4EEF3) Received response status [FAILED] from custom resource. Message returned: Exception thrown: name 'tempfile' is not defined (RequestId: ce880c19-8ccd-4447-90f3-145b9982013e)
-[16:56:53] Could not refresh notices: Error: getaddrinfo ENOTFOUND cli.cdk.dev-tools.aws.dev
-❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Received response status [FAILED] from custom resource. Message returned: Exception thrown: name 'tempfile' is not defined (RequestId: ce880c19-8ccd-4447-90f3-145b9982013e)
-[16:56:53] Error: ❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Received response status [FAILED] from custom resource. Message returned: Exception thrown: name 'tempfile' is not defined (RequestId: ce880c19-8ccd-4447-90f3-145b9982013e)
+APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV | 5:23:45 PM | UPDATE_FAILED        | AWS::CloudFormation::CustomResource | aws-mlops_lambda_layer/aws-mlops_lambda_layer_model_promotion_libraries_custom_resource/Default (awsmlopslambdalayerawsmlopslambdalayermodelpromotionlibrariescustomresource7AC4EEF3) Received response status [FAILED] from custom resource. Message returned: Exception thrown: <urlopen error unknown url type: [--no-deps]https> (RequestId: d4afc330-5951-4f36-85b9-5c9dec95ca7a)
+[17:24:41] Could not refresh notices: Error: getaddrinfo ENOTFOUND cli.cdk.dev-tools.aws.dev
+❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Received response status [FAILED] from custom resource. Message returned: Exception thrown: <urlopen error unknown url type: [--no-deps]https> (RequestId: d4afc330-5951-4f36-85b9-5c9dec95ca7a)
+[17:24:41] Error: ❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Received response status [FAILED] from custom resource. Message returned: Exception thrown: <urlopen error unknown url type: [--no-deps]https> (RequestId: d4afc330-5951-4f36-85b9-5c9dec95ca7a)
     at Object.deployStack2 [as deployStack] (/usr/lib/node_modules/aws-cdk/lib/index.js:573:7239)
     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
     at async /usr/lib/node_modules/aws-cdk/lib/index.js:572:187958
@@ -61,141 +68,3 @@ Stage "Run Tests" skipped due to earlier failure(s)
 [Pipeline] End of Pipeline
 ERROR: script returned exit code 1
 Finished: FAILURE
-
-
-
-voici mon code
-import re
-import boto3
-from datetime import datetime
-import cfnresponse
-import os
-import shutil
-import subprocess
-import sys
-import zipfile
-
-
-
-from urllib.request import urlretrieve
-requirements = os.environ['REQUIREMENTS']
-s3_bucket = os.environ['S3_BUCKET']
-
-
-def upload_file_to_s3(file_path, bucket, key):
-    s3 = boto3.client('s3')
-    s3.upload_file(file_path, bucket, key)
-    print(f"Upload successful. {file_path} uploaded to {bucket}/{key}")
-
-
-def make_zip_filename():
-    now = datetime.now()
-    timestamp = now.strftime('%Y%m%d_%H%M%S')
-    filename = f'LambdaLayer_{timestamp}.zip'
-    return filename
-
-
-def zipdir(path, zipname):
-    zipf = zipfile.ZipFile(zipname, 'w', zipfile.ZIP_DEFLATED)
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            zipf.write(os.path.join(root, file),
-                       os.path.relpath(os.path.join(root, file),
-                                       os.path.join(path, '..')))
-    zipf.close()
-
-
-def empty_bucket(bucket_name):
-    s3_client = boto3.client('s3')
-    response = s3_client.list_objects_v2(Bucket=bucket_name)
-    if 'Contents' in response:
-        keys = [{'Key': obj['Key']} for obj in response['Contents']]
-        s3_client.delete_objects(Bucket=bucket_name, Delete={'Objects': keys})
-    return
-
-
-def lambda_handler(event, context):
-    print("Event: ", event)
-    responseData = {}
-    reason = ""
-    status = cfnresponse.SUCCESS
-
-    def get_requirement_with_extras(requirement):
-        requirement_match = re.match(r"\[(.+)\](.+)", requirement)
-        if requirement_match:
-            extra_instruction = requirement_match.group(1)
-            package = requirement_match.group(2)
-            return package, extra_instruction
-        return requirement, None
-
-    try:
-        if event['RequestType'] != 'Delete':
-            os.chdir('/tmp')
-            # download Bedrock SDK
-            install_cmd = [sys.executable, "-m", "pip", "install", "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "-t", "python"]
-            requirements_list = requirements.split(" ")
-
-            if os.path.exists("python"):
-                shutil.rmtree("python")
-
-            for requirement in requirements_list:
-                install_zip_package(requirement)
-                requirement, extra = get_requirement_with_extras(requirement)
-                is_zip_url = requirement.startswith("http") and requirement.endswith(".zip")
-
-                if is_zip_url:
-                    install_cmd += [
-                        "--trusted-host", "http://proxy-euie.aws.novartis.net:3128",
-                        "--trusted-host", "novartis.net",
-                        "--trusted-host", "sts.novartis.com",
-                        "--trusted-host", "aws.novartis.net",
-                        "--trusted-host", "github.com",
-                        "--index-url", "http://pypi.org/simple"
-                    ]
-
-                if extra:
-                    install_cmd.append(extra)
-
-                install_cmd.append(requirement)
-                print(f"Installing: {' '.join(install_cmd)}")
-                subprocess.check_call(install_cmd)
-            
-            boto3_zip_name = make_zip_filename()
-            zipdir("python", boto3_zip_name)
-
-            print(f"uploading {boto3_zip_name} to s3 bucket {s3_bucket}")
-            upload_file_to_s3(boto3_zip_name, s3_bucket, boto3_zip_name)
-            responseData = {"Bucket": s3_bucket, "Key": boto3_zip_name}
-        else:
-            # delete - empty the bucket so it can be deleted by the stack.
-            empty_bucket(s3_bucket)
-    except Exception as e:
-        print(e)
-        status = cfnresponse.FAILED
-        reason = f"Exception thrown: {e}"
-    cfnresponse.send(event, context, status, responseData, reason=reason)
-
-
-#def install_zip_package(url, target):
-def install_zip_package(url, target="python"):
-    # Step 1: Download the repository as a zip file
-    zip_path = os.path.join(tempfile.gettempdir(), "mlflow-export-import.zip")
-    urlretrieve(url, zip_path)
-
-    # Step 2: Unzip the downloaded file
-    extract_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(tempfile.gettempdir())
-
-    # Step 3: Install the package into the target directory (e.g. 'python')
-    target_dir = os.path.abspath(target)
-    os.makedirs(target_dir, exist_ok=True)
-
-    package_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
-    subprocess.check_call([
-        sys.executable, "-m", "pip", "install", package_dir, "--target", target_dir
-    ])
-
-    # Optional: Clean up
-    os.remove(zip_path)
-    shutil.rmtree(package_dir, ignore_errors=True)
