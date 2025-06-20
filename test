@@ -1,19 +1,17 @@
-from dotenv import dotenv_values
-from f1ai_client import f1ai_client
-
-config = dotenv_values('.env')
-TOKEN = config.get("US_EAST_1_TOKEN")
-
-
 def process():
-    client = f1ai_client.init(TOKEN) # add token obtained from F1 Portal
-    response_json = client.promote_model_registration(
-                    model_name="irisclassifier",
-                    model_version=1,
-                    model_source="databricks_registry" # 'databricks_registry'|'databricks_uc'|'aws_model_registry'
+    client = f1ai_client.init(TOKEN)
+
+    response = client.promote_model_registration(
+        model_name="irisclassifier",
+        model_version=1,
+        model_source="databricks_registry"
     )
-    print(response_json)
 
-
-if __name__=="__main__":
-    process()
+    # Cas 1 : si response est déjà un dict JSON
+    if isinstance(response, dict):
+        print("Response JSON:", response)
+    # Cas 2 : si c'est un objet response de `requests`
+    else:
+        print("Status code:", response.status_code)
+        print("Content-Type:", response.headers.get("Content-Type"))
+        print("Raw body:", response.text[:500])  # Pour éviter d'afficher trop
