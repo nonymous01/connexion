@@ -1,133 +1,22 @@
-import re
-import boto3
-from datetime import datetime
-import cfnresponse
-import os
-import shutil
-import subprocess
-import sys
-import zipfile
-import tempfile
-
-requirements = os.environ['REQUIREMENTS']
-s3_bucket = os.environ['S3_BUCKET']
-
-
-def upload_file_to_s3(file_path, bucket, key):
-    s3 = boto3.client('s3')
-    s3.upload_file(file_path, bucket, key)
-    print(f"Upload successful. {file_path} uploaded to {bucket}/{key}")
-
-
-def make_zip_filename():
-    now = datetime.now()
-    timestamp = now.strftime('%Y%m%d_%H%M%S')
-    filename = f'LambdaLayer_{timestamp}.zip'
-    return filename
-
-
-def zipdir(path, zipname):
-    zipf = zipfile.ZipFile(zipname, 'w', zipfile.ZIP_DEFLATED)
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            zipf.write(os.path.join(root, file),
-                       os.path.relpath(os.path.join(root, file),
-                                       os.path.join(path, '..')))
-    zipf.close()
-
-
-def empty_bucket(bucket_name):
-    s3_client = boto3.client('s3')
-    response = s3_client.list_objects_v2(Bucket=bucket_name)
-    if 'Contents' in response:
-        keys = [{'Key': obj['Key']} for obj in response['Contents']]
-        s3_client.delete_objects(Bucket=bucket_name, Delete={'Objects': keys})
-    return
-
-
-def lambda_handler(event, context):
-    print("Event: ", event)
-    responseData = {}
-    reason = ""
-    status = cfnresponse.SUCCESS
-
-    def get_requirement_with_extras(requirement):
-        requirement_match = re.match(r"\[(.+)\](.+)", requirement)
-        if requirement_match:
-            extra_instruction = requirement_match.group(1)
-            package = requirement_match.group(2)
-            return package, extra_instruction
-        return requirement, None
+def install_pip_dep(requirement, extra=None):
+    base_cmd = [
+        sys.executable, "-m", "pip", "install", "--no-deps",
+        "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "-t", "python"
+    ]
+    if extra:
+        base_cmd.extend([requirement, extra])
+    else:
+        base_cmd.append(requirement)
 
     try:
-        if event['RequestType'] != 'Delete':
-            os.chdir('/tmp')
-            # download Bedrock SDK
-            installed = []
-            requirements_list = requirements.split(" ")
-
-            if os.path.exists("python"):
-                shutil.rmtree("python")
-
-            for requirement in requirements_list:
-                requirement, extra = get_requirement_with_extras(requirement)
-                is_zip_url = requirement.startswith("http") and requirement.endswith(".zip")
-
-                if is_zip_url:
-                    install_zip_package(requirement)
-
-                if requirement and not is_zip_url:
-                    install_pip_dep(requirement, extra)
-                
-                installed.append(requirement)
-            
-            print(installed)
-            boto3_zip_name = make_zip_filename()
-            zipdir("python", boto3_zip_name)
-
-            print(f"uploading {boto3_zip_name} to s3 bucket {s3_bucket}")
-            upload_file_to_s3(boto3_zip_name, s3_bucket, boto3_zip_name)
-            responseData = {"Bucket": s3_bucket, "Key": boto3_zip_name}
+        subprocess.check_call(base_cmd)
+    except subprocess.CalledProcessError as e:
+        print(f"First install attempt for {requirement} failed. Retrying without --only-binary=:all:")
+        fallback_cmd = [
+            sys.executable, "-m", "pip", "install", "--no-deps", "-t", "python"
+        ]
+        if extra:
+            fallback_cmd.extend([requirement, extra])
         else:
-            # delete - empty the bucket so it can be deleted by the stack.
-            empty_bucket(s3_bucket)
-    except Exception as e:
-        print(e)
-        status = cfnresponse.FAILED
-        reason = f"Exception thrown: {e}"
-    cfnresponse.send(event, context, status, responseData, reason=reason)
-
-
-def install_zip_package(zip_url, target="python"):
-    import ssl
-    ssl._create_default_https_context = ssl._create_unverified_context
-    from urllib.request import urlopen
-
-    # Step 1: Download the repository as a zip file
-    zip_path = os.path.join(tempfile.gettempdir(), "mlflow-export-import.zip")
-    with urlopen(zip_url) as resp, open(zip_path, "wb") as out_file:
-        out_file.write(resp.read())
-
-    # Step 2: Unzip the downloaded file
-    extract_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(tempfile.gettempdir())
-
-    # Step 3: Install the package into the target directory (e.g. 'python')
-    target_dir = os.path.abspath(target)
-    os.makedirs(target_dir, exist_ok=True)
-
-    package_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
-    subprocess.check_call([
-        sys.executable, "-m", "pip", "install", "--no-deps", package_dir, "--target", target_dir
-    ])
-
-    os.remove(zip_path)
-    shutil.rmtree(package_dir, ignore_errors=True)
-
-
-def install_pip_dep(requirement, extra=None):
-    if extra:
-        subprocess.check_call([sys.executable, "-m", "pip", "--no-deps","install", "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "-t", "python", requirement, extra])
-    else:
-        subprocess.check_call([sys.executable, "-m", "pip", "install","--no-deps", "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "-t", "python", requirement])
+            fallback_cmd.append(requirement)
+        subprocess.check_call(fallback_cmd)
