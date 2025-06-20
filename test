@@ -1,4 +1,39 @@
-mon code actuel et erreur
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
+Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
+Traceback (most recent call last):
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/requests/models.py", line 974, in json
+    return complexjson.loads(self.text, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/conda/lib/python3.12/json/decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 19, in <module>
+    process()
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 10, in process
+    response_json = client.promote_model_registration(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 1405, in promote_model_registration
+    return _transform_response(response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 21, in _transform_response
+    result = response.json() if response.ok else json.loads(response.content)
+             ^^^^^^^^^^^^^^^
+  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/requests/models.py", line 978, in json
+    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
+
+le code est 
 
 import re
 import boto3
@@ -128,12 +163,6 @@ def install_zip_package(zip_url, target="python"):
     shutil.rmtree(package_dir, ignore_errors=True)
 
 
-# def install_pip_dep(requirement, extra=None):
-#     if extra:
-#         subprocess.check_call([sys.executable, "-m", "pip", "--no-deps","install", "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "-t", "python", requirement, extra])
-#     else:
-#         subprocess.check_call([sys.executable, "-m", "pip", "install","--no-deps", "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "-t", "python", requirement])
-
 def install_pip_dep(requirement, extra=None):
     base_cmd = [
         sys.executable, "-m", "pip", "install", "--no-deps",
@@ -156,68 +185,3 @@ def install_pip_dep(requirement, extra=None):
         else:
             fallback_cmd.append(requirement)
         subprocess.check_call(fallback_cmd)
-
-
-(automationlambdaautomationlambdalambdaauthorizerfunctionCurrentVersion6AD7CA015deeef7ec52ba20a492ff354cf5c74b0) 
-APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |   2/101 | 11:26:08 AM | DELETE_COMPLETE      | AWS::Lambda::Version                | automation-lambda/automation-lambda_aws-mlops-service-endpoints_function/CurrentVersion (automationlambdaautomationlambdaawsmlopsserviceendpointsfunctionCurrentVersionA1D8B5C353ea620480c25eaafedc7d4028c35b7f) 
-APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |   2/101 | 11:26:08 AM | DELETE_IN_PROGRESS   | AWS::CloudFormation::CustomResource | aws-mlops_lambda_layer/aws-mlops_lambda_layer_model_promotion_libraries_custom_resource/Default (awsmlopslambdalayerawsmlopslambdalayermodelpromotionlibrariescustomresource7AC4EEF3) 
-APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |   1/101 | 11:26:08 AM | DELETE_COMPLETE      | AWS::Lambda::Version                | automation-lambda/automation-lambda_aws-mlops-credentials-generation_function/CurrentVersion (automationlambdaautomationlambdaawsmlopscredentialsgenerationfunctionCurrentVersionB37815A0f4a72b5b62274dcc3f6415b59e3af72d) 
-APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |   0/101 | 11:26:11 AM | DELETE_COMPLETE      | AWS::CloudFormation::CustomResource | aws-mlops_lambda_layer/aws-mlops_lambda_layer_model_promotion_libraries_custom_resource/Default (awsmlopslambdalayerawsmlopslambdalayermodelpromotionlibrariescustomresource7AC4EEF3) 
-APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV |   1/101 | 11:26:11 AM | UPDATE_ROLLBACK_COMP | AWS::CloudFormation::Stack          | APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV 
-
-Failed resources:
-APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV | 11:23:38 AM | UPDATE_FAILED        | AWS::Lambda::Alias                  | aws-mlops-model-endpoints-alias (awsmlopsmodelendpointsalias03C4F81B) Resource handler returned message: "Provisioned Concurrency configuration failed to be applied. Reason: FAILED" (RequestToken: f1cc4535-de67-c46f-6843-72336c32896f, HandlerErrorCode: NotStabilized)
-[11:26:14] Could not refresh notices: Error: getaddrinfo ENOTFOUND cli.cdk.dev-tools.aws.dev
-❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Resource handler returned message: "Provisioned Concurrency configuration failed to be applied. Reason: FAILED" (RequestToken: f1cc4535-de67-c46f-6843-72336c32896f, HandlerErrorCode: NotStabilized)
-[11:26:14] Error: ❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Resource handler returned message: "Provisioned Concurrency configuration failed to be applied. Reason: FAILED" (RequestToken: f1cc4535-de67-c46f-6843-72336c32896f, HandlerErrorCode: NotStabilized)
-    at Object.deployStack2 [as deployStack] (/usr/lib/node_modules/aws-cdk/lib/index.js:573:7239)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async /usr/lib/node_modules/aws-cdk/lib/index.js:572:187958
-[Pipeline] echo
-===========================
-[Pipeline] echo
->>>> CDK App Failed <<<<
-[Pipeline] echo
-===========================
-[Pipeline] echo
-hudson.AbortException: script returned exit code 1
-[Pipeline] unstable
-WARNING: CDK App failed hudson.AbortException: script returned exit code 1
-[Pipeline] }
-[Pipeline] // dir
-[Pipeline] }
-[Pipeline] // script
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] } (Run Tests)
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // node
-[Pipeline] End of Pipeline
-Finished: UNSTABLE
-
-[Pipeline] unstable
-WARNING: Downstream job FAILED
-[Pipeline] sh
-+ exit 1
-[Pipeline] }
-[Pipeline] // script
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Run Tests)
-Stage "Run Tests" skipped due to earlier failure(s)
-[Pipeline] getContext
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // node
-[Pipeline] End of Pipeline
-ERROR: script returned exit code 1
-Finished: FAILURE
