@@ -1,34 +1,17 @@
-venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
-Traceback (most recent call last):
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/requests/models.py", line 974, in json
-    return complexjson.loads(self.text, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/json/__init__.py", line 346, in loads
-    return _default_decoder.decode(s)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/json/decoder.py", line 338, in decode
-    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/json/decoder.py", line 356, in raw_decode
-    raise JSONDecodeError("Expecting value", s, err.value) from None
-json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 35, in <module>
-    process()
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 19, in process
-    response = client.promote_model_registration(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 1405, in promote_model_registration
-    return _transform_response(response)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 21, in _transform_response
+def _transform_response(response, status_ok="SUCCESS", status_fail="FAILURE"):
+    """
+    Transform response
+    """
     result = response.json() if response.ok else json.loads(response.content)
-             ^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/requests/models.py", line 978, in json
-    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
-requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$
+    if response.status_code == 403:
+        raise RuntimeError(
+            "Access denied: either your token is invalid or access to the requested endpoint is not allowed")
+    if not response.ok and 'success' not in result:
+        raise RuntimeError(f"{response.reason=}, {response.content=}")
+    if not 'status' in result:
+        ok = result.get('success', False)
+        result['status'] = status_ok if ok else status_fail
+    result.pop('success', None)
+    if 'error' in result:
+        result['message'] = result.pop('error')
+    return result
