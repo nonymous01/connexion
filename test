@@ -1,133 +1,65 @@
-import re
-import boto3
-from datetime import datetime
-import cfnresponse
-import os
-import shutil
-import subprocess
-import sys
-import zipfile
-import tempfile
+10:17:20] [25%] upload: Upload s3://novartiscdk1712147579093/cdk/APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV/4a31a868d91c92ecd18f48ee1e1f2dd499429b848fb3385333250e9f875625d0.yml
+[10:17:20] [25%] build: Zip /home/jenkins/workspace/F1_ALL_ALL_AI_LAB/MLOPS_Pipelines/R19/DEV/Common_CDK_App_Deploy/cdk_apps/aws_baseline_automation_env/cdk.out/asset.a5ca8d3648a5060d597b9836ffc645d1565d3c0248fe5e98771e4d07d96230f2 -> cdk.out/.cache/a5ca8d3648a5060d597b9836ffc645d1565d3c0248fe5e98771e4d07d96230f2.zip
+[10:17:20] [25%] upload: Upload s3://novartiscdk1712147579093/assets/a5ca8d3648a5060d597b9836ffc645d1565d3c0248fe5e98771e4d07d96230f2.zip
+[10:17:20] [25%] upload: Upload s3://novartiscdk1712147579093/assets/9c9c7bffaad6fd42e56f7e428fc6017ee9c880b8af5825feb438f7b1313a48b4.zip
+[50%] success: Published 4a31a868d91c92ecd18f48ee1e1f2dd499429b848fb3385333250e9f875625d0:current
+[75%] success: Published a5ca8d3648a5060d597b9836ffc645d1565d3c0248fe5e98771e4d07d96230f2:current
+[100%] success: Published 9c9c7bffaad6fd42e56f7e428fc6017ee9c880b8af5825feb438f7b1313a48b4:current
+[10:17:20] Removing existing change set with name cdk-deploy-change-set if it exists
+[10:17:20] Attempting to create ChangeSet with name cdk-deploy-change-set to update stack APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV
+APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV: creating CloudFormation changeset...
+[10:17:21] Call failed: createChangeSet({"StackName":"APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV","ChangeSetName":"cdk-deploy-change-set","ChangeSetType":"UPDATE","Description":"CDK Changeset for execution 741f5fe0-7c8b-4515-8756-6a2378280689","ClientToken":"create741f5fe0-7c8b-4515-8756-6a2378280689","Capabilities":["CAPABILITY_IAM","CAPABILITY_NAMED_IAM","CAPABILITY_AUTO_EXPAND"],"NotificationARNs":[],"Parameters":[{"ParameterKey":"AssetParametersa5ca8d3648a5060d597b9836ffc645d1565d3c0248fe5e98771e4d07d96230f2S3Bucket04941247","ParameterValue":"novartiscdk1712147579093"},{"ParameterKey":"AssetParametersa5ca8d3648a5060d597b9836ffc645d1565d3c0248fe5e98771e4d07d96230f2S3VersionKey513DAF06","ParameterValue":"assets/||a5ca8d3648a5060d597b9836ffc645d1565d3c0248fe5e98771e4d07d96230f2.zip"},{"ParameterKey":"AssetParametersa5ca8d3648a5060d597b9836ffc645d1565d3c0248fe5e98771e4d07d96230f2ArtifactHashE83367A5","ParameterValue":"a5ca8d3648a5060d597b9836ffc645d1565d3c0248fe5e98771e4d07d96230f2"},{"ParameterKey":"AssetParameters9c9c7bffaad6fd42e56f7e428fc6017ee9c880b8af5825feb438f7b1313a48b4S3Bucket03E97E43","ParameterValue":"novartiscdk1712147579093"},{"ParameterKey":"AssetParameters9c9c7bffaad6fd42e56f7e428fc6017ee9c880b8af5825feb438f7b1313a48b4S3VersionKey70532D28","ParameterValue":"assets/||9c9c7bffaad6fd42e56f7e428fc6017ee9c880b8af5825feb438f7b1313a48b4.zip"},{"ParameterKey":"AssetParameters9c9c7bffaad6fd42e56f7e428fc6017ee9c880b8af5825feb438f7b1313a48b4ArtifactHash388B2CB3","ParameterValue":"9c9c7bffaad6fd42e56f7e428fc6017ee9c880b8af5825feb438f7b1313a48b4"},{"ParameterKey":"AssetParametersd0d3517d2275d9958b06529d601cec5d49909951d47da30a483e9b625e14f85aS3Bucket74735AFD","ParameterValue":"novartiscdk1712147579093"},{"ParameterKey":"AssetParametersd0d3517d2275d9958b06529d601cec5d49909951d47da30a483e9b625e14f85aS3VersionKey5BB92223","ParameterValue":"assets/||d0d3517d2275d9958b06529d601cec5d49909951d47da30a483e9b625e14f85a.zip"},{"ParameterKey":"AssetParametersd0d3517d2275d9958b06529d601cec5d49909951d47da30a483e9b625e14f85aArtifactHash580696FC","ParameterValue":"d0d3517d2275d9958b06529d601cec5d49909951d47da30a483e9b625e14f85a"}],"TemplateURL":"https://novartiscdk1712147579093.s3.eu-west-1.amazonaws.com/cdk/APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV/4a31a868d91c92ecd18f48ee1e1f2dd499429b848fb3385333250e9f875625d0.yml","Tags":[]}) => Stack:arn:aws:cloudformation:eu-west-1:913542069806:stack/APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV/699da910-6c23-11ef-b101-0269f40dcb45 is in UPDATE_ROLLBACK_IN_PROGRESS state and can not be updated. (code=ValidationError)
+[10:17:21] Could not refresh notices: Error: getaddrinfo ENOTFOUND cli.cdk.dev-tools.aws.dev
+❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: ValidationError: Stack:arn:aws:cloudformation:eu-west-1:913542069806:stack/APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV/699da910-6c23-11ef-b101-0269f40dcb45 is in UPDATE_ROLLBACK_IN_PROGRESS state and can not be updated.
+[10:17:21] Error: ❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: ValidationError: Stack:arn:aws:cloudformation:eu-west-1:913542069806:stack/APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV/699da910-6c23-11ef-b101-0269f40dcb45 is in UPDATE_ROLLBACK_IN_PROGRESS state and can not be updated.
+    at Object.deployStack2 [as deployStack] (/usr/lib/node_modules/aws-cdk/lib/index.js:573:7239)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async /usr/lib/node_modules/aws-cdk/lib/index.js:572:187958
+[Pipeline] echo
+===========================
+[Pipeline] echo
+>>>> CDK App Failed <<<<
+[Pipeline] echo
+===========================
+[Pipeline] echo
+hudson.AbortException: script returned exit code 1
+[Pipeline] unstable
+WARNING: CDK App failed hudson.AbortException: script returned exit code 1
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] } (Run Tests)
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: UNSTABLE
 
-requirements = os.environ['REQUIREMENTS']
-s3_bucket = os.environ['S3_BUCKET']
-
-
-def upload_file_to_s3(file_path, bucket, key):
-    s3 = boto3.client('s3')
-    s3.upload_file(file_path, bucket, key)
-    print(f"Upload successful. {file_path} uploaded to {bucket}/{key}")
-
-
-def make_zip_filename():
-    now = datetime.now()
-    timestamp = now.strftime('%Y%m%d_%H%M%S')
-    filename = f'LambdaLayer_{timestamp}.zip'
-    return filename
-
-
-def zipdir(path, zipname):
-    zipf = zipfile.ZipFile(zipname, 'w', zipfile.ZIP_DEFLATED)
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            zipf.write(os.path.join(root, file),
-                       os.path.relpath(os.path.join(root, file),
-                                       os.path.join(path, '..')))
-    zipf.close()
-
-
-def empty_bucket(bucket_name):
-    s3_client = boto3.client('s3')
-    response = s3_client.list_objects_v2(Bucket=bucket_name)
-    if 'Contents' in response:
-        keys = [{'Key': obj['Key']} for obj in response['Contents']]
-        s3_client.delete_objects(Bucket=bucket_name, Delete={'Objects': keys})
-    return
-
-
-def lambda_handler(event, context):
-    print("Event: ", event)
-    responseData = {}
-    reason = ""
-    status = cfnresponse.SUCCESS
-
-    def get_requirement_with_extras(requirement):
-        requirement_match = re.match(r"\[(.+)\](.+)", requirement)
-        if requirement_match:
-            extra_instruction = requirement_match.group(1)
-            package = requirement_match.group(2)
-            return package, extra_instruction
-        return requirement, None
-
-    try:
-        if event['RequestType'] != 'Delete':
-            os.chdir('/tmp')
-            # download Bedrock SDK
-            installed = []
-            requirements_list = requirements.split(" ")
-
-            if os.path.exists("python"):
-                shutil.rmtree("python")
-
-            for requirement in requirements_list:
-                requirement, extra = get_requirement_with_extras(requirement)
-                is_zip_url = requirement.startswith("http") and requirement.endswith(".zip")
-
-                if is_zip_url:
-                    install_zip_package(requirement)
-
-                if requirement and not is_zip_url:
-                    install_pip_dep(requirement, extra)
-                
-                installed.append(requirement)
-            
-            print(installed)
-            boto3_zip_name = make_zip_filename()
-            zipdir("python", boto3_zip_name)
-
-            print(f"uploading {boto3_zip_name} to s3 bucket {s3_bucket}")
-            upload_file_to_s3(boto3_zip_name, s3_bucket, boto3_zip_name)
-            responseData = {"Bucket": s3_bucket, "Key": boto3_zip_name}
-        else:
-            # delete - empty the bucket so it can be deleted by the stack.
-            empty_bucket(s3_bucket)
-    except Exception as e:
-        print(e)
-        status = cfnresponse.FAILED
-        reason = f"Exception thrown: {e}"
-    cfnresponse.send(event, context, status, responseData, reason=reason)
-
-
-def install_zip_package(zip_url, target="python"):
-    import ssl
-    ssl._create_default_https_context = ssl._create_unverified_context
-    from urllib.request import urlopen
-
-    # Step 1: Download the repository as a zip file
-    zip_path = os.path.join(tempfile.gettempdir(), "mlflow-export-import.zip")
-    with urlopen(zip_url) as resp, open(zip_path, "wb") as out_file:
-        out_file.write(resp.read())
-
-    # Step 2: Unzip the downloaded file
-    extract_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(tempfile.gettempdir())
-
-    # Step 3: Install the package into the target directory (e.g. 'python')
-    target_dir = os.path.abspath(target)
-    os.makedirs(target_dir, exist_ok=True)
-
-    package_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
-    subprocess.check_call([
-        sys.executable, "-m", "pip", "install", package_dir, "--target", target_dir
-    ])
-
-    os.remove(zip_path)
-    shutil.rmtree(package_dir, ignore_errors=True)
-
-
-def install_pip_dep(requirement, extra=None):
-    if extra:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "-t", "python", requirement, extra])
-    else:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "-t", "python", requirement])
+[Pipeline] unstable
+WARNING: Downstream job FAILED
+[Pipeline] sh
++ exit 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run Tests)
+Stage "Run Tests" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE
