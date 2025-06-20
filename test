@@ -1,14 +1,19 @@
-def _transform_response(response):
-    try:
-        response.raise_for_status()  # Lève une exception HTTP pour les codes 4xx/5xx
-        if response.headers.get('Content-Type', '').startswith('application/json'):
-            return response.json()
-        else:
-            print("Warning: Expected JSON but got:", response.text)
-            return {"message": "Non-JSON response", "content": response.text}
-    except requests.exceptions.HTTPError as http_err:
-        print(f"HTTP error occurred: {http_err} - Response: {response.text}")
-        raise
-    except ValueError as json_err:
-        print(f"JSON decode error: {json_err} - Raw response: {response.text}")
-        raise
+from dotenv import dotenv_values
+from f1ai_client import f1ai_client
+
+config = dotenv_values('.env')
+TOKEN = config.get("US_EAST_1_TOKEN")
+
+
+def process():
+    client = f1ai_client.init(TOKEN) # add token obtained from F1 Portal
+    response_json = client.promote_model_registration(
+                    model_name="irisclassifier",
+                    model_version=1,
+                    model_source="databricks_registry" # 'databricks_registry'|'databricks_uc'|'aws_model_registry'
+    )
+    print(response_json)
+
+
+if __name__=="__main__":
+    process()
