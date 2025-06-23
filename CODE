@@ -1,7 +1,17 @@
-3T17:16:45.491Z
+INIT_START Runtime Version: python:3.10.v78	Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:b556158cad85934b6c377a5efb9a608a8a761e7800735ebbcc34a66e4c6523ab
+
+INIT_START Runtime Version: python:3.10.v78 Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:b556158cad85934b6c377a5efb9a608a8a761e7800735ebbcc34a66e4c6523ab
+2025-06-23T18:08:26.563Z
 [ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': cannot import name 'validate_core_schema' from 'pydantic_core' (/opt/python/pydantic_core/__init__.py)
 Traceback (most recent call last):
 
 [ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': cannot import name 'validate_core_schema' from 'pydantic_core' (/opt/python/pydantic_core/__init__.py) Traceback (most recent call last):
-2025-06-23T17:16:45.634Z
-INIT_REPORT Init Duration: 1762.32 ms	Phase: init	Status: error	Error Type: Runtime.ImportModuleError
+2025-06-23T18:08:26.798Z
+INIT_REPORT Init Duration: 3028.19 ms	Phase: init	Status: error	Error Type: Runtime.ImportModuleError
+
+
+
+
+mon requirment.txt
+[--upgrade]pydantic>=2.0.0
+[--upgrade]pydantic-core>=2.0.0
