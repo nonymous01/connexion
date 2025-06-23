@@ -1,34 +1,21 @@
-emaker-user@default:~/f1_ai_mlops_baseline$ python python_scripts/utils/f1ai_model_promoter.py 
-Warning: Could not generate AWS temporary credentials. Please make sure you have the necessary permissions.
+[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.attributes'
 Traceback (most recent call last):
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/requests/models.py", line 974, in json
-    return complexjson.loads(self.text, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/json/__init__.py", line 346, in loads
-    return _default_decoder.decode(s)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/json/decoder.py", line 338, in decode
-    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/conda/lib/python3.12/json/decoder.py", line 356, in raw_decode
-    raise JSONDecodeError("Expecting value", s, err.value) from None
-json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
 
-During handling of the above exception, another exception occurred:
+[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.attributes' Traceback (most recent call last):
+2025-06-23T19:28:45.940Z
+INIT_REPORT Init Duration: 1527.51 ms	Phase: init	Status: error	Error Type: Runtime.ImportModuleError
 
+INIT_REPORT Init Duration: 1527.51 ms Phase: init Status: error Error Type: Runtime.ImportModuleError
+2025-06-23T19:29:03.114Z
+[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.attributes'
 Traceback (most recent call last):
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 35, in <module>
-    process()
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/python_scripts/utils/f1ai_model_promoter.py", line 19, in process
-    response = client.promote_model_registration(
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 1405, in promote_model_registration
-    return _transform_response(response)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/f1ai_client/f1ai_client.py", line 21, in _transform_response
-    result = response.json() if response.ok else json.loads(response.content)
-             ^^^^^^^^^^^^^^^
-  File "/home/sagemaker-user/f1_ai_mlops_baseline/venv/lib/python3.12/site-packages/requests/models.py", line 978, in json
-    raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
-requests.exceptions.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
-(venv) sagemaker-user@default:~/f1_ai_mlops_baseline$ 
+
+[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.attributes' Traceback (most recent call last):
+2025-06-23T19:29:05.252Z
+INIT_REPORT Init Duration: 19285.46 ms Phase: invoke Status: error Error Type: Runtime.ImportModuleError
+2025-06-23T19:29:05.252Z
+START RequestId: 4af95587-6aca-4bf2-b967-ea7d433b7914 Version: $LATEST
+2025-06-23T19:29:05.272Z
+Unknown application error occurred Runtime.ImportModuleError
+2025-06-23T19:29:05.272Z
+END RequestId: 4af95587-6aca-4bf2-b967-ea7d433b7914
