@@ -1,21 +1,10 @@
-[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.attributes'
+INIT_START Runtime Version: python:3.10.v78	Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:b556158cad85934b6c377a5efb9a608a8a761e7800735ebbcc34a66e4c6523ab
+
+INIT_START Runtime Version: python:3.10.v78 Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:b556158cad85934b6c377a5efb9a608a8a761e7800735ebbcc34a66e4c6523ab
+2025-06-23T19:49:29.341Z
+[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.sdk'
 Traceback (most recent call last):
 
-[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.attributes' Traceback (most recent call last):
-2025-06-23T19:28:45.940Z
-INIT_REPORT Init Duration: 1527.51 ms	Phase: init	Status: error	Error Type: Runtime.ImportModuleError
-
-INIT_REPORT Init Duration: 1527.51 ms Phase: init Status: error Error Type: Runtime.ImportModuleError
-2025-06-23T19:29:03.114Z
-[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.attributes'
-Traceback (most recent call last):
-
-[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.attributes' Traceback (most recent call last):
-2025-06-23T19:29:05.252Z
-INIT_REPORT Init Duration: 19285.46 ms Phase: invoke Status: error Error Type: Runtime.ImportModuleError
-2025-06-23T19:29:05.252Z
-START RequestId: 4af95587-6aca-4bf2-b967-ea7d433b7914 Version: $LATEST
-2025-06-23T19:29:05.272Z
-Unknown application error occurred Runtime.ImportModuleError
-2025-06-23T19:29:05.272Z
-END RequestId: 4af95587-6aca-4bf2-b967-ea7d433b7914
+[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.sdk' Traceback (most recent call last):
+2025-06-23T19:49:29.531Z
+INIT_REPORT Init Duration: 3201.49 ms	Phase: init	Status: error	Error Type: Runtime.ImportModuleError
