@@ -1,10 +1,29 @@
-INIT_START Runtime Version: python:3.10.v78	Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:b556158cad85934b6c377a5efb9a608a8a761e7800735ebbcc34a66e4c6523ab
+voci mon requirment.txt
 
-INIT_START Runtime Version: python:3.10.v78 Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:b556158cad85934b6c377a5efb9a608a8a761e7800735ebbcc34a66e4c6523ab
-2025-06-23T19:49:29.341Z
-[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.sdk'
-Traceback (most recent call last):
 
-[ERROR] Runtime.ImportModuleError: Unable to import module 'model_function': No module named 'opentelemetry.sdk' Traceback (most recent call last):
-2025-06-23T19:49:29.531Z
-INIT_REPORT Init Duration: 3201.49 ms	Phase: init	Status: error	Error Type: Runtime.ImportModuleError
+[--no-deps]https://github.com/mlflow/mlflow-export-import/archive/refs/heads/master.zip
+[--upgrade]mlflow-skinny
+[--upgrade]databricks-cli==0.18.0
+[--upgrade]pandas
+[--upgrade]numpy
+[--upgrade]tabulate==0.9.0
+[--upgrade]databricks-sdk
+[--upgrade]wheel
+[--upgrade]numpy
+[--upgrade]google-cloud
+[--upgrade]google
+[--upgrade]protobuf
+[--upgrade]pytz
+[--upgrade]packaging
+[--upgrade]pydantic==2.5.3
+[--upgrade]pydantic-core==2.14.6
+[--upgrade]typing-inspection
+[--upgrade]typing_inspection
+
+
+
+
+
+
+
+
