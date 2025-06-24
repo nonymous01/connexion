@@ -1,50 +1,56 @@
-[--upgrade]annotated-types==0.7.0
-[--upgrade]anyio==4.9.0
-[--upgrade]cachetools==5.5.2
-[--upgrade]certifi==2025.1.31
-[--upgrade]charset-normalizer==3.4.1
-[--upgrade]click==8.1.8
-[--upgrade]cloudpickle==3.1.1
-[--upgrade]databricks-cli==0.18.0
-[--upgrade]databricks-sdk==0.50.0
-[--upgrade]Deprecated==1.2.18
-[--upgrade]fastapi==0.115.12
-[--upgrade]gitdb==4.0.12
-[--upgrade]GitPython==3.1.44
-[--upgrade]google-auth==2.39.0
-[--upgrade]h11==0.14.0
-[--upgrade]idna==3.10
-[--upgrade]importlib_metadata==8.6.1
-[--upgrade]mlflow-skinny==2.21.3
-[--upgrade]numpy==2.2.4
-[--upgrade]oauthlib==3.2.2
-[--upgrade]opentelemetry-api==1.32.1
-[--upgrade]opentelemetry-sdk==1.32.1
-[--upgrade]opentelemetry-semantic-conventions==0.53b1
-[--upgrade]packaging==24.2
-[--upgrade]pandas==2.2.3
-[--upgrade]protobuf==5.29.4
-[--upgrade]pyasn1==0.6.1
-[--upgrade]pyasn1_modules==0.4.2
-[--upgrade]pydantic==2.11.3
-[--upgrade]pydantic_core==2.33.1
-[--upgrade]PyJWT==2.10.1
-[--upgrade]python-dateutil==2.9.0.post0
-[--upgrade]pytz==2025.2
-[--upgrade]PyYAML==6.0.2
-[--upgrade]requests==2.32.3
-[--upgrade]rsa==4.9.1
-[--upgrade]six==1.17.0
-[--upgrade]smmap==5.0.2
-[--upgrade]sniffio==1.3.1
-[--upgrade]sqlparse==0.5.3
-[--upgrade]starlette==0.46.2
-[--upgrade]tabulate==0.9.0
-[--upgrade]typing-inspection==0.4.0
-[--upgrade]typing_extensions==4.13.2
-[--upgrade]tzdata==2025.2
-[--upgrade]urllib3==2.4.0
-[--upgrade]uvicorn==0.34.1
-[--upgrade]wheel==0.45.1
-[--upgrade]wrapt==1.17.2
-[--upgrade]zipp==3.21.0
+
+Failed resources:
+APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV | 6:57:31 PM | UPDATE_FAILED        | AWS::Lambda::Function               | automation-lambda/automation-lambda_aws-mlops-models_function (automationlambdaautomationlambdaawsmlopsmodelsfunction0ED357C5) Resource handler returned message: "Layers consume more than the available size of 262144000 bytes (Service: Lambda, Status Code: 400, Request ID: 8d0b056d-3933-4850-9287-a709e23552ae) (SDK Attempt Count: 1)" (RequestToken: 7cea877b-658d-74fc-fdb0-d031a016819e, HandlerErrorCode: InvalidRequest)
+[18:59:56] Could not refresh notices: Error: getaddrinfo ENOTFOUND cli.cdk.dev-tools.aws.dev
+❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Resource handler returned message: "Layers consume more than the available size of 262144000 bytes (Service: Lambda, Status Code: 400, Request ID: 8d0b056d-3933-4850-9287-a709e23552ae) (SDK Attempt Count: 1)" (RequestToken: 7cea877b-658d-74fc-fdb0-d031a016819e, HandlerErrorCode: InvalidRequest)
+[18:59:56] Error: ❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Resource handler returned message: "Layers consume more than the available size of 262144000 bytes (Service: Lambda, Status Code: 400, Request ID: 8d0b056d-3933-4850-9287-a709e23552ae) (SDK Attempt Count: 1)" (RequestToken: 7cea877b-658d-74fc-fdb0-d031a016819e, HandlerErrorCode: InvalidRequest)
+    at Object.deployStack2 [as deployStack] (/usr/lib/node_modules/aws-cdk/lib/index.js:573:7239)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async /usr/lib/node_modules/aws-cdk/lib/index.js:572:187958
+[Pipeline] echo
+===========================
+[Pipeline] echo
+>>>> CDK App Failed <<<<
+[Pipeline] echo
+===========================
+[Pipeline] echo
+hudson.AbortException: script returned exit code 1
+[Pipeline] unstable
+WARNING: CDK App failed hudson.AbortException: script returned exit code 1
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] } (Run Tests)
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: UNSTABLE
+
+[Pipeline] unstable
+WARNING: Downstream job FAILED
+[Pipeline] sh
++ exit 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run Tests)
+Stage "Run Tests" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
