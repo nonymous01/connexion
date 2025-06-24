@@ -1,30 +1,10 @@
-v1) sagemaker-user@default:~/f1_ai_mlops_baseline$ git branch
-* (HEAD detached from d01b608a)
-:...skipping...
-* (HEAD detached from d01b608a)
-  UN-15422
-  develop
-  feature/UN-12623
-  feature/UN-13744
-  master
-  model_promotion_chris
-  model_promotion_chris_new
-~
-~
-~
-~
-(END)...skipping...
-* (HEAD detached from d01b608a)
-  UN-15422
-  develop
-  feature/UN-12623
-  feature/UN-13744
-  master
-  model_promotion_chris
-  model_promotion_chris_new
-~
-~
-~
-~
-~
-~
+venv1) sagemaker-user@default:~/f1_ai_mlops_baseline$ git reset --hard d01b608a0d1d44ba86c026b0c869a9444152a5a5
+HEAD is now at d01b608a add layer
+(venv1) sagemaker-user@default:~/f1_ai_mlops_baseline$ git add .
+(venv1) sagemaker-user@default:~/f1_ai_mlops_baseline$ git commit -m 'reset branch'
+On branch model_promotion_chris_new
+Your branch is behind 'origin/model_promotion_chris_new' by 5 commits, and can be fast-forwarded.
+  (use "git pull" to update your local branch)
+
+nothing to commit, working tree clean
+(venv1) sagemaker-user@
