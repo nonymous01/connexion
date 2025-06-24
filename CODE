@@ -1,1 +1,113 @@
-Hi Diogo, I've been trying to install opentelemetry sdk but the lambda the lambda stillfails. I'm looking for another solution
+Failed resources:
+APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV | 3:36:34 PM | UPDATE_FAILED        | AWS::CloudFormation::CustomResource | aws-mlops_lambda_layer/aws-mlops_lambda_layer_model_promotion_libraries_custom_resource/Default (awsmlopslambdalayerawsmlopslambdalayermodelpromotionlibrariescustomresource7AC4EEF3) Received response status [FAILED] from custom resource. Message returned: Exception thrown: Command '['/var/lang/bin/python3.10', '-m', 'pip', 'install', '--no-deps', '-t', 'python', '#']' returned non-zero exit status 1. (RequestId: 70fffd9c-a9e6-4f72-b368-3f6f296bdfad)
+[15:37:39] Could not refresh notices: Error: getaddrinfo ENOTFOUND cli.cdk.dev-tools.aws.dev
+❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Received response status [FAILED] from custom resource. Message returned: Exception thrown: Command '['/var/lang/bin/python3.10', '-m', 'pip', 'install', '--no-deps', '-t', 'python', '#']' returned non-zero exit status 1. (RequestId: 70fffd9c-a9e6-4f72-b368-3f6f296bdfad)
+[15:37:39] Error: ❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Received response status [FAILED] from custom resource. Message returned: Exception thrown: Command '['/var/lang/bin/python3.10', '-m', 'pip', 'install', '--no-deps', '-t', 'python', '#']' returned non-zero exit status 1. (RequestId: 70fffd9c-a9e6-4f72-b368-3f6f296bdfad)
+    at Object.deployStack2 [as deployStack] (/usr/lib/node_modules/aws-cdk/lib/index.js:573:7239)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async /usr/lib/node_modules/aws-cdk/lib/index.js:572:187958
+[Pipeline] echo
+===========================
+[Pipeline] echo
+>>>> CDK App Failed <<<<
+[Pipeline] echo
+===========================
+[Pipeline] echo
+hudson.AbortException: script returned exit code 1
+[Pipeline] unstable
+WARNING: CDK App failed hudson.AbortException: script returned exit code 1
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] } (Run Tests)
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: UNSTABLE
+
+[Pipeline] unstable
+WARNING: Downstream job FAILED
+[Pipeline] sh
++ exit 1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Run Tests)
+Stage "Run Tests" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+
+et le code
+
+
+def install_zip_package(zip_url, target="python"):
+    import ssl
+    ssl._create_default_https_context = ssl._create_unverified_context
+    from urllib.request import urlopen
+
+    # Step 1: Download the repository as a zip file
+    zip_path = os.path.join(tempfile.gettempdir(), "mlflow-export-import.zip")
+    with urlopen(zip_url) as resp, open(zip_path, "wb") as out_file:
+        out_file.write(resp.read())
+
+    # Step 2: Unzip the downloaded file
+    extract_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(tempfile.gettempdir())
+
+    # Step 3: Install the package into the target directory (e.g. 'python')
+    target_dir = os.path.abspath(target)
+    os.makedirs(target_dir, exist_ok=True)
+
+    package_dir = os.path.join(tempfile.gettempdir(), "mlflow-export-import-master")
+    subprocess.check_call([
+        sys.executable, "-m", "pip", "install", "--no-deps", package_dir, "--target", target_dir
+    ])
+
+    os.remove(zip_path)
+    shutil.rmtree(package_dir, ignore_errors=True)
+
+#install_pip_dep
+def install_pip_dep(requirement, extra=None):
+    base_cmd = [
+        sys.executable, "-m", "pip", "install", "--no-deps",
+        "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "-t", "python"
+    ]
+    if extra:
+        base_cmd.extend([requirement, extra])
+    else:
+        base_cmd.append(requirement)
+
+    try:
+        subprocess.check_call(base_cmd)
+    except subprocess.CalledProcessError as e:
+        print(f"First install attempt for {requirement} failed. Retrying without --only-binary=:all:")
+        fallback_cmd = [
+            sys.executable, "-m", "pip", "install", "--no-deps", "-t", "python"
+        ]
+        if extra:
+            fallback_cmd.extend([requirement, extra])
+        else:
+            fallback_cmd.append(requirement)
+        subprocess.check_call(fallback_cmd)
+
+
+
+pourquoi erreur
