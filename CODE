@@ -1,56 +1,43 @@
+# pip install git+https:///github.com/mlflow/mlflow-export-import/#egg=mlflow-export-import -t python  \
+pip install https://github.com/mlflow/mlflow-export-import/archive/refs/heads/master.zip -t python \
+--no-deps \
+--platform manylinux2014_x86_64 \
+--python-version 3.10 \
+--only-binary=:all:
 
-Failed resources:
-APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV | 6:57:31 PM | UPDATE_FAILED        | AWS::Lambda::Function               | automation-lambda/automation-lambda_aws-mlops-models_function (automationlambdaautomationlambdaawsmlopsmodelsfunction0ED357C5) Resource handler returned message: "Layers consume more than the available size of 262144000 bytes (Service: Lambda, Status Code: 400, Request ID: 8d0b056d-3933-4850-9287-a709e23552ae) (SDK Attempt Count: 1)" (RequestToken: 7cea877b-658d-74fc-fdb0-d031a016819e, HandlerErrorCode: InvalidRequest)
-[18:59:56] Could not refresh notices: Error: getaddrinfo ENOTFOUND cli.cdk.dev-tools.aws.dev
-❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Resource handler returned message: "Layers consume more than the available size of 262144000 bytes (Service: Lambda, Status Code: 400, Request ID: 8d0b056d-3933-4850-9287-a709e23552ae) (SDK Attempt Count: 1)" (RequestToken: 7cea877b-658d-74fc-fdb0-d031a016819e, HandlerErrorCode: InvalidRequest)
-[18:59:56] Error: ❌  APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed: The stack named APP01-NVSGISRSSR36-DEVCDKAUTOMATIONENV failed to deploy: UPDATE_ROLLBACK_COMPLETE: Resource handler returned message: "Layers consume more than the available size of 262144000 bytes (Service: Lambda, Status Code: 400, Request ID: 8d0b056d-3933-4850-9287-a709e23552ae) (SDK Attempt Count: 1)" (RequestToken: 7cea877b-658d-74fc-fdb0-d031a016819e, HandlerErrorCode: InvalidRequest)
-    at Object.deployStack2 [as deployStack] (/usr/lib/node_modules/aws-cdk/lib/index.js:573:7239)
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async /usr/lib/node_modules/aws-cdk/lib/index.js:572:187958
-[Pipeline] echo
-===========================
-[Pipeline] echo
->>>> CDK App Failed <<<<
-[Pipeline] echo
-===========================
-[Pipeline] echo
-hudson.AbortException: script returned exit code 1
-[Pipeline] unstable
-WARNING: CDK App failed hudson.AbortException: script returned exit code 1
-[Pipeline] }
-[Pipeline] // dir
-[Pipeline] }
-[Pipeline] // script
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] } (Run Tests)
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // node
-[Pipeline] End of Pipeline
-Finished: UNSTABLE
+pip install -t python mlflow-skinny --upgrade
+pip install -t python databricks-cli==0.18.0 --upgrade
+pip install -t python "pandas>=1.5.2" --upgrade
+pip install -t python tabulate==0.9.0 --upgrade
+pip install -t python databricks-sdk --upgrade
+pip install -t python wheel --upgrade
 
-[Pipeline] unstable
-WARNING: Downstream job FAILED
-[Pipeline] sh
-+ exit 1
-[Pipeline] }
-[Pipeline] // script
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] stage
-[Pipeline] { (Run Tests)
-Stage "Run Tests" skipped due to earlier failure(s)
-[Pipeline] getContext
-[Pipeline] }
-[Pipeline] // stage
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // withEnv
-[Pipeline] }
-[Pipeline] // node
-[Pipeline] End of Pipeline
-ERROR: script returned exit code 1
+# protobuf version: 3.20.3
+# pip install git+https:///github.com/mlflow/mlflow-export-import/#egg=mlflow-export-import   \
+# --no-deps \
+# --platform manylinux2014_x86_64 \
+# --python-version 3.10 \
+# --only-binary=:all:
+
+
+# pip install --upgrade mlflow-skinny
+# pip install --upgrade databricks-cli==0.18.0
+# pip install --upgrade pandas
+# pip install --upgrade numpy
+# pip install --upgrade tabulate==0.9.0
+# pip install --upgrade databricks-sdk
+# pip install --upgrade wheel
+# pip install --upgrade numpy
+# pip install --upgrade google-cloud
+# pip install --upgrade google
+# pip install --upgrade protobuf
+# pip install --upgrade pytz
+# pip install --upgrade packaging
+# pip install --upgrade pydantic==2.5.3
+# pip install --upgrade pydantic-core==2.14.6
+# pip install --upgrade typing-inspection
+# pip install --upgrade typing_inspection
+# pip install --upgrade opentelemetry-api==1.21.0
+# pip install --upgrade opentelemetry-sdk==1.21.0
+# pip install --upgrade opentelemetry-exporter-otlp==1.21.0
+# pip install --upgrade opentelemetry-exporter-otlp-proto-grpc==1.21.0
