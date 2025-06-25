@@ -1,45 +1,35 @@
-# pip install git+https:///github.com/mlflow/mlflow-export-import/#egg=mlflow-export-import -t python  \
-pip install https://github.com/mlflow/mlflow-export-import/archive/refs/heads/master.zip -t python \
---no-deps \
---platform manylinux2014_x86_64 \
---python-version 3.10 \
---only-binary=:all:
+#!/bin/bash
 
+set -e
+
+LAYER_NAME="mlflow_layer"
+PYTHON_VERSION="3.10"
+ZIP_NAME="mlflow-layer.zip"
+
+# 1. Créer dossier propre
+rm -rf $LAYER_NAME $ZIP_NAME
+mkdir -p $LAYER_NAME/python
+cd $LAYER_NAME
+
+echo "[+] Installation des dépendances..."
+
+# 2. Installer les dépendances dans le dossier python/
 pip install -t python mlflow-skinny --upgrade
 pip install -t python databricks-cli==0.18.0 --upgrade
 pip install -t python "pandas>=1.5.2" --upgrade
 pip install -t python tabulate==0.9.0 --upgrade
 pip install -t python databricks-sdk --upgrade
 pip install -t python wheel --upgrade
-pip install -t python google
-pip install -t python protobuf
+pip install -t python protobuf --upgrade
+pip install -t python google --upgrade
 
-# protobuf version: 3.20.3
-# pip install git+https:///github.com/mlflow/mlflow-export-import/#egg=mlflow-export-import   \
-# --no-deps \
-# --platform manylinux2014_x86_64 \
-# --python-version 3.10 \
-# --only-binary=:all:
+# Installer mlflow-export-import via .zip
+curl -L -o mlflow-export-import.zip https://github.com/mlflow/mlflow-export-import/archive/refs/heads/master.zip
+pip install mlflow-export-import.zip -t python --no-deps
 
+# 3. Créer l’archive ZIP avec `python/` à la racine
+echo "[+] Zippage du dossier python/"
+zip -r9 ../$ZIP_NAME python
 
-# pip install --upgrade mlflow-skinny
-# pip install --upgrade databricks-cli==0.18.0
-# pip install --upgrade pandas
-# pip install --upgrade numpy
-# pip install --upgrade tabulate==0.9.0
-# pip install --upgrade databricks-sdk
-# pip install --upgrade wheel
-# pip install --upgrade numpy
-# pip install --upgrade google-cloud
-# pip install --upgrade google
-# pip install --upgrade protobuf
-# pip install --upgrade pytz
-# pip install --upgrade packaging
-# pip install --upgrade pydantic==2.5.3
-# pip install --upgrade pydantic-core==2.14.6
-# pip install --upgrade typing-inspection
-# pip install --upgrade typing_inspection
-# pip install --upgrade opentelemetry-api==1.21.0
-# pip install --upgrade opentelemetry-sdk==1.21.0
-# pip install --upgrade opentelemetry-exporter-otlp==1.21.0
-# pip install --upgrade opentelemetry-exporter-otlp-proto-grpc==1.21.0
+cd ..
+echo "[✔] ZIP prêt : $ZIP_NAME"
