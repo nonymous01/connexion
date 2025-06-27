@@ -1,3 +1,70 @@
-ip install -t mlflow python/lib/python3.12/site-packages
-zsh: /home/christian/workspace/mlflow-export-import/venv/bin/pip: bad interpreter: /home/christian/mlflow-export-import/venv/bin/python3: no such file or directory
-ERROR: Directory 'python/lib/python3.12/site-packages' is not installable. Neither 'setup.py' nor 'pyproject.toml' found.
+2025-06-27T18:37:36.259Z
+[ERROR] ModuleNotFoundError: No module named 'google.protobuf'
+Traceback (most recent call last):
+  File "/var/task/lambda_function.py", line 26, in lambda_handler
+    from mlflow_export_import.copy.copy_model_version import copy
+  File "/opt/python/mlflow_export_import/__init__.py", line 3, in <module>
+    import mlflow
+  File "/tmp/mlflow/__init__.py", line 44, in <module>
+    from mlflow import (
+  File "/tmp/mlflow/artifacts/__init__.py", line 11, in <module>
+    from mlflow.entities.file_info import FileInfo
+  File "/tmp/mlflow/entities/__init__.py", line 6, in <module>
+    from mlflow.entities.assessment import (
+  File "/tmp/mlflow/entities/assessment.py", line 8, in <module>
+    from google.protobuf.json_format import MessageToDict, ParseDict
+
+[ERROR] ModuleNotFoundError: No module named 'google.protobuf' Traceback (most recent call last):   File "/var/task/lambda_function.py", line 26, in lambda_handler     from mlflow_export_import.copy.copy_model_version import copy   File "/opt/python/mlflow_export_import/__init__.py", line 3, in <module>     import mlflow   File "/tmp/mlflow/__init__.py", line 44, in <module>     from mlflow import (   File "/tmp/mlflow/artifacts/__init__.py", line 11, in <module>     from mlflow.entities.file_info import FileInfo   File "/tmp/mlflow/entities/__init__.py", line 6, in <module>     from mlflow.entities.assessment import (   File "/tmp/mlflow/entities/assessment.py", line 8, in <module>     from google.protobuf.json_format import MessageToDict, ParseDict
+2025-06-27T18:37:36.302Z
+END RequestId: 950b9c48-36b9-442c-9d8d-852c3eca41db
+
+END RequestId: 950b9c48-36b9-442c-9d8d-852c3eca41db
+
+
+
+voci mon code
+import json
+import sys
+import subprocess
+
+def lambda_handler(event, context):
+    reqs=[
+        "mlflow-skinny",
+        "databricks-cli",
+        "pandas",
+        "tabulate",
+        "databricks-sdk",
+        "wheel"
+    ]
+    # reqs=[
+    #     "mlflow-skinny",
+    #     "databricks-cli==0.18.0",
+    #     "pandas>=1.5.2",
+    #     "tabulate==0.9.0",
+    #     "databricks-sdk",
+    #     "wheel"
+    # ]
+
+    install_pip_dep(reqs)
+    sys.path.insert(1, '/tmp/')
+
+    from mlflow_export_import.copy.copy_model_version import copy
+
+    print_pip_deps('/tmp')
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Hello from Lambda!')
+    }
+
+
+def print_pip_deps(target):
+    subprocess.check_call([sys.executable, "-m", "pip", "freeze", "--path", target])
+
+
+def install_pip_dep(reqs_list):
+    for req in reqs_list:
+        base_cmd = [
+            sys.executable, "-m", "pip", "install", "-t", "/tmp", "--no-cache-dir", req, "--upgrade"
+        ]
+        subprocess.check_call(base_cmd)
