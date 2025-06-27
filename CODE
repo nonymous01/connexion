@@ -1,22 +1,350 @@
-def lambda_handler(event, context):
-    reqs=[
-        "mlflow-skinny",
-        "protobuf",  # <-- Ajouté ici
-        "databricks-cli",
-        "pandas",
-        "tabulate",
-        "databricks-sdk",
-        "wheel"
-    ]
-
-    install_pip_dep(reqs)
-    sys.path.insert(1, '/tmp/')
-
-    from mlflow_export_import.copy.copy_model_version import copy
-
-    print_pip_deps('/tmp')
-
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
-    }
+mlflow-skinny
+mlflow_skinny-3.1.1-py3-none-any.whl.metadata
+cachetools<7,>=5.0.0
+cachetools-6.1.0-py3-none-any.whl.metadata
+click<9,>=7.0 (from mlflow-skinny)
+click-8.2.1-py3-none-any.whl.metadata
+cloudpickle<4 (from mlflow-skinny)
+cloudpickle-3.1.1-py3-none-any.whl.metadata
+databricks-sdk<1,>=0.20.0 (from mlflow-skinny)
+databricks_sdk-0.57.0-py3-none-any.whl.metadata 
+fastapi<1 (from mlflow-skinny)
+ fastapi-0.115.14-py3-none-any.whl.metadata 
+gitpython<4,>=3.1.9
+GitPython-3.1.44-py3-none-any.whl.metadata
+importlib_metadata!=4.7.0,<9,>=3.7.0 (from mlflow-skinny)
+2025-06-27T18:42:30.589Z
+Downloading importlib_metadata-8.7.0-py3-none-any.whl.metadata (4.8 kB)
+2025-06-27T18:42:30.969Z
+Collecting opentelemetry-api<3,>=1.9.0 (from mlflow-skinny)
+2025-06-27T18:42:30.989Z
+Downloading opentelemetry_api-1.34.1-py3-none-any.whl.metadata (1.5 kB)
+2025-06-27T18:42:31.309Z
+Collecting opentelemetry-sdk<3,>=1.9.0 (from mlflow-skinny)
+2025-06-27T18:42:31.330Z
+Downloading opentelemetry_sdk-1.34.1-py3-none-any.whl.metadata (1.6 kB)
+2025-06-27T18:42:31.569Z
+Collecting packaging<26 (from mlflow-skinny)
+2025-06-27T18:42:31.609Z
+Downloading packaging-25.0-py3-none-any.whl.metadata (3.3 kB)
+2025-06-27T18:42:34.689Z
+Collecting protobuf<7,>=3.12.0 (from mlflow-skinny)
+2025-06-27T18:42:34.729Z
+Downloading protobuf-6.31.1-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+2025-06-27T18:42:36.769Z
+Collecting pydantic<3,>=1.10.8 (from mlflow-skinny)
+2025-06-27T18:42:36.773Z
+Downloading pydantic-2.11.7-py3-none-any.whl.metadata (67 kB)
+2025-06-27T18:42:37.391Z
+Collecting pyyaml<7,>=5.1 (from mlflow-skinny)
+2025-06-27T18:42:37.451Z
+Downloading PyYAML-6.0.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.1 kB)
+2025-06-27T18:42:37.889Z
+Collecting requests<3,>=2.17.3 (from mlflow-skinny)
+2025-06-27T18:42:37.929Z
+Downloading requests-2.32.4-py3-none-any.whl.metadata (4.9 kB)
+2025-06-27T18:42:38.072Z
+Collecting sqlparse<1,>=0.4.0 (from mlflow-skinny)
+2025-06-27T18:42:38.129Z
+Downloading sqlparse-0.5.3-py3-none-any.whl.metadata (3.9 kB)
+2025-06-27T18:42:38.370Z
+Collecting typing-extensions<5,>=4.0.0 (from mlflow-skinny)
+2025-06-27T18:42:38.409Z
+Downloading typing_extensions-4.14.0-py3-none-any.whl.metadata (3.0 kB)
+2025-06-27T18:42:38.829Z
+Collecting uvicorn<1 (from mlflow-skinny)
+2025-06-27T18:42:38.869Z
+Downloading uvicorn-0.34.3-py3-none-any.whl.metadata (6.5 kB)
+2025-06-27T18:42:39.851Z
+Collecting google-auth~=2.0 (from databricks-sdk<1,>=0.20.0->mlflow-skinny)
+2025-06-27T18:42:39.889Z
+Downloading google_auth-2.40.3-py2.py3-none-any.whl.metadata (6.2 kB)
+2025-06-27T18:42:40.490Z
+Collecting starlette<0.47.0,>=0.40.0 (from fastapi<1->mlflow-skinny)
+2025-06-27T18:42:40.529Z
+Downloading starlette-0.46.2-py3-none-any.whl.metadata (6.2 kB)
+2025-06-27T18:42:41.511Z
+Collecting gitdb<5,>=4.0.1 (from gitpython<4,>=3.1.9->mlflow-skinny)
+2025-06-27T18:42:41.571Z
+Downloading gitdb-4.0.12-py3-none-any.whl.metadata (1.2 kB)
+2025-06-27T18:42:41.690Z
+Collecting smmap<6,>=3.0.1 (from gitdb<5,>=4.0.1->gitpython<4,>=3.1.9->mlflow-skinny)
+2025-06-27T18:42:41.729Z
+Downloading smmap-5.0.2-py3-none-any.whl.metadata (4.3 kB)
+2025-06-27T18:42:41.910Z
+Collecting cachetools<7,>=5.0.0 (from mlflow-skinny)
+2025-06-27T18:42:41.949Z
+Downloading cachetools-5.5.2-py3-none-any.whl.metadata (5.4 kB)
+2025-06-27T18:42:42.191Z
+Collecting pyasn1-modules>=0.2.1 (from google-auth~=2.0->databricks-sdk<1,>=0.20.0->mlflow-skinny)
+2025-06-27T18:42:42.249Z
+Downloading pyasn1_modules-0.4.2-py3-none-any.whl.metadata (3.5 kB)
+2025-06-27T18:42:42.471Z
+Collecting rsa<5,>=3.1.4 (from google-auth~=2.0->databricks-sdk<1,>=0.20.0->mlflow-skinny)
+2025-06-27T18:42:42.531Z
+Downloading rsa-4.9.1-py3-none-any.whl.metadata (5.6 kB)
+2025-06-27T18:42:42.810Z
+Collecting zipp>=3.20 (from importlib_metadata!=4.7.0,<9,>=3.7.0->mlflow-skinny)
+2025-06-27T18:42:42.849Z
+Downloading zipp-3.23.0-py3-none-any.whl.metadata (3.6 kB)
+2025-06-27T18:42:43.652Z
+Collecting opentelemetry-semantic-conventions==0.55b1 (from opentelemetry-sdk<3,>=1.9.0->mlflow-skinny)
+2025-06-27T18:42:43.729Z
+Downloading opentelemetry_semantic_conventions-0.55b1-py3-none-any.whl.metadata (2.5 kB)
+2025-06-27T18:42:43.852Z
+Collecting annotated-types>=0.6.0 (from pydantic<3,>=1.10.8->mlflow-skinny)
+2025-06-27T18:42:43.912Z
+Downloading annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
+2025-06-27T18:42:55.010Z
+Collecting pydantic-core==2.33.2 (from pydantic<3,>=1.10.8->mlflow-skinny)
+2025-06-27T18:42:55.051Z
+Downloading pydantic_core-2.33.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
+2025-06-27T18:42:55.212Z
+Collecting typing-inspection>=0.4.0 (from pydantic<3,>=1.10.8->mlflow-skinny)
+2025-06-27T18:42:55.289Z
+Downloading typing_inspection-0.4.1-py3-none-any.whl.metadata (2.6 kB)
+2025-06-27T18:42:56.632Z
+Collecting charset_normalizer<4,>=2 (from requests<3,>=2.17.3->mlflow-skinny)
+2025-06-27T18:42:56.692Z
+Downloading charset_normalizer-3.4.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (35 kB)
+2025-06-27T18:42:56.910Z
+Collecting idna<4,>=2.5 (from requests<3,>=2.17.3->mlflow-skinny)
+2025-06-27T18:42:56.949Z
+Downloading idna-3.10-py3-none-any.whl.metadata (10 kB)
+2025-06-27T18:42:57.431Z
+Collecting urllib3<3,>=1.21.1 (from requests<3,>=2.17.3->mlflow-skinny)
+2025-06-27T18:42:57.469Z
+Downloading urllib3-2.5.0-py3-none-any.whl.metadata (6.5 kB)
+2025-06-27T18:42:58.610Z
+Collecting certifi>=2017.4.17 (from requests<3,>=2.17.3->mlflow-skinny)
+2025-06-27T18:42:58.652Z
+Downloading certifi-2025.6.15-py3-none-any.whl.metadata (2.4 kB)
+2025-06-27T18:42:59.011Z
+Collecting pyasn1>=0.1.3 (from rsa<5,>=3.1.4->google-auth~=2.0->databricks-sdk<1,>=0.20.0->mlflow-skinny)
+2025-06-27T18:42:59.074Z
+Downloading pyasn1-0.6.1-py3-none-any.whl.metadata (8.4 kB)
+2025-06-27T18:42:59.352Z
+Collecting anyio<5,>=3.6.2 (from starlette<0.47.0,>=0.40.0->fastapi<1->mlflow-skinny)
+2025-06-27T18:42:59.429Z
+Downloading anyio-4.9.0-py3-none-any.whl.metadata (4.7 kB)
+2025-06-27T18:42:59.648Z
+Collecting sniffio>=1.1 (from anyio<5,>=3.6.2->starlette<0.47.0,>=0.40.0->fastapi<1->mlflow-skinny)
+2025-06-27T18:42:59.689Z
+Downloading sniffio-1.3.1-py3-none-any.whl.metadata (3.9 kB)
+2025-06-27T18:42:59.869Z
+Collecting h11>=0.8 (from uvicorn<1->mlflow-skinny)
+2025-06-27T18:42:59.909Z
+Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+2025-06-27T18:43:00.309Z
+Downloading mlflow_skinny-3.1.1-py3-none-any.whl (1.9 MB)
+2025-06-27T18:43:00.429Z
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 40.8 MB/s eta 0:00:00
+2025-06-27T18:43:00.449Z
+Downloading click-8.2.1-py3-none-any.whl (102 kB)
+2025-06-27T18:43:00.490Z
+Downloading cloudpickle-3.1.1-py3-none-any.whl (20 kB)
+2025-06-27T18:43:00.529Z
+Downloading databricks_sdk-0.57.0-py3-none-any.whl (733 kB)
+2025-06-27T18:43:00.608Z
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 733.8/733.8 kB 562.3 MB/s eta 0:00:00
+2025-06-27T18:43:00.629Z
+Downloading fastapi-0.115.14-py3-none-any.whl (95 kB)
+2025-06-27T18:43:00.669Z
+Downloading GitPython-3.1.44-py3-none-any.whl (207 kB)
+2025-06-27T18:43:00.709Z
+Downloading gitdb-4.0.12-py3-none-any.whl (62 kB)
+2025-06-27T18:43:00.749Z
+Downloading google_auth-2.40.3-py2.py3-none-any.whl (216 kB)
+2025-06-27T18:43:00.789Z
+Downloading cachetools-5.5.2-py3-none-any.whl (10 kB)
+2025-06-27T18:43:00.809Z
+Downloading importlib_metadata-8.7.0-py3-none-any.whl (27 kB)
+2025-06-27T18:43:00.849Z
+Downloading opentelemetry_api-1.34.1-py3-none-any.whl (65 kB)
+2025-06-27T18:43:00.889Z
+Downloading opentelemetry_sdk-1.34.1-py3-none-any.whl (118 kB)
+2025-06-27T18:43:00.930Z
+Downloading opentelemetry_semantic_conventions-0.55b1-py3-none-any.whl (196 kB)
+2025-06-27T18:43:00.969Z
+Downloading packaging-25.0-py3-none-any.whl (66 kB)
+2025-06-27T18:43:00.990Z
+Downloading protobuf-6.31.1-cp39-abi3-manylinux2014_x86_64.whl (321 kB)
+2025-06-27T18:43:01.049Z
+Downloading pydantic-2.11.7-py3-none-any.whl (444 kB)
+2025-06-27T18:43:01.089Z
+Downloading pydantic_core-2.33.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.0 MB)
+2025-06-27T18:43:01.209Z
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 78.3 MB/s eta 0:00:00
+2025-06-27T18:43:01.249Z
+Downloading PyYAML-6.0.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (759 kB)
+2025-06-27T18:43:01.329Z
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 759.5/759.5 kB 25.1 MB/s eta 0:00:00
+2025-06-27T18:43:01.349Z
+Downloading requests-2.32.4-py3-none-any.whl (64 kB)
+2025-06-27T18:43:01.389Z
+Downloading charset_normalizer-3.4.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (148 kB)
+2025-06-27T18:43:01.429Z
+Downloading idna-3.10-py3-none-any.whl (70 kB)
+2025-06-27T18:43:01.469Z
+Downloading rsa-4.9.1-py3-none-any.whl (34 kB)
+2025-06-27T18:43:01.489Z
+Downloading smmap-5.0.2-py3-none-any.whl (24 kB)
+2025-06-27T18:43:01.529Z
+Downloading sqlparse-0.5.3-py3-none-any.whl (44 kB)
+2025-06-27T18:43:01.569Z
+Downloading starlette-0.46.2-py3-none-any.whl (72 kB)
+2025-06-27T18:43:01.609Z
+Downloading anyio-4.9.0-py3-none-any.whl (100 kB)
+2025-06-27T18:43:01.650Z
+Downloading typing_extensions-4.14.0-py3-none-any.whl (43 kB)
+2025-06-27T18:43:01.689Z
+Downloading urllib3-2.5.0-py3-none-any.whl (129 kB)
+2025-06-27T18:43:01.709Z
+Downloading uvicorn-0.34.3-py3-none-any.whl (62 kB)
+2025-06-27T18:43:01.749Z
+Downloading annotated_types-0.7.0-py3-none-any.whl (13 kB)
+2025-06-27T18:43:01.790Z
+Downloading certifi-2025.6.15-py3-none-any.whl (157 kB)
+2025-06-27T18:43:01.829Z
+Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+2025-06-27T18:43:01.870Z
+Downloading pyasn1-0.6.1-py3-none-any.whl (83 kB)
+2025-06-27T18:43:01.931Z
+Downloading pyasn1_modules-0.4.2-py3-none-any.whl (181 kB)
+2025-06-27T18:43:01.969Z
+Downloading sniffio-1.3.1-py3-none-any.whl (10 kB)
+2025-06-27T18:43:02.009Z
+Downloading typing_inspection-0.4.1-py3-none-any.whl (14 kB)
+2025-06-27T18:43:02.049Z
+Downloading zipp-3.23.0-py3-none-any.whl (10 kB)
+2025-06-27T18:43:04.592Z
+Installing collected packages: zipp, urllib3, typing-extensions, sqlparse, sniffio, smmap, pyyaml, pyasn1, protobuf, packaging, idna, h11, cloudpickle, click, charset_normalizer, certifi, cachetools, annotated-types, uvicorn, typing-inspection, rsa, requests, pydantic-core, pyasn1-modules, importlib_metadata, gitdb, anyio, starlette, pydantic, opentelemetry-api, google-auth, gitpython, opentelemetry-semantic-conventions, fastapi, databricks-sdk, opentelemetry-sdk, mlflow-skinny
+2025-06-27T18:44:25.809Z
+Successfully installed annotated-types-0.7.0 anyio-4.9.0 cachetools-5.5.2 certifi-2025.6.15 charset_normalizer-3.4.2 click-8.2.1 cloudpickle-3.1.1 databricks-sdk-0.57.0 fastapi-0.115.14 gitdb-4.0.12 gitpython-3.1.44 google-auth-2.40.3 h11-0.16.0 idna-3.10 importlib_metadata-8.7.0 mlflow-skinny-3.1.1 opentelemetry-api-1.34.1 opentelemetry-sdk-1.34.1 opentelemetry-semantic-conventions-0.55b1 packaging-25.0 protobuf-6.31.1 pyasn1-0.6.1 pyasn1-modules-0.4.2 pydantic-2.11.7 pydantic-core-2.33.2 pyyaml-6.0.2 requests-2.32.4 rsa-4.9.1 smmap-5.0.2 sniffio-1.3.1 sqlparse-0.5.3 starlette-0.46.2 typing-extensions-4.14.0 typing-inspection-0.4.1 urllib3-2.5.0 uvicorn-0.34.3 zipp-3.23.0
+2025-06-27T18:44:43.491Z
+Collecting databricks-cli
+2025-06-27T18:44:43.870Z
+Downloading databricks_cli-0.18.0-py2.py3-none-any.whl.metadata (4.0 kB)
+2025-06-27T18:44:44.151Z
+Collecting click>=7.0 (from databricks-cli)
+2025-06-27T18:44:44.209Z
+Downloading click-8.2.1-py3-none-any.whl.metadata (2.5 kB)
+2025-06-27T18:44:44.412Z
+Collecting pyjwt>=1.7.0 (from databricks-cli)
+2025-06-27T18:44:44.471Z
+Downloading PyJWT-2.10.1-py3-none-any.whl.metadata (4.0 kB)
+2025-06-27T18:44:44.690Z
+Collecting oauthlib>=3.1.0 (from databricks-cli)
+2025-06-27T18:44:44.729Z
+Downloading oauthlib-3.3.1-py3-none-any.whl.metadata (7.9 kB)
+2025-06-27T18:44:45.130Z
+Collecting requests>=2.17.3 (from databricks-cli)
+2025-06-27T18:44:45.169Z
+Downloading requests-2.32.4-py3-none-any.whl.metadata (4.9 kB)
+2025-06-27T18:44:45.310Z
+Collecting tabulate>=0.7.7 (from databricks-cli)
+2025-06-27T18:44:45.369Z
+Downloading tabulate-0.9.0-py3-none-any.whl.metadata (34 kB)
+2025-06-27T18:44:45.608Z
+Collecting six>=1.10.0 (from databricks-cli)
+2025-06-27T18:44:45.629Z
+Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+2025-06-27T18:44:45.952Z
+Collecting urllib3<3,>=1.26.7 (from databricks-cli)
+2025-06-27T18:44:46.029Z
+Downloading urllib3-2.5.0-py3-none-any.whl.metadata (6.5 kB)
+2025-06-27T18:44:47.411Z
+Collecting charset_normalizer<4,>=2 (from requests>=2.17.3->databricks-cli)
+2025-06-27T18:44:47.471Z
+Downloading charset_normalizer-3.4.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (35 kB)
+2025-06-27T18:44:47.709Z
+Collecting idna<4,>=2.5 (from requests>=2.17.3->databricks-cli)
+2025-06-27T18:44:47.749Z
+Downloading idna-3.10-py3-none-any.whl.metadata (10 kB)
+2025-06-27T18:44:48.189Z
+Collecting certifi>=2017.4.17 (from requests>=2.17.3->databricks-cli)
+2025-06-27T18:44:48.228Z
+Downloading certifi-2025.6.15-py3-none-any.whl.metadata (2.4 kB)
+2025-06-27T18:44:48.349Z
+Downloading databricks_cli-0.18.0-py2.py3-none-any.whl (150 kB)
+2025-06-27T18:44:48.389Z
+Downloading urllib3-2.5.0-py3-none-any.whl (129 kB)
+2025-06-27T18:44:48.429Z
+Downloading click-8.2.1-py3-none-any.whl (102 kB)
+2025-06-27T18:44:48.469Z
+Downloading oauthlib-3.3.1-py3-none-any.whl (160 kB)
+2025-06-27T18:44:48.489Z
+Downloading PyJWT-2.10.1-py3-none-any.whl (22 kB)
+2025-06-27T18:44:48.529Z
+Downloading requests-2.32.4-py3-none-any.whl (64 kB)
+2025-06-27T18:44:48.569Z
+Downloading charset_normalizer-3.4.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (148 kB)
+2025-06-27T18:44:48.609Z
+Downloading idna-3.10-py3-none-any.whl (70 kB)
+2025-06-27T18:44:48.649Z
+Downloading certifi-2025.6.15-py3-none-any.whl (157 kB)
+2025-06-27T18:44:48.669Z
+Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+2025-06-27T18:44:48.709Z
+Downloading tabulate-0.9.0-py3-none-any.whl (35 kB)
+2025-06-27T18:44:49.609Z
+Installing collected packages: urllib3, tabulate, six, pyjwt, oauthlib, idna, click, charset_normalizer, certifi, requests, databricks-cli
+2025-06-27T18:44:59.851Z
+Successfully installed certifi-2025.6.15 charset_normalizer-3.4.2 click-8.2.1 databricks-cli-0.18.0 idna-3.10 oauthlib-3.3.1 pyjwt-2.10.1 requests-2.32.4 six-1.17.0 tabulate-0.9.0 urllib3-2.5.0
+2025-06-27T18:45:12.730Z
+Collecting protobuf
+2025-06-27T18:45:13.090Z
+Downloading protobuf-6.31.1-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+2025-06-27T18:45:13.169Z
+Downloading protobuf-6.31.1-cp39-abi3-manylinux2014_x86_64.whl (321 kB)
+2025-06-27T18:45:13.552Z
+Installing collected packages: protobuf
+2025-06-27T18:45:16.130Z
+Successfully installed protobuf-6.31.1
+2025-06-27T18:45:27.731Z
+Collecting pandas
+2025-06-27T18:45:28.110Z
+Downloading pandas-2.3.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (91 kB)
+2025-06-27T18:45:31.952Z
+Collecting numpy>=1.26.0 (from pandas)
+2025-06-27T18:45:32.029Z
+Downloading numpy-2.3.1-cp313-cp313-manylinux_2_28_x86_64.whl.metadata (62 kB)
+2025-06-27T18:45:32.408Z
+Collecting python-dateutil>=2.8.2 (from pandas)
+2025-06-27T18:45:32.429Z
+Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+2025-06-27T18:45:33.051Z
+Collecting pytz>=2020.1 (from pandas)
+2025-06-27T18:45:33.109Z
+Downloading pytz-2025.2-py2.py3-none-any.whl.metadata (22 kB)
+2025-06-27T18:45:33.309Z
+Collecting tzdata>=2022.7 (from pandas)
+2025-06-27T18:45:33.349Z
+Downloading tzdata-2025.2-py2.py3-none-any.whl.metadata (1.4 kB)
+2025-06-27T18:45:33.492Z
+Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas)
+2025-06-27T18:45:33.569Z
+Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+2025-06-27T18:45:33.649Z
+Downloading pandas-2.3.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.0 MB)
+2025-06-27T18:45:34.089Z
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.0/12.0 MB 32.7 MB/s eta 0:00:00
+2025-06-27T18:45:34.109Z
+Downloading numpy-2.3.1-cp313-cp313-manylinux_2_28_x86_64.whl (16.6 MB)
+2025-06-27T18:45:34.632Z
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 32.7 MB/s eta 0:00:00
+2025-06-27T18:45:34.709Z
+Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+2025-06-27T18:45:34.749Z
+Downloading pytz-2025.2-py2.py3-none-any.whl (509 kB)
+2025-06-27T18:45:34.809Z
+Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+2025-06-27T18:45:34.849Z
+Downloading tzdata-2025.2-py2.py3-none-any.whl (347 kB)
+2025-06-27T18:45:37.570Z
+Installing collected packages: pytz, tzdata, six, numpy, python-dateutil, pandas
+No newer events at this moment. 
+Auto retry paused.
+ 
+Resume
+ 
