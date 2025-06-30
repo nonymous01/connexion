@@ -1,4 +1,3 @@
-tu vois mon model_function.py
 import ast
 import json
 import traceback
@@ -7,13 +6,48 @@ from dateutil.relativedelta import relativedelta
 
 import time
 import logging
+import sys
+import subprocess
 
+# Setup logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# 1. Installer les dépendances dynamiquement dans /tmp
+def install_pip_dep(reqs_list):
+    for req in reqs_list:
+        base_cmd = [
+            sys.executable, "-m", "pip", "install", "-t", "/tmp", "--no-cache-dir", req, "--upgrade"
+        ]
+        subprocess.check_call(base_cmd)
+
+# 2. Voir ce qui a été installé (debug)
+def print_pip_deps(target):
+    subprocess.check_call([sys.executable, "-m", "pip", "freeze", "--path", target])
+
+# 3. Dépendances nécessaires
+PIP_REQUIREMENTS = [
+    "mlflow-skinny",
+    "databricks-cli",
+    "protobuf",
+    "pandas",
+    "tabulate",
+    "databricks-sdk",
+    "wheel"
+]
+
+# 4. Appel initial avant les imports utils personnalisés
+try:
+    install_pip_dep(PIP_REQUIREMENTS)
+    sys.path.insert(1, '/tmp')
+    print_pip_deps('/tmp')
+except Exception as e:
+    logger.error("Erreur lors de l'installation dynamique des dépendances", exc_info=True)
+
+# 5. Import après ajout du /tmp au path
 import utils.dispatcher_helper as dispatcher_helper
 import utils.databricks_model_registry_helper as databricks_model_registry_helper
 import utils.databricks_pipeline_helper as databricks_pipeline_helper
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
 
 def promote_model_registration(client_parameters: dict, deployment_parameters: dict):
@@ -108,11 +142,8 @@ def get_latest_model_registration(client_parameters: dict, deployment_parameters
 
         if model_version_response:
             result["model_version"] = model_version_response["version"]
-
             result["model_stage"] = model_version_response["current_stage"]
-
             result["model_source"] = model_version_response["source"]
-
         else:
             result["model_version"] = 0
 
@@ -139,53 +170,3 @@ def lambda_handler(event, context):
     logger.info(f"handler completed in {duration:3f} seconds")
 
     return result
-
-
-je veux ajouter cette partie dans le code il dois installer des dependance dans le pip install et continuer avec mon code qui existe en haut
-
-import json
-import sys
-import subprocess
-
-def lambda_handler(event, context):
-    reqs=[
-        "mlflow-skinny",
-        "databricks-cli",
-        "protobuf",
-        "pandas",
-        "tabulate",
-        "databricks-sdk",
-        "wheel"
-    ]
-    # reqs=[
-    #     "mlflow-skinny",
-    #     "databricks-cli==0.18.0",
-    #     "pandas>=1.5.2",
-    #     "tabulate==0.9.0",
-    #     "databricks-sdk",
-    #     "wheel"
-    # ]
-
-    install_pip_dep(reqs)
-    sys.path.insert(1, '/tmp/')
-
-    from mlflow_export_import.copy.copy_model_version import copy
-
-    print_pip_deps('/tmp')
-
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
-    }
-
-
-def print_pip_deps(target):
-    subprocess.check_call([sys.executable, "-m", "pip", "freeze", "--path", target])
-
-
-def install_pip_dep(reqs_list):
-    for req in reqs_list:
-        base_cmd = [
-            sys.executable, "-m", "pip", "install", "-t", "/tmp", "--no-cache-dir", req, "--upgrade"
-        ]
-        subprocess.check_call(base_cmd)
