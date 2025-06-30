@@ -1,24 +1,35 @@
-def _get_request_context_authorizer(event: dict) -> dict:
-    """
-    Tries to get the authorizer from the request context in the event.
-    If not present (e.g., invoked manually), returns a default authorizer.
-    """
-    node = event.get("context", event)
-    
-    request_context = node.get("requestContext")
-    if not request_context:
-        logger.warning(" No requestContext provided — assuming direct Lambda invocation.")
-        return {
-            "principalId": "anonymous",
-            "claims": {}
-        }
+Status: Failed
+Test Event Name: test
 
-    authorizer = request_context.get("authorizer")
-    if not authorizer:
-        logger.warning(" No authorizer found in requestContext — using default.")
-        return {
-            "principalId": "anonymous",
-            "claims": {}
-        }
+Response:
+{
+  "errorMessage": "'workspace_name'",
+  "errorType": "KeyError",
+  "requestId": "262ab943-3494-4ed3-9a4d-e808fd089410",
+  "stackTrace": [
+    "  File \"/var/task/model_function.py\", line 136, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 149, in dispatch_method\n    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 118, in _get_deployment_params\n    deployment_params['deployment_workspace_name'] = params['workspace_name']\n"
+  ]
+}
 
-    return authorizer
+Function Logs:
+[INFO]	2025-06-30T17:40:28.048Z		Found credentials in environment variables.
+START RequestId: 262ab943-3494-4ed3-9a4d-e808fd089410 Version: $LATEST
+[INFO]	2025-06-30T17:40:28.448Z	262ab943-3494-4ed3-9a4d-e808fd089410	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev'}
+[WARNING]	2025-06-30T17:40:28.448Z	262ab943-3494-4ed3-9a4d-e808fd089410	 No requestContext provided — assuming direct Lambda invocation.
+[INFO]	2025-06-30T17:40:28.448Z	262ab943-3494-4ed3-9a4d-e808fd089410	authorizer={'principalId': 'anonymous', 'claims': {}}
+[INFO]	2025-06-30T17:40:28.448Z	262ab943-3494-4ed3-9a4d-e808fd089410	Enriched_ _params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev', 'principalId': 'anonymous', 'claims': {}}
+[INFO]	2025-06-30T17:40:28.448Z	262ab943-3494-4ed3-9a4d-e808fd089410	####### DWS0004069
+[ERROR] KeyError: 'workspace_name'
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 136, in lambda_handler
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+  File "/var/task/utils/dispatcher_helper.py", line 149, in dispatch_method
+    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)
+  File "/var/task/utils/dispatcher_helper.py", line 118, in _get_deployment_params
+    deployment_params['deployment_workspace_name'] = params['workspace_name']
+END RequestId: 262ab943-3494-4ed3-9a4d-e808fd089410
+REPORT RequestId: 262ab943-3494-4ed3-9a4d-e808fd089410	Duration: 2.77 ms	Billed Duration: 3 ms	Memory Size: 1024 MB	Max Memory Used: 119 MB	Init Duration: 2170.84 ms
+
+Request ID: 262ab943-3494-4ed3-9a4d-e808fd089410
