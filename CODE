@@ -1,1 +1,25 @@
-https://eu-west-1.console.aws.amazon.com/cloudformation/home
+2025-06-30T11:42:46.837Z
+START RequestId: 15163d82-a165-4152-a7ef-88640cc4f2b6 Version: $LATEST
+
+START RequestId: 15163d82-a165-4152-a7ef-88640cc4f2b6 Version: $LATEST
+2025-06-30T11:42:46.846Z
+[INFO]	2025-06-30T11:42:46.846Z	15163d82-a165-4152-a7ef-88640cc4f2b6	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry'}
+
+[INFO] 2025-06-30T11:42:46.846Z 15163d82-a165-4152-a7ef-88640cc4f2b6 Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry'}
+2025-06-30T11:42:46.847Z
+[ERROR] RuntimeError: Invalid event, no requestContext provided
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 166, in lambda_handler
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
+    authorizer = _get_request_context_authorizer(event)
+  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
+    raise RuntimeError("Invalid event, no requestContext provided")
+
+[ERROR] RuntimeError: Invalid event, no requestContext provided Traceback (most recent call last):   File "/var/task/model_function.py", line 166, in lambda_handler     result = dispatcher_helper.dispatch_method(dispatch_table, event)   File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method     authorizer = _get_request_context_authorizer(event)   File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer     raise RuntimeError("Invalid event, no requestContext provided")
+2025-06-30T11:42:46.849Z
+END RequestId: 15163d82-a165-4152-a7ef-88640cc4f2b6
+
+END RequestId: 15163d82-a165-4152-a7ef-88640cc4f2b6
+2025-06-30T11:42:46.849Z
+REPORT RequestId: 15163d82-a165-4152-a7ef-88640cc4f2b6	Duration: 53855.29 ms	Billed Duration: 53856 ms	Memory Size: 1024 MB	Max Memory Used: 452 MB	
