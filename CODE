@@ -1,25 +1,144 @@
-2025-06-30T11:42:46.837Z
-START RequestId: 15163d82-a165-4152-a7ef-88640cc4f2b6 Version: $LATEST
+voici mon dispache
 
-START RequestId: 15163d82-a165-4152-a7ef-88640cc4f2b6 Version: $LATEST
-2025-06-30T11:42:46.846Z
-[INFO]	2025-06-30T11:42:46.846Z	15163d82-a165-4152-a7ef-88640cc4f2b6	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry'}
 
-[INFO] 2025-06-30T11:42:46.846Z 15163d82-a165-4152-a7ef-88640cc4f2b6 Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry'}
-2025-06-30T11:42:46.847Z
-[ERROR] RuntimeError: Invalid event, no requestContext provided
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 166, in lambda_handler
-    result = dispatcher_helper.dispatch_method(dispatch_table, event)
-  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
+import base64
+import json
+import logging
+import traceback
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+DEPLOYMENT_PREFIX = "deployment_"
+
+def _check_input_params(invokation_params, expected_keys):
+    if not all(k in invokation_params for k in expected_keys):
+        raise RuntimeError(f"Invalid input params, expected keys={expected_keys}")
+
+
+def _create_response(result: dict) -> dict:
+    """
+    Creates the response object.
+
+    Args:
+    - result: The result of the operation.
+
+    Returns:
+    - The response object.
+    """
+    r = result
+    return {
+        "statusCode": 200 if isinstance(r, str) or r["success"] else 500,
+        "isBase64Encoded": False,
+        "headers": {"Content-Type": "application/json"},
+        "body": json.dumps(r, default=str),
+    }
+
+
+def _get_request_context_authorizer(event: dict) -> dict:
+    """
+    Gets the authorizer from the request context in the event.
+
+    Args:
+    - event: The event object.
+
+    Returns:
+    - The authorizer from the request context.
+    """
+    node = event["context"] if "context" in event else event
+    if "requestContext" not in node:
+        raise RuntimeError("Invalid event, no requestContext provided")
+    requestContext = node["requestContext"]
+
+    if "authorizer" not in requestContext:
+        raise RuntimeError("Invalid requestContext, no authorizer provided")
+    return requestContext["authorizer"]
+
+
+def _get_params(event: dict) -> dict:
+    """
+    Gets the parameters from the event.
+
+    Args:
+    - event: The event object.
+
+    Returns:
+    - The parameters.
+    """
+    if "body" not in event:
+        if "body-json" not in event:
+            return event
+    body = event["body"] if "body" in event else event["body-json"]
+    try:
+        body = base64.b64decode(body, validate=True)
+    except:
+        pass
+    logger.info(f"Calculated 'body'={body}")
+    if body==None or body=={}:
+        return {}
+    return body if isinstance(body, dict) else json.loads(body)
+
+def _get_deployment_params(params: dict, prefix: str) -> tuple:
+
+    deployment_params = {}
+    client_params = {}
+    logger.info(f"####### {params['workspace_id']}")
+    for param in params:
+
+        if param.startswith(prefix):
+            deployment_params[param] = params[param]
+        else:
+            client_params[param] = params[param]            
+
+        #Adding workspace id and workspace name into deployment parameters
+        
+        deployment_params['deployment_workspace_id'] = params['workspace_id']
+        
+        deployment_params['deployment_workspace_name'] = params['workspace_name']
+
+    return client_params, deployment_params
+
+
+def dispatch_method(dispatch_table: dict, event: dict) -> dict:
+    """
+    Dispatches the method based on the action in the invocation parameters.
+
+    Args:
+    - invokation_params: The invocation parameters.
+
+    Returns:
+    - The response from the dispatched method.
+    """
+
+    DISPATCH_TABLE = dispatch_table
+
+    invokation_params = _get_params(event)
+
+    if invokation_params is None or len(invokation_params) == 0:
+        raise RuntimeError("Invalid input params, event={event}")
+
+    logger.info(f"Invokation params: {invokation_params}")
+
     authorizer = _get_request_context_authorizer(event)
-  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
-    raise RuntimeError("Invalid event, no requestContext provided")
+    logger.info(f"{authorizer=}")
+    invokation_params |= authorizer
 
-[ERROR] RuntimeError: Invalid event, no requestContext provided Traceback (most recent call last):   File "/var/task/model_function.py", line 166, in lambda_handler     result = dispatcher_helper.dispatch_method(dispatch_table, event)   File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method     authorizer = _get_request_context_authorizer(event)   File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer     raise RuntimeError("Invalid event, no requestContext provided")
-2025-06-30T11:42:46.849Z
-END RequestId: 15163d82-a165-4152-a7ef-88640cc4f2b6
+    logger.info(f"Enriched_ _params: {invokation_params}")
 
-END RequestId: 15163d82-a165-4152-a7ef-88640cc4f2b6
-2025-06-30T11:42:46.849Z
-REPORT RequestId: 15163d82-a165-4152-a7ef-88640cc4f2b6	Duration: 53855.29 ms	Billed Duration: 53856 ms	Memory Size: 1024 MB	Max Memory Used: 452 MB	
+    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)
+
+    logger.info(f"deployment_parameters : {deployment_parameters}")
+    logger.info(f"client_parameters : {client_parameters}")
+
+    result = {}
+    try:
+        _check_input_params(client_parameters, ["action", "workspace_id"])
+        action = client_parameters["action"]
+        result = DISPATCH_TABLE[action](client_parameters, deployment_parameters)
+
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        result["success"] = False
+        result["error"] = repr(e)
+    logger.info(f"Finished dispatch with result={result}")
+    return _create_response(result)
