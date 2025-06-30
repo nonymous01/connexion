@@ -1,47 +1,191 @@
-mlflow-skinny==3.1.1
-protobuf==6.31.1
-databricks-cli==0.18.0
-databricks-sdk==0.57.0
-pandas==2.3.0
-tabulate==0.9.0
-wheel
-click==8.2.1
-cloudpickle==3.1.1
-fastapi==0.115.14
-GitPython==3.1.44
-importlib_metadata==8.7.0
-opentelemetry-api==1.34.1
-opentelemetry-sdk==1.34.1
-opentelemetry-semantic-conventions==0.55b1
-packaging==25.0
-pydantic==2.11.7
-pydantic-core==2.33.2
-pyyaml==6.0.2
-requests==2.32.4
-sqlparse==0.5.3
-typing-extensions==4.14.0
-uvicorn==0.34.3
-starlette==0.46.2
-google-auth==2.40.3
-gitdb==4.0.12
-smmap==5.0.2
-zipp==3.23.0
-annotated-types==0.7.0
-typing-inspection==0.4.1
-anyio==4.9.0
-sniffio==1.3.1
-h11==0.16.0
-pyasn1==0.6.1
-pyasn1-modules==0.4.2
-rsa==4.9.1
-certifi==2025.6.15
-charset-normalizer==3.4.2
-idna==3.10
-urllib3==2.5.0
-pyjwt==2.10.1
-oauthlib==3.3.1
-six==1.17.0
-numpy==2.3.1
-python-dateutil==2.9.0.post0
-pytz==2025.2
-tzdata==2025.2
+tu vois mon model_function.py
+import ast
+import json
+import traceback
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
+import time
+import logging
+
+import utils.dispatcher_helper as dispatcher_helper
+import utils.databricks_model_registry_helper as databricks_model_registry_helper
+import utils.databricks_pipeline_helper as databricks_pipeline_helper
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+
+def promote_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    model_name = client_parameters["model_name"]
+    model_version = client_parameters["model_version"]
+    model_source = client_parameters["model_source"]
+
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
+
+        response = databricks_model_registry_helper.promote_model_registration(
+            model_name, model_version, model_source
+        )
+
+        if response is not None:
+            if "message" in response:
+                result["message"] = response["message"]
+                result["success"] = False
+            else:
+                result["success"] = True
+
+    except Exception as e:
+        logger.error(f"Error promoting model", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
+
+    return result
+
+
+def describe_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    print("# Describe model")
+
+    model_name = client_parameters["model_name"]
+    model_version = client_parameters["model_version"]
+
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
+
+        model_version_response = (
+            databricks_model_registry_helper.get_model_registration(
+                model_name, model_version
+            )
+        )
+
+        if model_version_response:
+            if model_version_response["status"] == "READY":
+                result["status"] = "AVAILABLE"
+            else:
+                result["status"] = "UNAVAILABLE"
+
+            result["model_name"] = model_name
+            result["model_version"] = model_version
+            result["model_source"] = model_version_response["source"]
+            result["model_stage"] = model_version_response["current_stage"]
+
+            result["success"] = True
+
+        else:
+            result["success"] = False
+            result["error"] = (
+                f"Model {model_name} and {model_version} is not registered"
+            )
+
+    except Exception as e:
+        logger.error(f"Error retrieving model information", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
+
+    return result
+
+
+def get_latest_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    print("# Get model registration")
+
+    model_name = client_parameters["model_name"]
+
+    stage = client_parameters.get("stage")
+
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
+
+        result["model_name"] = model_name
+
+        model_version_response = (
+            databricks_model_registry_helper.get_latest_model_registration(
+                model_name, stage
+            )
+        )
+
+        if model_version_response:
+            result["model_version"] = model_version_response["version"]
+
+            result["model_stage"] = model_version_response["current_stage"]
+
+            result["model_source"] = model_version_response["source"]
+
+        else:
+            result["model_version"] = 0
+
+        result["success"] = True
+
+    except Exception as e:
+        logger.error(f"Error retrieving model information", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
+
+    return result
+
+
+def lambda_handler(event, context):
+    start = time.perf_counter()
+    dispatch_table = {
+        "describe_model_registry": describe_model_registration,
+        "get_latest_model_registration": get_latest_model_registration,
+        "promote_model_registration": promote_model_registration,
+    }
+
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+    duration = time.perf_counter() - start
+    logger.info(f"handler completed in {duration:3f} seconds")
+
+    return result
+
+
+je veux ajouter cette partie dans le code il dois installer des dependance dans le pip install et continuer avec mon code qui existe en haut
+
+import json
+import sys
+import subprocess
+
+def lambda_handler(event, context):
+    reqs=[
+        "mlflow-skinny",
+        "databricks-cli",
+        "protobuf",
+        "pandas",
+        "tabulate",
+        "databricks-sdk",
+        "wheel"
+    ]
+    # reqs=[
+    #     "mlflow-skinny",
+    #     "databricks-cli==0.18.0",
+    #     "pandas>=1.5.2",
+    #     "tabulate==0.9.0",
+    #     "databricks-sdk",
+    #     "wheel"
+    # ]
+
+    install_pip_dep(reqs)
+    sys.path.insert(1, '/tmp/')
+
+    from mlflow_export_import.copy.copy_model_version import copy
+
+    print_pip_deps('/tmp')
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Hello from Lambda!')
+    }
+
+
+def print_pip_deps(target):
+    subprocess.check_call([sys.executable, "-m", "pip", "freeze", "--path", target])
+
+
+def install_pip_dep(reqs_list):
+    for req in reqs_list:
+        base_cmd = [
+            sys.executable, "-m", "pip", "install", "-t", "/tmp", "--no-cache-dir", req, "--upgrade"
+        ]
+        subprocess.check_call(base_cmd)
