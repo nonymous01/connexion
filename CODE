@@ -9,11 +9,13 @@ import logging
 import sys
 import subprocess
 
-# Setup logging
+import utils.dispatcher_helper as dispatcher_helper
+import utils.databricks_model_registry_helper as databricks_model_registry_helper
+import utils.databricks_pipeline_helper as databricks_pipeline_helper
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-# 1. Installer les dépendances dynamiquement dans /tmp
 def install_pip_dep(reqs_list):
     for req in reqs_list:
         base_cmd = [
@@ -21,11 +23,10 @@ def install_pip_dep(reqs_list):
         ]
         subprocess.check_call(base_cmd)
 
-# 2. Voir ce qui a été installé (debug)
 def print_pip_deps(target):
     subprocess.check_call([sys.executable, "-m", "pip", "freeze", "--path", target])
 
-# 3. Dépendances nécessaires
+
 PIP_REQUIREMENTS = [
     "mlflow-skinny",
     "databricks-cli",
@@ -36,18 +37,12 @@ PIP_REQUIREMENTS = [
     "wheel"
 ]
 
-# 4. Appel initial avant les imports utils personnalisés
 try:
     install_pip_dep(PIP_REQUIREMENTS)
     sys.path.insert(1, '/tmp')
     print_pip_deps('/tmp')
 except Exception as e:
-    logger.error("Erreur lors de l'installation dynamique des dépendances", exc_info=True)
-
-# 5. Import après ajout du /tmp au path
-import utils.dispatcher_helper as dispatcher_helper
-import utils.databricks_model_registry_helper as databricks_model_registry_helper
-import utils.databricks_pipeline_helper as databricks_pipeline_helper
+    logger.error("Error installations dependencices", exc_info=True)
 
 
 def promote_model_registration(client_parameters: dict, deployment_parameters: dict):
@@ -142,8 +137,11 @@ def get_latest_model_registration(client_parameters: dict, deployment_parameters
 
         if model_version_response:
             result["model_version"] = model_version_response["version"]
+
             result["model_stage"] = model_version_response["current_stage"]
+
             result["model_source"] = model_version_response["source"]
+
         else:
             result["model_version"] = 0
 
