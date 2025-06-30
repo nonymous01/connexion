@@ -1,141 +1,24 @@
-import base64
-import json
-import logging
-import traceback
-
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-DEPLOYMENT_PREFIX = "deployment_"
-
-def _check_input_params(invokation_params, expected_keys):
-    if not all(k in invokation_params for k in expected_keys):
-        raise RuntimeError(f"Invalid input params, expected keys={expected_keys}")
-
-
-def _create_response(result: dict) -> dict:
-    """
-    Creates the response object.
-
-    Args:
-    - result: The result of the operation.
-
-    Returns:
-    - The response object.
-    """
-    r = result
-    return {
-        "statusCode": 200 if isinstance(r, str) or r["success"] else 500,
-        "isBase64Encoded": False,
-        "headers": {"Content-Type": "application/json"},
-        "body": json.dumps(r, default=str),
-    }
-
-
 def _get_request_context_authorizer(event: dict) -> dict:
     """
-    Gets the authorizer from the request context in the event.
-
-    Args:
-    - event: The event object.
-
-    Returns:
-    - The authorizer from the request context.
+    Tries to get the authorizer from the request context in the event.
+    If not present (e.g., invoked manually), returns a default authorizer.
     """
-    node = event["context"] if "context" in event else event
-    if "requestContext" not in node:
-        raise RuntimeError("Invalid event, no requestContext provided")
-    requestContext = node["requestContext"]
+    node = event.get("context", event)
+    
+    request_context = node.get("requestContext")
+    if not request_context:
+        logger.warning(" No requestContext provided — assuming direct Lambda invocation.")
+        return {
+            "principalId": "anonymous",
+            "claims": {}
+        }
 
-    if "authorizer" not in requestContext:
-        raise RuntimeError("Invalid requestContext, no authorizer provided")
-    return requestContext["authorizer"]
+    authorizer = request_context.get("authorizer")
+    if not authorizer:
+        logger.warning(" No authorizer found in requestContext — using default.")
+        return {
+            "principalId": "anonymous",
+            "claims": {}
+        }
 
-
-def _get_params(event: dict) -> dict:
-    """
-    Gets the parameters from the event.
-
-    Args:
-    - event: The event object.
-
-    Returns:
-    - The parameters.
-    """
-    if "body" not in event:
-        if "body-json" not in event:
-            return event
-    body = event["body"] if "body" in event else event["body-json"]
-    try:
-        body = base64.b64decode(body, validate=True)
-    except:
-        pass
-    logger.info(f"Calculated 'body'={body}")
-    if body==None or body=={}:
-        return {}
-    return body if isinstance(body, dict) else json.loads(body)
-
-def _get_deployment_params(params: dict, prefix: str) -> tuple:
-
-    deployment_params = {}
-    client_params = {}
-    logger.info(f"####### {params['workspace_id']}")
-    for param in params:
-
-        if param.startswith(prefix):
-            deployment_params[param] = params[param]
-        else:
-            client_params[param] = params[param]            
-
-        #Adding workspace id and workspace name into deployment parameters
-        
-        deployment_params['deployment_workspace_id'] = params['workspace_id']
-        
-        deployment_params['deployment_workspace_name'] = params['workspace_name']
-
-    return client_params, deployment_params
-
-
-def dispatch_method(dispatch_table: dict, event: dict) -> dict:
-    """
-    Dispatches the method based on the action in the invocation parameters.
-
-    Args:
-    - invokation_params: The invocation parameters.
-
-    Returns:
-    - The response from the dispatched method.
-    """
-
-    DISPATCH_TABLE = dispatch_table
-
-    invokation_params = _get_params(event)
-
-    if invokation_params is None or len(invokation_params) == 0:
-        raise RuntimeError("Invalid input params, event={event}")
-
-    logger.info(f"Invokation params: {invokation_params}")
-
-    authorizer = _get_request_context_authorizer(event)
-    logger.info(f"{authorizer=}")
-    invokation_params |= authorizer
-
-    logger.info(f"Enriched_ _params: {invokation_params}")
-
-    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)
-
-    logger.info(f"deployment_parameters : {deployment_parameters}")
-    logger.info(f"client_parameters : {client_parameters}")
-
-    result = {}
-    try:
-        _check_input_params(client_parameters, ["action", "workspace_id"])
-        action = client_parameters["action"]
-        result = DISPATCH_TABLE[action](client_parameters, deployment_parameters)
-
-    except Exception as e:
-        logger.error(traceback.format_exc())
-        result["success"] = False
-        result["error"] = repr(e)
-    logger.info(f"Finished dispatch with result={result}")
-    return _create_response(result)
+    return authorizer
