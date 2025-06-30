@@ -1,11 +1,14 @@
-import logging
-logger = logging.getLogger(__name__)
+ERROR] KeyError: 'workspace_id'
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 166, in lambda_handler
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+  File "/var/task/utils/dispatcher_helper.py", line 132, in dispatch_method
+    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)
+  File "/var/task/utils/dispatcher_helper.py", line 89, in _get_deployment_params
+    logger.info(f"####### {params['workspace_id']}")
 
-def _get_request_context_authorizer(event):
-    if "requestContext" not in event:
-        logger.warning("⚠️ No requestContext provided. Assuming non-API Gateway invocation.")
-        return {
-            "principalId": "anonymous",
-            "claims": {}
-        }
-    return event["requestContext"].get("authorizer", {})
+[ERROR] KeyError: 'workspace_id' Traceback (most recent call last):   File "/var/task/model_function.py", line 166, in lambda_handler     result = dispatcher_helper.dispatch_method(dispatch_table, event)   File "/var/task/utils/dispatcher_helper.py", line 132, in dispatch_method     client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)   File "/var/task/utils/dispatcher_helper.py", line 89, in _get_deployment_params     logger.info(f"####### {params['workspace_id']}")
+2025-06-30T12:07:51.139Z
+END RequestId: e66e42c8-f4ed-40d1-83fa-04dad1d500da
+2025-06-30T12:07:51.139Z
+REPORT 
