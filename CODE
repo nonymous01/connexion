@@ -1,8 +1,30 @@
+Status: Failed
+Test Event Name: test
+
+Response:
 {
-  "action": "promote_model_registration",
-  "model_name": "irisclassifier",
-  "model_version": "1",
-  "model_source": "databricks_registry",
-  "workspace_id": "YOUR_WORKSPACE_ID",
-  "deployment_target": "dev"
+  "errorMessage": "Invalid event, no requestContext provided",
+  "errorType": "RuntimeError",
+  "requestId": "bf17884b-1b26-4ed2-b2d7-0d0154f614c7",
+  "stackTrace": [
+    "  File \"/var/task/model_function.py\", line 136, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 119, in dispatch_method\n    authorizer = _get_request_context_authorizer(event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 47, in _get_request_context_authorizer\n    raise RuntimeError(\"Invalid event, no requestContext provided\")\n"
+  ]
 }
+
+Function Logs:
+START RequestId: bf17884b-1b26-4ed2-b2d7-0d0154f614c7 Version: $LATEST
+30-Jun-25 17:31:28 - INFO - Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev'}
+[ERROR] RuntimeError: Invalid event, no requestContext provided
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 136, in lambda_handler
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
+    authorizer = _get_request_context_authorizer(event)
+  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
+    raise RuntimeError("Invalid event, no requestContext provided")
+END RequestId: bf17884b-1b26-4ed2-b2d7-0d0154f614c7
+REPORT RequestId: bf17884b-1b26-4ed2-b2d7-0d0154f614c7	Duration: 5.89 ms	Billed Duration: 6 ms	Memory Size: 1024 MB	Max Memory Used: 419 MB
+
+Request ID: bf17884b-1b26-4ed2-b2d7-0d0154f614c7
