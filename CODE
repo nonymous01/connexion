@@ -1,35 +1,22 @@
-Status: Failed
-Test Event Name: test
-
-Response:
-{
-  "errorMessage": "'workspace_name'",
-  "errorType": "KeyError",
-  "requestId": "262ab943-3494-4ed3-9a4d-e808fd089410",
-  "stackTrace": [
-    "  File \"/var/task/model_function.py\", line 136, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 149, in dispatch_method\n    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 118, in _get_deployment_params\n    deployment_params['deployment_workspace_name'] = params['workspace_name']\n"
-  ]
-}
-
-Function Logs:
-[INFO]	2025-06-30T17:40:28.048Z		Found credentials in environment variables.
-START RequestId: 262ab943-3494-4ed3-9a4d-e808fd089410 Version: $LATEST
-[INFO]	2025-06-30T17:40:28.448Z	262ab943-3494-4ed3-9a4d-e808fd089410	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev'}
-[WARNING]	2025-06-30T17:40:28.448Z	262ab943-3494-4ed3-9a4d-e808fd089410	 No requestContext provided — assuming direct Lambda invocation.
-[INFO]	2025-06-30T17:40:28.448Z	262ab943-3494-4ed3-9a4d-e808fd089410	authorizer={'principalId': 'anonymous', 'claims': {}}
-[INFO]	2025-06-30T17:40:28.448Z	262ab943-3494-4ed3-9a4d-e808fd089410	Enriched_ _params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev', 'principalId': 'anonymous', 'claims': {}}
-[INFO]	2025-06-30T17:40:28.448Z	262ab943-3494-4ed3-9a4d-e808fd089410	####### DWS0004069
-[ERROR] KeyError: 'workspace_name'
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 136, in lambda_handler
-    result = dispatcher_helper.dispatch_method(dispatch_table, event)
-  File "/var/task/utils/dispatcher_helper.py", line 149, in dispatch_method
-    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)
-  File "/var/task/utils/dispatcher_helper.py", line 118, in _get_deployment_params
-    deployment_params['deployment_workspace_name'] = params['workspace_name']
-END RequestId: 262ab943-3494-4ed3-9a4d-e808fd089410
-REPORT RequestId: 262ab943-3494-4ed3-9a4d-e808fd089410	Duration: 2.77 ms	Billed Duration: 3 ms	Memory Size: 1024 MB	Max Memory Used: 119 MB	Init Duration: 2170.84 ms
-
-Request ID: 262ab943-3494-4ed3-9a4d-e808fd089410
+Ahidjo, Chris (Ext) - thanks the libraries are working
+ 
+I need your help to troubleshoot model promotion
+ 
+it returns the following error
+ 
+botocore.exceptions.ClientError: An error occurred (AccessDenied) when calling the PutObject operation: User: arn:aws:sts::117439318503:assumed-role/RRDBKRDEV_AWS_DBKF1UNITYCATALOGEUDEVAILAB/m=K0e7wYGAR2yZTzTVt4MIrw,s=V5a2ZvsxRzSomCToUiE1mw is not authorized to perform: s3:PutObject on resource: "arn:aws:s3:::novartisrs3adevief1ailab001/applications/vdws0006448/data/unity/models/59652426-56bf-48e0-a36b-c5dddf29fbc5/versions/aa91baef-aaa5-4dfd-ac54-af52e7c1b64a/model.pkl" with an explicit deny in a resource-based policy
+ 
+Which is coming from this task 
+ 
+Submitting task PutObjectTask(transfer_id=0, {'bucket': 'novartisrs3adevief1ailab001', 'key': 'applications/vdws0006448/data/unity/models/59652426-56bf-48e0-a36b-c5dddf29fbc5/versions/aa91baef-aaa5-4dfd-ac54-af52e7c1b64a/python_env.yaml', 'extra_args': {}}) to executor <s3transfer.futures.BoundedExecutor object at 0x7f2cb5388f70> for transfer request: 0.
+ 
+where we need to find a way to pass extra_args': {} such as KMS to make it work
+ 
+Ok. Can I go eat quickly and we can do call ?
+ 
+Only tomorrow, please check the branch token_generation_model_promotion once you are back. This code is already deployed in the accounts 56 and 36
+ 
+ 
+Code for you to reproduce the issue: https://formulaone-eu-west-1-dev-ai-workspace.cloud.databricks.com/editor/notebooks/3960682424021338?o=1522847799419204
+Databricks - Sign In
+ 
