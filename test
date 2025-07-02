@@ -1,9 +1,141 @@
-{
-  "requestContext": {
-    "authorizer": {
-      "principalId": "test-user",
-      "role": "mlops-admin"
+import ast
+import json
+import traceback
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
+import time
+import logging
+
+import utils.dispatcher_helper as dispatcher_helper
+import utils.databricks_model_registry_helper as databricks_model_registry_helper
+import utils.databricks_pipeline_helper as databricks_pipeline_helper
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+
+def promote_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    model_name = client_parameters["model_name"]
+    model_version = client_parameters["model_version"]
+    model_source = client_parameters["model_source"]
+
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
+
+        response = databricks_model_registry_helper.promote_model_registration(
+            model_name, model_version, model_source
+        )      
+
+
+        if response is not None:
+            if isinstance(response, tuple) and len(response) > 1:
+                result["message"] = response[1]
+                result["success"] = True
+            else:
+                result["success"] = False
+
+    except Exception as e:
+        logger.error(f"Error promoting model", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
+
+    return result
+
+
+def describe_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    print("# Describe model")
+
+    model_name = client_parameters["model_name"]
+    model_version = client_parameters["model_version"]
+
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
+
+        model_version_response = (
+            databricks_model_registry_helper.get_model_registration(
+                model_name, model_version
+            )
+        )
+
+        if model_version_response:
+            if model_version_response["status"] == "READY":
+                result["status"] = "AVAILABLE"
+            else:
+                result["status"] = "UNAVAILABLE"
+
+            result["model_name"] = model_name
+            result["model_version"] = model_version
+            result["model_source"] = model_version_response["source"]
+            result["model_stage"] = model_version_response["current_stage"]
+
+            result["success"] = True
+
+        else:
+            result["success"] = False
+            result["error"] = (
+                f"Model {model_name} and {model_version} is not registered"
+            )
+
+    except Exception as e:
+        logger.error(f"Error retrieving model information", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
+
+    return result
+
+
+def get_latest_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    print("# Get model registration")
+
+    model_name = client_parameters["model_name"]
+
+    stage = client_parameters.get("stage")
+
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
+
+        result["model_name"] = model_name
+
+        model_version_response = (
+            databricks_model_registry_helper.get_latest_model_registration(
+                model_name, stage
+            )
+        )
+
+        if model_version_response:
+            result["model_version"] = model_version_response["version"]
+
+            result["model_stage"] = model_version_response["current_stage"]
+
+            result["model_source"] = model_version_response["source"]
+
+        else:
+            result["model_version"] = 0
+
+        result["success"] = True
+
+    except Exception as e:
+        logger.error(f"Error retrieving model information", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
+
+    return result
+
+
+def lambda_handler(event, context):
+    start = time.perf_counter()
+    dispatch_table = {
+        "describe_model_registry": describe_model_registration,
+        "get_latest_model_registration": get_latest_model_registration,
+        "promote_model_registration": promote_model_registration,
     }
-  },
-  "body": "{\"action\": \"promote_model_registration\", \"model_name\": \"irisclassifier\", \"model_version\": \"1\", \"model_source\": \"databricks_registry\", \"workspace_id\": \"DWS0004069\", \"deployment_target\": \"dev\"}"
-}
+
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+    duration = time.perf_counter() - start
+    logger.info(f"handler completed in {duration:3f} seconds")
+
+    return result
