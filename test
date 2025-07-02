@@ -12,91 +12,115 @@ def _check_input_params(invokation_params, expected_keys):
     if not all(k in invokation_params for k in expected_keys):
         raise RuntimeError(f"Invalid input params, expected keys={expected_keys}")
 
+
 def _create_response(result: dict) -> dict:
     """
-    Formats the final Lambda HTTP response.
-    Returns status code 200 if success, otherwise 500.
+    Creates the response object.
+
+    Args:
+    - result: The result of the operation.
+
+    Returns:
+    - The response object.
     """
+    r = result
     return {
-        "statusCode": 200 if isinstance(result, str) or result.get("success") else 500,
+        "statusCode": 200 if isinstance(r, str) or r["success"] else 500,
         "isBase64Encoded": False,
         "headers": {"Content-Type": "application/json"},
-        "body": json.dumps(result, default=str),
+        "body": json.dumps(r, default=str),
     }
+
 
 def _get_request_context_authorizer(event: dict) -> dict:
     """
-    Retrieves authorizer claims from API Gateway requestContext.
-    Returns an empty dict if requestContext or authorizer is missing.
-    """
-    node = event.get("context", event)
-    request_context = node.get("requestContext", {})
-    authorizer = request_context.get("authorizer", {})
+    Gets the authorizer from the request context in the event.
 
-    if not isinstance(authorizer, dict):
-        logging.warning("No 'authorizer' found in 'requestContext'. Returning empty dict.")
-        return {}
-    return authorizer
+    Args:
+    - event: The event object.
+
+    Returns:
+    - The authorizer from the request context.
+    """
+    node = event["context"] if "context" in event else event
+    if "requestContext" not in node:
+        raise RuntimeError("Invalid event, no requestContext provided")
+    requestContext = node["requestContext"]
+
+    if "authorizer" not in requestContext:
+        raise RuntimeError("Invalid requestContext, no authorizer provided")
+    return requestContext["authorizer"]
+
 
 def _get_params(event: dict) -> dict:
     """
-    Parses and decodes the body payload if available.
-    Handles both base64 and raw JSON bodies.
+    Gets the parameters from the event.
+
+    Args:
+    - event: The event object.
+
+    Returns:
+    - The parameters.
     """
-    if "body" not in event and "body-json" not in event:
-        return event
-
-    body = event.get("body") or event.get("body-json")
-
+    if "body" not in event:
+        if "body-json" not in event:
+            return event
+    body = event["body"] if "body" in event else event["body-json"]
     try:
         body = base64.b64decode(body, validate=True)
-    except Exception:
+    except:
         pass
-
     logger.info(f"Calculated 'body'={body}")
-
-    if not body:
+    if body==None or body=={}:
         return {}
     return body if isinstance(body, dict) else json.loads(body)
 
 def _get_deployment_params(params: dict, prefix: str) -> tuple:
-    """
-    Splits parameters into client-specific and deployment-specific groups.
-    Also adds workspace_id and workspace_name into deployment parameters.
-    """
+
     deployment_params = {}
     client_params = {}
-
+    logger.info(f"####### {params['workspace_id']}")
     for param in params:
+
         if param.startswith(prefix):
             deployment_params[param] = params[param]
         else:
-            client_params[param] = params[param]
+            client_params[param] = params[param]            
 
-    deployment_params['deployment_workspace_id'] = params.get('workspace_id')
-    deployment_params['deployment_workspace_name'] = params.get('workspace_name')
+        #Adding workspace id and workspace name into deployment parameters
+        
+        deployment_params['deployment_workspace_id'] = params['workspace_id']
+        
+        deployment_params['deployment_workspace_name'] = params['workspace_name']
 
     return client_params, deployment_params
 
+
 def dispatch_method(dispatch_table: dict, event: dict) -> dict:
     """
-    Dispatches the appropriate method from the table based on the 'action' key.
-    Merges authorization claims into invocation parameters.
+    Dispatches the method based on the action in the invocation parameters.
+
+    Args:
+    - invokation_params: The invocation parameters.
+
+    Returns:
+    - The response from the dispatched method.
     """
+
+    DISPATCH_TABLE = dispatch_table
+
     invokation_params = _get_params(event)
 
-    if not invokation_params:
-        raise RuntimeError(f"Invalid input params, event={event}")
+    if invokation_params is None or len(invokation_params) == 0:
+        raise RuntimeError("Invalid input params, event={event}")
 
     logger.info(f"Invokation params: {invokation_params}")
 
     authorizer = _get_request_context_authorizer(event)
-    logger.info(f"authorizer={authorizer}")
+    logger.info(f"{authorizer=}")
+    invokation_params |= authorizer
 
-    if isinstance(authorizer, dict):
-        invokation_params |= authorizer
-
-    logger.info(f"Enriched _params: {invokation_params}")
+    logger.info(f"Enriched_ _params: {invokation_params}")
 
     client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)
 
@@ -107,12 +131,69 @@ def dispatch_method(dispatch_table: dict, event: dict) -> dict:
     try:
         _check_input_params(client_parameters, ["action", "workspace_id"])
         action = client_parameters["action"]
-        result = dispatch_table[action](client_parameters, deployment_parameters)
+        result = DISPATCH_TABLE[action](client_parameters, deployment_parameters)
 
     except Exception as e:
         logger.error(traceback.format_exc())
         result["success"] = False
         result["error"] = repr(e)
-
     logger.info(f"Finished dispatch with result={result}")
     return _create_response(result)
+
+
+Status: Succeeded
+Test Event Name: test
+
+Response:
+{
+  "statusCode": 500,
+  "isBase64Encoded": false,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "{\"success\": false, \"error\": \"KeyError('deployment_databricks_host_lower_env')\"}"
+}
+
+Function Logs:
+004069', 'deployment_target': 'dev'}
+[INFO]	2025-07-02T18:17:52.345Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	authorizer={}
+[INFO]	2025-07-02T18:17:52.345Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	Enriched _params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev'}
+[INFO]	2025-07-02T18:17:52.345Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	deployment_parameters : {'deployment_target': 'dev', 'deployment_workspace_id': 'DWS0004069', 'deployment_workspace_name': None}
+[INFO]	2025-07-02T18:17:52.346Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	client_parameters : {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069'}
+[INFO]	2025-07-02T18:17:52.350Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	Installing libraries
+[INFO]	2025-07-02T18:17:52.350Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	====================================
+[INFO]	2025-07-02T18:17:52.351Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	mlflow-skinny==3.1.1
+WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Collecting mlflow-skinny==3.1.1
+Downloading mlflow_skinny-3.1.1-py3-none-any.whl (1.9 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 15.5 MB/s eta 0:00:00
+Installing collected packages: mlflow-skinny
+Successfully installed mlflow-skinny-3.1.1
+[notice] A new release of pip is available: 23.0.1 -> 25.1.1
+[notice] To update, run: pip install --upgrade pip
+[INFO]	2025-07-02T18:17:56.240Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	====================================
+[INFO]	2025-07-02T18:17:56.240Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	====================================
+[INFO]	2025-07-02T18:17:56.240Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	pandas==2.3.0
+WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Collecting pandas==2.3.0
+Downloading pandas-2.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.3 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.3/12.3 MB 43.0 MB/s eta 0:00:00
+Installing collected packages: pandas
+Successfully installed pandas-2.3.0
+[notice] A new release of pip is available: 23.0.1 -> 25.1.1
+[notice] To update, run: pip install --upgrade pip
+[INFO]	2025-07-02T18:18:07.383Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	====================================
+[INFO]	2025-07-02T18:18:07.396Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	Adding tmp to syspath
+[ERROR]	2025-07-02T18:18:07.396Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	Error promoting model
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 27, in promote_model_registration
+    response = databricks_model_registry_helper.promote_model_registration(
+  File "/var/task/utils/databricks_model_registry_helper.py", line 97, in promote_model_registration
+    src_host = DEPLOYMENT_PARAMETERS["deployment_databricks_host_lower_env"]
+KeyError: 'deployment_databricks_host_lower_env'
+[INFO]	2025-07-02T18:18:07.397Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	Finished dispatch with result={'success': False, 'error': "KeyError('deployment_databricks_host_lower_env')"}
+[INFO]	2025-07-02T18:18:07.397Z	b2d4af08-f939-43c0-95c8-f6e8bf713fb2	handler completed in 15.051781 seconds
+END RequestId: b2d4af08-f939-43c0-95c8-f6e8bf713fb2
+REPORT RequestId: b2d4af08-f939-43c0-95c8-f6e8bf713fb2	Duration: 15054.41 ms	Billed Duration: 15055 ms	Memory Size: 1024 MB	Max Memory Used: 318 MB	Init Duration: 2250.29 ms
+
+Request ID: b2d4af08-f939-43c0-95c8-f6e8bf713fb2
