@@ -1,82 +1,9 @@
 {
-  "key1": "value1",
-  "key2": "value2",
-  "key3": "value3"
+  "requestContext": {
+    "authorizer": {
+      "principalId": "test-user",
+      "role": "mlops-admin"
+    }
+  },
+  "body": "{\"action\": \"promote_model_registration\", \"model_name\": \"irisclassifier\", \"model_version\": \"1\", \"model_source\": \"databricks_registry\", \"workspace_id\": \"DWS0004069\", \"deployment_target\": \"dev\"}"
 }
-
-si je  met ca voici erreur
-Status: Failed
-Test Event Name: test
-
-Response:
-{
-  "errorMessage": "Invalid event, no requestContext provided",
-  "errorType": "RuntimeError",
-  "requestId": "c598de8c-e86f-4c96-b692-8c1401ce765f",
-  "stackTrace": [
-    "  File \"/var/task/model_function.py\", line 137, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 119, in dispatch_method\n    authorizer = _get_request_context_authorizer(event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 47, in _get_request_context_authorizer\n    raise RuntimeError(\"Invalid event, no requestContext provided\")\n"
-  ]
-}
-
-Function Logs:
-START RequestId: c598de8c-e86f-4c96-b692-8c1401ce765f Version: $LATEST
-[INFO]	2025-07-02T17:45:23.166Z	c598de8c-e86f-4c96-b692-8c1401ce765f	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev'}
-[ERROR] RuntimeError: Invalid event, no requestContext provided
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 137, in lambda_handler
-    result = dispatcher_helper.dispatch_method(dispatch_table, event)
-  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
-    authorizer = _get_request_context_authorizer(event)
-  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
-    raise RuntimeError("Invalid event, no requestContext provided")
-END RequestId: c598de8c-e86f-4c96-b692-8c1401ce765f
-REPORT RequestId: c598de8c-e86f-4c96-b692-8c1401ce765f	Duration: 2.49 ms	Billed Duration: 3 ms	Memory Size: 1024 MB	Max Memory Used: 151 MB
-
-Request ID: c598de8c-e86f-4c96-b692-8c1401ce765f
-
-
-
-
-avec ce code
-{
-  "action": "promote_model_registration",
-  "model_name": "irisclassifier",
-  "model_version": "1",
-  "model_source": "databricks_registry",
-  "workspace_id": "DWS0004069",
-  "deployment_target": "dev"
-}
-
-voci erreur
-Status: Failed
-Test Event Name: test
-
-Response:
-{
-  "errorMessage": "Invalid event, no requestContext provided",
-  "errorType": "RuntimeError",
-  "requestId": "c958561a-5fc7-4858-b616-bf5c4fc021ff",
-  "stackTrace": [
-    "  File \"/var/task/model_function.py\", line 137, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 119, in dispatch_method\n    authorizer = _get_request_context_authorizer(event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 47, in _get_request_context_authorizer\n    raise RuntimeError(\"Invalid event, no requestContext provided\")\n"
-  ]
-}
-
-Function Logs:
-START RequestId: c958561a-5fc7-4858-b616-bf5c4fc021ff Version: $LATEST
-[INFO]	2025-07-02T17:46:37.887Z	c958561a-5fc7-4858-b616-bf5c4fc021ff	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev'}
-[ERROR] RuntimeError: Invalid event, no requestContext provided
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 137, in lambda_handler
-    result = dispatcher_helper.dispatch_method(dispatch_table, event)
-  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
-    authorizer = _get_request_context_authorizer(event)
-  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
-    raise RuntimeError("Invalid event, no requestContext provided")
-END RequestId: c958561a-5fc7-4858-b616-bf5c4fc021ff
-REPORT RequestId: c958561a-5fc7-4858-b616-bf5c4fc021ff	Duration: 1.65 ms	Billed Duration: 2 ms	Memory Size: 1024 MB	Max Memory Used: 151 MB
-
-Request ID: c958561a-5fc7-4858-b616-bf5c4fc021ff
