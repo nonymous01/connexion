@@ -1,31 +1,9 @@
-Status: Failed
-Test Event Name: test
-
-Response:
 {
-  "errorMessage": "Invalid event, no requestContext provided",
-  "errorType": "RuntimeError",
-  "requestId": "38dffa7b-a55f-4669-b0d6-1f571073a303",
-  "stackTrace": [
-    "  File \"/var/task/model_function.py\", line 137, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 119, in dispatch_method\n    authorizer = _get_request_context_authorizer(event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 47, in _get_request_context_authorizer\n    raise RuntimeError(\"Invalid event, no requestContext provided\")\n"
-  ]
+  "requestContext": {
+    "authorizer": {
+      "principalId": "user123",
+      "role": "admin"
+    }
+  },
+  "body": "{\"action\": \"promote_model_registration\", \"model_name\": \"irisclassifier\", \"model_version\": \"1\", \"model_source\": \"databricks_registry\", \"workspace_id\": \"DWS0004069\", \"deployment_target\": \"dev\"}"
 }
-
-Function Logs:
-[INFO]	2025-07-02T15:20:17.686Z		Found credentials in environment variables.
-START RequestId: 38dffa7b-a55f-4669-b0d6-1f571073a303 Version: $LATEST
-[INFO]	2025-07-02T15:20:18.011Z	38dffa7b-a55f-4669-b0d6-1f571073a303	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev'}
-[ERROR] RuntimeError: Invalid event, no requestContext provided
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 137, in lambda_handler
-    result = dispatcher_helper.dispatch_method(dispatch_table, event)
-  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
-    authorizer = _get_request_context_authorizer(event)
-  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
-    raise RuntimeError("Invalid event, no requestContext provided")
-END RequestId: 38dffa7b-a55f-4669-b0d6-1f571073a303
-REPORT RequestId: 38dffa7b-a55f-4669-b0d6-1f571073a303	Duration: 2.92 ms	Billed Duration: 3 ms	Memory Size: 1024 MB	Max Memory Used: 151 MB	Init Duration: 2721.44 ms
-
-Request ID: 38dffa7b-a55f-4669-b0d6-1f571073a303
