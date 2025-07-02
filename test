@@ -1,40 +1,31 @@
-def _transform_response(response, status_ok="SUCCESS", status_fail="FAILURE"):
-    """
-    Transform response with better error handling
-    """
-    try:
-        response.raise_for_status()
-        content_type = response.headers.get("Content-Type", "")
+Status: Failed
+Test Event Name: test
 
-        if 'application/json' in content_type:
-            try:
-                result = response.json()
-            except ValueError:
-                print(" Failed to parse JSON. Raw response:")
-                print(response.text[:300])
-                raise RuntimeError("Invalid JSON in response")
-        else:
-            print(" Unexpected content type:", content_type)
-            print(" Raw response:", response.text[:300])
-            raise RuntimeError("Response is not JSON")
+Response:
+{
+  "errorMessage": "Invalid event, no requestContext provided",
+  "errorType": "RuntimeError",
+  "requestId": "38dffa7b-a55f-4669-b0d6-1f571073a303",
+  "stackTrace": [
+    "  File \"/var/task/model_function.py\", line 137, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 119, in dispatch_method\n    authorizer = _get_request_context_authorizer(event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 47, in _get_request_context_authorizer\n    raise RuntimeError(\"Invalid event, no requestContext provided\")\n"
+  ]
+}
 
-        if response.status_code == 403:
-            raise RuntimeError("Access denied: either your token is invalid or access to the requested endpoint is not allowed")
+Function Logs:
+[INFO]	2025-07-02T15:20:17.686Z		Found credentials in environment variables.
+START RequestId: 38dffa7b-a55f-4669-b0d6-1f571073a303 Version: $LATEST
+[INFO]	2025-07-02T15:20:18.011Z	38dffa7b-a55f-4669-b0d6-1f571073a303	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev'}
+[ERROR] RuntimeError: Invalid event, no requestContext provided
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 137, in lambda_handler
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
+    authorizer = _get_request_context_authorizer(event)
+  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
+    raise RuntimeError("Invalid event, no requestContext provided")
+END RequestId: 38dffa7b-a55f-4669-b0d6-1f571073a303
+REPORT RequestId: 38dffa7b-a55f-4669-b0d6-1f571073a303	Duration: 2.92 ms	Billed Duration: 3 ms	Memory Size: 1024 MB	Max Memory Used: 151 MB	Init Duration: 2721.44 ms
 
-        if not response.ok and 'success' not in result:
-            raise RuntimeError(f"{response.reason=}, {response.content=}")
-
-        if 'status' not in result:
-            ok = result.get('success', False)
-            result['status'] = status_ok if ok else status_fail
-
-        result.pop('success', None)
-        if 'error' in result:
-            result['message'] = result.pop('error')
-
-        return result
-
-    except requests.exceptions.RequestException as e:
-        print( Request failed:", e)
-        print(" Raw response (if any):", getattr(response, "text", "")[:300])
-        raise RuntimeError("Request failed") from e
+Request ID: 38dffa7b-a55f-4669-b0d6-1f571073a303
