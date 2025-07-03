@@ -1,19 +1,10 @@
-Status: Succeeded
-Test Event Name: event
+INIT_START Runtime Version: python:3.10.v81	Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:54f13d9c2d62eeff7823517e6329905034fc7ba8805966d6193dc33d7c3f61df
+[INFO]	2025-07-03T15:38:03.255Z		Found credentials in environment variables.
+START RequestId: 00425c7c-14c9-4b9f-a350-fc272307fc9e Version: $LATEST
+[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
+[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	authorizer=
+{}
 
-Response:
-{
-  "statusCode": 500,
-  "isBase64Encoded": false,
-  "headers": {
-    "Content-Type": "application/json"
-  },
-  "body": "{\"success\": false, \"error\": \"KeyError('deployment_databricks_host_lower_env')\"}"
-}
-
-Function Logs:
-nt_target': 'dev'}
-[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	authorizer={}
 [INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Enriched _params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
 [INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	deployment_parameters : {'deployment_target': 'dev', 'deployment_workspace_id': '6051921418418893', 'deployment_workspace_name': None}
 [INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	client_parameters : {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893'}
@@ -51,6 +42,4 @@ KeyError: 'deployment_databricks_host_lower_env'
 [INFO]	2025-07-03T15:38:19.377Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Finished dispatch with result={'success': False, 'error': "KeyError('deployment_databricks_host_lower_env')"}
 [INFO]	2025-07-03T15:38:19.377Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	handler completed in 15.855000 seconds
 END RequestId: 00425c7c-14c9-4b9f-a350-fc272307fc9e
-REPORT RequestId: 00425c7c-14c9-4b9f-a350-fc272307fc9e	Duration: 15856.78 ms	Billed Duration: 15857 ms	Memory Size: 1024 MB	Max Memory Used: 319 MB	Init Duration: 2675.04 ms
-
-Request ID: 00425c7c-14c9-4b9f-a350-fc272307fc9e
+REPORT RequestId: 00425c7c-14c9-4b9f-a350-fc272307fc9e	Duration: 15856.78 ms	Billed Duration: 15857 ms	Memory Size: 1024 MB	Max Memory Used: 319 MB	Init Duration: 2675.04 ms	
