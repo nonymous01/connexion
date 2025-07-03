@@ -143,3 +143,13 @@ def dispatch_method(dispatch_table: dict, event: dict) -> dict:
 
 _get_deployment_params
 deployment_params['deployment_databricks_host_lower_env'] = params.get('deployment_databricks_host_lower_env', 'default-host')
+
+{
+  "action": "promote_model_registration",
+  "model_name": "irisclassifier",
+  "model_version": "1",
+  "model_source": "databricks_registry",
+  "workspace_id": "DWS0004069",
+  "deployment_target": "dev"
+}
+
