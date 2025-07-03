@@ -1,45 +1,141 @@
-INIT_START Runtime Version: python:3.10.v81	Runtime Version ARN: arn:aws:lambda:us-east-1::runtime:54f13d9c2d62eeff7823517e6329905034fc7ba8805966d6193dc33d7c3f61df
-[INFO]	2025-07-03T15:38:03.255Z		Found credentials in environment variables.
-START RequestId: 00425c7c-14c9-4b9f-a350-fc272307fc9e Version: $LATEST
-[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
-[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	authorizer=
-{}
+import ast
+import json
+import traceback
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
-[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Enriched _params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
-[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	deployment_parameters : {'deployment_target': 'dev', 'deployment_workspace_id': '6051921418418893', 'deployment_workspace_name': None}
-[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	client_parameters : {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893'}
-[INFO]	2025-07-03T15:38:03.528Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Installing libraries
-[INFO]	2025-07-03T15:38:03.529Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	====================================
-[INFO]	2025-07-03T15:38:03.529Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	mlflow-skinny==3.1.1
-WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
-Collecting mlflow-skinny==3.1.1
-Downloading mlflow_skinny-3.1.1-py3-none-any.whl (1.9 MB)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 17.0 MB/s eta 0:00:00
-Installing collected packages: mlflow-skinny
-Successfully installed mlflow-skinny-3.1.1
-[notice] A new release of pip is available: 23.0.1 -> 25.1.1
-[notice] To update, run: pip install --upgrade pip
-[INFO]	2025-07-03T15:38:07.600Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	====================================
-[INFO]	2025-07-03T15:38:07.600Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	====================================
-[INFO]	2025-07-03T15:38:07.600Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	pandas==2.3.0
-WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
-Collecting pandas==2.3.0
-Downloading pandas-2.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.3 MB)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.3/12.3 MB 58.8 MB/s eta 0:00:00
-Installing collected packages: pandas
-Successfully installed pandas-2.3.0
-[notice] A new release of pip is available: 23.0.1 -> 25.1.1
-[notice] To update, run: pip install --upgrade pip
-[INFO]	2025-07-03T15:38:19.376Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	====================================
-[INFO]	2025-07-03T15:38:19.377Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Adding tmp to syspath
-[ERROR]	2025-07-03T15:38:19.377Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Error promoting model
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 27, in promote_model_registration
-    response = databricks_model_registry_helper.promote_model_registration(
-  File "/var/task/utils/databricks_model_registry_helper.py", line 97, in promote_model_registration
-    src_host = DEPLOYMENT_PARAMETERS["deployment_databricks_host_lower_env"]
-KeyError: 'deployment_databricks_host_lower_env'
-[INFO]	2025-07-03T15:38:19.377Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Finished dispatch with result={'success': False, 'error': "KeyError('deployment_databricks_host_lower_env')"}
-[INFO]	2025-07-03T15:38:19.377Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	handler completed in 15.855000 seconds
-END RequestId: 00425c7c-14c9-4b9f-a350-fc272307fc9e
-REPORT RequestId: 00425c7c-14c9-4b9f-a350-fc272307fc9e	Duration: 15856.78 ms	Billed Duration: 15857 ms	Memory Size: 1024 MB	Max Memory Used: 319 MB	Init Duration: 2675.04 ms	
+import time
+import logging
+
+import utils.dispatcher_helper as dispatcher_helper
+import utils.databricks_model_registry_helper as databricks_model_registry_helper
+import utils.databricks_pipeline_helper as databricks_pipeline_helper
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+
+def promote_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    model_name = client_parameters["model_name"]
+    model_version = client_parameters["model_version"]
+    model_source = client_parameters["model_source"]
+
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
+
+        response = databricks_model_registry_helper.promote_model_registration(
+            model_name, model_version, model_source
+        )      
+
+
+        if response is not None:
+            if isinstance(response, tuple) and len(response) > 1:
+                result["message"] = response[1]
+                result["success"] = True
+            else:
+                result["success"] = False
+
+    except Exception as e:
+        logger.error(f"Error promoting model", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
+
+    return result
+
+
+def describe_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    print("# Describe model")
+
+    model_name = client_parameters["model_name"]
+    model_version = client_parameters["model_version"]
+
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
+
+        model_version_response = (
+            databricks_model_registry_helper.get_model_registration(
+                model_name, model_version
+            )
+        )
+
+        if model_version_response:
+            if model_version_response["status"] == "READY":
+                result["status"] = "AVAILABLE"
+            else:
+                result["status"] = "UNAVAILABLE"
+
+            result["model_name"] = model_name
+            result["model_version"] = model_version
+            result["model_source"] = model_version_response["source"]
+            result["model_stage"] = model_version_response["current_stage"]
+
+            result["success"] = True
+
+        else:
+            result["success"] = False
+            result["error"] = (
+                f"Model {model_name} and {model_version} is not registered"
+            )
+
+    except Exception as e:
+        logger.error(f"Error retrieving model information", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
+
+    return result
+
+
+def get_latest_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    print("# Get model registration")
+
+    model_name = client_parameters["model_name"]
+
+    stage = client_parameters.get("stage")
+
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
+
+        result["model_name"] = model_name
+
+        model_version_response = (
+            databricks_model_registry_helper.get_latest_model_registration(
+                model_name, stage
+            )
+        )
+
+        if model_version_response:
+            result["model_version"] = model_version_response["version"]
+
+            result["model_stage"] = model_version_response["current_stage"]
+
+            result["model_source"] = model_version_response["source"]
+
+        else:
+            result["model_version"] = 0
+
+        result["success"] = True
+
+    except Exception as e:
+        logger.error(f"Error retrieving model information", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
+
+    return result
+
+
+def lambda_handler(event, context):
+    start = time.perf_counter()
+    dispatch_table = {
+        "describe_model_registry": describe_model_registration,
+        "get_latest_model_registration": get_latest_model_registration,
+        "promote_model_registration": promote_model_registration,
+    }
+
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+    duration = time.perf_counter() - start
+    logger.info(f"handler completed in {duration:3f} seconds")
+
+    return result
