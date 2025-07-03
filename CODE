@@ -1,22 +1,56 @@
-Ahidjo, Chris (Ext) - thanks the libraries are working
- 
-I need your help to troubleshoot model promotion
- 
-it returns the following error
- 
-botocore.exceptions.ClientError: An error occurred (AccessDenied) when calling the PutObject operation: User: arn:aws:sts::117439318503:assumed-role/RRDBKRDEV_AWS_DBKF1UNITYCATALOGEUDEVAILAB/m=K0e7wYGAR2yZTzTVt4MIrw,s=V5a2ZvsxRzSomCToUiE1mw is not authorized to perform: s3:PutObject on resource: "arn:aws:s3:::novartisrs3adevief1ailab001/applications/vdws0006448/data/unity/models/59652426-56bf-48e0-a36b-c5dddf29fbc5/versions/aa91baef-aaa5-4dfd-ac54-af52e7c1b64a/model.pkl" with an explicit deny in a resource-based policy
- 
-Which is coming from this task 
- 
-Submitting task PutObjectTask(transfer_id=0, {'bucket': 'novartisrs3adevief1ailab001', 'key': 'applications/vdws0006448/data/unity/models/59652426-56bf-48e0-a36b-c5dddf29fbc5/versions/aa91baef-aaa5-4dfd-ac54-af52e7c1b64a/python_env.yaml', 'extra_args': {}}) to executor <s3transfer.futures.BoundedExecutor object at 0x7f2cb5388f70> for transfer request: 0.
- 
-where we need to find a way to pass extra_args': {} such as KMS to make it work
- 
-Ok. Can I go eat quickly and we can do call ?
- 
-Only tomorrow, please check the branch token_generation_model_promotion once you are back. This code is already deployed in the accounts 56 and 36
- 
- 
-Code for you to reproduce the issue: https://formulaone-eu-west-1-dev-ai-workspace.cloud.databricks.com/editor/notebooks/3960682424021338?o=1522847799419204
-Databricks - Sign In
- 
+Status: Succeeded
+Test Event Name: event
+
+Response:
+{
+  "statusCode": 500,
+  "isBase64Encoded": false,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "{\"success\": false, \"error\": \"KeyError('deployment_databricks_host_lower_env')\"}"
+}
+
+Function Logs:
+nt_target': 'dev'}
+[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	authorizer={}
+[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Enriched _params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
+[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	deployment_parameters : {'deployment_target': 'dev', 'deployment_workspace_id': '6051921418418893', 'deployment_workspace_name': None}
+[INFO]	2025-07-03T15:38:03.523Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	client_parameters : {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893'}
+[INFO]	2025-07-03T15:38:03.528Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Installing libraries
+[INFO]	2025-07-03T15:38:03.529Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	====================================
+[INFO]	2025-07-03T15:38:03.529Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	mlflow-skinny==3.1.1
+WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Collecting mlflow-skinny==3.1.1
+Downloading mlflow_skinny-3.1.1-py3-none-any.whl (1.9 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 17.0 MB/s eta 0:00:00
+Installing collected packages: mlflow-skinny
+Successfully installed mlflow-skinny-3.1.1
+[notice] A new release of pip is available: 23.0.1 -> 25.1.1
+[notice] To update, run: pip install --upgrade pip
+[INFO]	2025-07-03T15:38:07.600Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	====================================
+[INFO]	2025-07-03T15:38:07.600Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	====================================
+[INFO]	2025-07-03T15:38:07.600Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	pandas==2.3.0
+WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Collecting pandas==2.3.0
+Downloading pandas-2.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.3 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.3/12.3 MB 58.8 MB/s eta 0:00:00
+Installing collected packages: pandas
+Successfully installed pandas-2.3.0
+[notice] A new release of pip is available: 23.0.1 -> 25.1.1
+[notice] To update, run: pip install --upgrade pip
+[INFO]	2025-07-03T15:38:19.376Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	====================================
+[INFO]	2025-07-03T15:38:19.377Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Adding tmp to syspath
+[ERROR]	2025-07-03T15:38:19.377Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Error promoting model
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 27, in promote_model_registration
+    response = databricks_model_registry_helper.promote_model_registration(
+  File "/var/task/utils/databricks_model_registry_helper.py", line 97, in promote_model_registration
+    src_host = DEPLOYMENT_PARAMETERS["deployment_databricks_host_lower_env"]
+KeyError: 'deployment_databricks_host_lower_env'
+[INFO]	2025-07-03T15:38:19.377Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	Finished dispatch with result={'success': False, 'error': "KeyError('deployment_databricks_host_lower_env')"}
+[INFO]	2025-07-03T15:38:19.377Z	00425c7c-14c9-4b9f-a350-fc272307fc9e	handler completed in 15.855000 seconds
+END RequestId: 00425c7c-14c9-4b9f-a350-fc272307fc9e
+REPORT RequestId: 00425c7c-14c9-4b9f-a350-fc272307fc9e	Duration: 15856.78 ms	Billed Duration: 15857 ms	Memory Size: 1024 MB	Max Memory Used: 319 MB	Init Duration: 2675.04 ms
+
+Request ID: 00425c7c-14c9-4b9f-a350-fc272307fc9e
