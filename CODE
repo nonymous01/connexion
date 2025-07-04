@@ -1,174 +1,143 @@
-Status: Failed
-Test Event Name: event
+voici mon dispatcher_helper.Py
 
-Response:
-{
-  "errorMessage": "Invalid event, no requestContext provided",
-  "errorType": "RuntimeError",
-  "requestId": "87745569-b72d-4295-9c7e-2ba903ea8b42",
-  "stackTrace": [
-    "  File \"/var/task/model_function.py\", line 137, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 119, in dispatch_method\n    authorizer = _get_request_context_authorizer(event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 47, in _get_request_context_authorizer\n    raise RuntimeError(\"Invalid event, no requestContext provided\")\n"
-  ]
-}
-
-Function Logs:
-[INFO]	2025-07-04T10:12:00.946Z		Found credentials in environment variables.
-START RequestId: 87745569-b72d-4295-9c7e-2ba903ea8b42 Version: $LATEST
-[INFO]	2025-07-04T10:12:01.174Z	87745569-b72d-4295-9c7e-2ba903ea8b42	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
-[ERROR] RuntimeError: Invalid event, no requestContext provided
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 137, in lambda_handler
-    result = dispatcher_helper.dispatch_method(dispatch_table, event)
-  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
-    authorizer = _get_request_context_authorizer(event)
-  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
-    raise RuntimeError("Invalid event, no requestContext provided")
-END RequestId: 87745569-b72d-4295-9c7e-2ba903ea8b42
-REPORT RequestId: 87745569-b72d-4295-9c7e-2ba903ea8b42	Duration: 2.44 ms	Billed Duration: 3 ms	Memory Size: 1024 MB	Max Memory Used: 151 MB	Init Duration: 2216.15 ms
-
-Request ID: 87745569-b72d-4295-9c7e-2ba903ea8b42
-
-
-import ast
+import base64
 import json
-import traceback
-from datetime import date
-from dateutil.relativedelta import relativedelta
-
-import time
 import logging
-
-import utils.dispatcher_helper as dispatcher_helper
-import utils.databricks_model_registry_helper as databricks_model_registry_helper
-import utils.databricks_pipeline_helper as databricks_pipeline_helper
+import traceback
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+DEPLOYMENT_PREFIX = "deployment_"
 
-def promote_model_registration(client_parameters: dict, deployment_parameters: dict):
-    result = {}
-    model_name = client_parameters["model_name"]
-    model_version = client_parameters["model_version"]
-    model_source = client_parameters["model_source"]
-
-    try:
-        databricks_model_registry_helper.init(deployment_parameters)
-
-        response = databricks_model_registry_helper.promote_model_registration(
-            model_name, model_version, model_source
-        )      
+def _check_input_params(invokation_params, expected_keys):
+    if not all(k in invokation_params for k in expected_keys):
+        raise RuntimeError(f"Invalid input params, expected keys={expected_keys}")
 
 
-        if response is not None:
-            if isinstance(response, tuple) and len(response) > 1:
-                result["message"] = response[1]
-                result["success"] = True
-            else:
-                result["success"] = False
+def _create_response(result: dict) -> dict:
+    """
+    Creates the response object.
 
-    except Exception as e:
-        logger.error(f"Error promoting model", exc_info=True)
-        result["success"] = False
-        result["error"] = repr(e)
+    Args:
+    - result: The result of the operation.
 
-    return result
-
-
-def describe_model_registration(client_parameters: dict, deployment_parameters: dict):
-    result = {}
-    print("# Describe model")
-
-    model_name = client_parameters["model_name"]
-    model_version = client_parameters["model_version"]
-
-    try:
-        databricks_model_registry_helper.init(deployment_parameters)
-
-        model_version_response = (
-            databricks_model_registry_helper.get_model_registration(
-                model_name, model_version
-            )
-        )
-
-        if model_version_response:
-            if model_version_response["status"] == "READY":
-                result["status"] = "AVAILABLE"
-            else:
-                result["status"] = "UNAVAILABLE"
-
-            result["model_name"] = model_name
-            result["model_version"] = model_version
-            result["model_source"] = model_version_response["source"]
-            result["model_stage"] = model_version_response["current_stage"]
-
-            result["success"] = True
-
-        else:
-            result["success"] = False
-            result["error"] = (
-                f"Model {model_name} and {model_version} is not registered"
-            )
-
-    except Exception as e:
-        logger.error(f"Error retrieving model information", exc_info=True)
-        result["success"] = False
-        result["error"] = repr(e)
-
-    return result
-
-
-def get_latest_model_registration(client_parameters: dict, deployment_parameters: dict):
-    result = {}
-    print("# Get model registration")
-
-    model_name = client_parameters["model_name"]
-
-    stage = client_parameters.get("stage")
-
-    try:
-        databricks_model_registry_helper.init(deployment_parameters)
-
-        result["model_name"] = model_name
-
-        model_version_response = (
-            databricks_model_registry_helper.get_latest_model_registration(
-                model_name, stage
-            )
-        )
-
-        if model_version_response:
-            result["model_version"] = model_version_response["version"]
-
-            result["model_stage"] = model_version_response["current_stage"]
-
-            result["model_source"] = model_version_response["source"]
-
-        else:
-            result["model_version"] = 0
-
-        result["success"] = True
-
-    except Exception as e:
-        logger.error(f"Error retrieving model information", exc_info=True)
-        result["success"] = False
-        result["error"] = repr(e)
-
-    return result
-
-
-def lambda_handler(event, context):
-    start = time.perf_counter()
-    dispatch_table = {
-        "describe_model_registry": describe_model_registration,
-        "get_latest_model_registration": get_latest_model_registration,
-        "promote_model_registration": promote_model_registration,
+    Returns:
+    - The response object.
+    """
+    r = result
+    return {
+        "statusCode": 200 if isinstance(r, str) or r["success"] else 500,
+        "isBase64Encoded": False,
+        "headers": {"Content-Type": "application/json"},
+        "body": json.dumps(r, default=str),
     }
 
-    result = dispatcher_helper.dispatch_method(dispatch_table, event)
-    duration = time.perf_counter() - start
-    logger.info(f"handler completed in {duration:3f} seconds")
 
-    return result
+def _get_request_context_authorizer(event: dict) -> dict:
+    """
+    Gets the authorizer from the request context in the event.
+
+    Args:
+    - event: The event object.
+
+    Returns:
+    - The authorizer from the request context.
+    """
+    node = event["context"] if "context" in event else event
+    if "requestContext" not in node:
+        raise RuntimeError("Invalid event, no requestContext provided")
+    requestContext = node["requestContext"]
+
+    if "authorizer" not in requestContext:
+        raise RuntimeError("Invalid requestContext, no authorizer provided")
+    return requestContext["authorizer"]
+
+
+def _get_params(event: dict) -> dict:
+    """
+    Gets the parameters from the event.
+
+    Args:
+    - event: The event object.
+
+    Returns:
+    - The parameters.
+    """
+    if "body" not in event:
+        if "body-json" not in event:
+            return event
+    body = event["body"] if "body" in event else event["body-json"]
+    try:
+        body = base64.b64decode(body, validate=True)
+    except:
+        pass
+    logger.info(f"Calculated 'body'={body}")
+    if body==None or body=={}:
+        return {}
+    return body if isinstance(body, dict) else json.loads(body)
+
+def _get_deployment_params(params: dict, prefix: str) -> tuple:
+
+    deployment_params = {}
+    client_params = {}
+    logger.info(f"####### {params['workspace_id']}")
+    for param in params:
+
+        if param.startswith(prefix):
+            deployment_params[param] = params[param]
+        else:
+            client_params[param] = params[param]            
+
+        #Adding workspace id and workspace name into deployment parameters
+        
+        deployment_params['deployment_workspace_id'] = params['workspace_id']
+        
+        deployment_params['deployment_workspace_name'] = params['workspace_name']
+
+    return client_params, deployment_params
+
+
+def dispatch_method(dispatch_table: dict, event: dict) -> dict:
+    """
+    Dispatches the method based on the action in the invocation parameters.
+
+    Args:
+    - invokation_params: The invocation parameters.
+
+    Returns:
+    - The response from the dispatched method.
+    """
+
+    DISPATCH_TABLE = dispatch_table
+
+    invokation_params = _get_params(event)
+
+    if invokation_params is None or len(invokation_params) == 0:
+        raise RuntimeError("Invalid input params, event={event}")
+
+    logger.info(f"Invokation params: {invokation_params}")
+
+    authorizer = _get_request_context_authorizer(event)
+    logger.info(f"{authorizer=}")
+    invokation_params |= authorizer
+
+    logger.info(f"Enriched_ _params: {invokation_params}")
+
+    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)
+
+    logger.info(f"deployment_parameters : {deployment_parameters}")
+    logger.info(f"client_parameters : {client_parameters}")
+
+    result = {}
+    try:
+        _check_input_params(client_parameters, ["action", "workspace_id"])
+        action = client_parameters["action"]
+        result = DISPATCH_TABLE[action](client_parameters, deployment_parameters)
+
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        result["success"] = False
+        result["error"] = repr(e)
+    logger.info(f"Finished dispatch with result={result}")
+    return _create_response(result)
