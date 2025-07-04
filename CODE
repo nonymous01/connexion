@@ -1,5 +1,3 @@
-voici mon dispatcher_helper.Py
-
 import base64
 import json
 import logging
@@ -46,6 +44,7 @@ def _get_request_context_authorizer(event: dict) -> dict:
     except Exception:
         logger.warning("No requestContext or authorizer found in event. Proceeding with empty authorizer.")
         return {}
+
 
 
 def _get_params(event: dict) -> dict:
