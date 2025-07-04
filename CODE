@@ -1,56 +1,9 @@
-Status: Succeeded
-Test Event Name: event
-
-Response:
 {
-  "statusCode": 500,
-  "isBase64Encoded": false,
-  "headers": {
-    "Content-Type": "application/json"
-  },
-  "body": "{\"success\": false, \"error\": \"KeyError('deployment_databricks_host_lower_env')\"}"
+  "action": "promote_model_registration",
+  "model_name": "irisclassifier",
+  "model_version": "1",
+  "model_source": "databricks_registry",
+  "workspace_id": "6051921418418893",
+  "workspace_name": "dev-ws",
+  "deployment_target": "dev"
 }
-
-Function Logs:
-}
-[INFO]	2025-07-04T10:59:18.407Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	Enriched_ _params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
-[INFO]	2025-07-04T10:59:18.408Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	####### 6051921418418893
-[INFO]	2025-07-04T10:59:18.408Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	deployment_parameters : {'deployment_workspace_id': '6051921418418893', 'deployment_workspace_name': 'unknown', 'deployment_target': 'dev'}
-[INFO]	2025-07-04T10:59:18.408Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	client_parameters : {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893'}
-[INFO]	2025-07-04T10:59:18.413Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	Installing libraries
-[INFO]	2025-07-04T10:59:18.413Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	====================================
-[INFO]	2025-07-04T10:59:18.413Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	mlflow-skinny==3.1.1
-WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
-Collecting mlflow-skinny==3.1.1
-Downloading mlflow_skinny-3.1.1-py3-none-any.whl (1.9 MB)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 26.0 MB/s eta 0:00:00
-Installing collected packages: mlflow-skinny
-Successfully installed mlflow-skinny-3.1.1
-[notice] A new release of pip is available: 23.0.1 -> 25.1.1
-[notice] To update, run: pip install --upgrade pip
-[INFO]	2025-07-04T10:59:22.383Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	====================================
-[INFO]	2025-07-04T10:59:22.384Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	====================================
-[INFO]	2025-07-04T10:59:22.384Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	pandas==2.3.0
-WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
-Collecting pandas==2.3.0
-Downloading pandas-2.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.3 MB)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.3/12.3 MB 85.5 MB/s eta 0:00:00
-Installing collected packages: pandas
-Successfully installed pandas-2.3.0
-[notice] A new release of pip is available: 23.0.1 -> 25.1.1
-[notice] To update, run: pip install --upgrade pip
-[INFO]	2025-07-04T10:59:33.864Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	====================================
-[INFO]	2025-07-04T10:59:33.865Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	Adding tmp to syspath
-[ERROR]	2025-07-04T10:59:33.865Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	Error promoting model
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 27, in promote_model_registration
-    response = databricks_model_registry_helper.promote_model_registration(
-  File "/var/task/utils/databricks_model_registry_helper.py", line 97, in promote_model_registration
-    src_host = DEPLOYMENT_PARAMETERS["deployment_databricks_host_lower_env"]
-KeyError: 'deployment_databricks_host_lower_env'
-[INFO]	2025-07-04T10:59:33.865Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	Finished dispatch with result={'success': False, 'error': "KeyError('deployment_databricks_host_lower_env')"}
-[INFO]	2025-07-04T10:59:33.865Z	333f58a6-370f-4340-b9e2-7b98c7a39e3b	handler completed in 15.458158 seconds
-END RequestId: 333f58a6-370f-4340-b9e2-7b98c7a39e3b
-REPORT RequestId: 333f58a6-370f-4340-b9e2-7b98c7a39e3b	Duration: 15459.91 ms	Billed Duration: 15460 ms	Memory Size: 1024 MB	Max Memory Used: 321 MB	Init Duration: 2597.65 ms
-
-Request ID: 333f58a6-370f-4340-b9e2-7b98c7a39e3b
