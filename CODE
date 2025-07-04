@@ -1,35 +1,10 @@
-Status: Failed
-Test Event Name: event
-
-Response:
 {
-  "errorMessage": "'workspace_name'",
-  "errorType": "KeyError",
-  "requestId": "1dd05b62-ac37-4f35-8339-a1bd43c19d66",
-  "stackTrace": [
-    "  File \"/var/task/model_function.py\", line 137, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 120, in dispatch_method\n    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)\n",
-    "  File \"/var/task/utils/dispatcher_helper.py\", line 89, in _get_deployment_params\n    deployment_params['deployment_workspace_name'] = params['workspace_name']\n"
-  ]
+  "action": "promote_model_registration",
+  "model_name": "irisclassifier",
+  "model_version": "1",
+  "model_source": "databricks_registry",
+  "workspace_id": "6051921418418893",
+  "workspace_name": "dev-ws",
+  "deployment_target": "dev"
 }
-
-Function Logs:
-[INFO]	2025-07-04T10:45:59.779Z		Found credentials in environment variables.
-START RequestId: 1dd05b62-ac37-4f35-8339-a1bd43c19d66 Version: $LATEST
-[INFO]	2025-07-04T10:46:00.047Z	1dd05b62-ac37-4f35-8339-a1bd43c19d66	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
-[WARNING]	2025-07-04T10:46:00.047Z	1dd05b62-ac37-4f35-8339-a1bd43c19d66	No requestContext or authorizer found in event. Proceeding with empty authorizer.
-[INFO]	2025-07-04T10:46:00.047Z	1dd05b62-ac37-4f35-8339-a1bd43c19d66	authorizer={}
-[INFO]	2025-07-04T10:46:00.047Z	1dd05b62-ac37-4f35-8339-a1bd43c19d66	Enriched_ _params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
-[INFO]	2025-07-04T10:46:00.047Z	1dd05b62-ac37-4f35-8339-a1bd43c19d66	####### 6051921418418893
-[ERROR] KeyError: 'workspace_name'
-Traceback (most recent call last):
-  File "/var/task/model_function.py", line 137, in lambda_handler
-    result = dispatcher_helper.dispatch_method(dispatch_table, event)
-  File "/var/task/utils/dispatcher_helper.py", line 120, in dispatch_method
-    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)
-  File "/var/task/utils/dispatcher_helper.py", line 89, in _get_deployment_params
-    deployment_params['deployment_workspace_name'] = params['workspace_name']
-END RequestId: 1dd05b62-ac37-4f35-8339-a1bd43c19d66
-REPORT RequestId: 1dd05b62-ac37-4f35-8339-a1bd43c19d66	Duration: 2.84 ms	Billed Duration: 3 ms	Memory Size: 1024 MB	Max Memory Used: 151 MB	Init Duration: 2684.40 ms
-
-Request ID: 1dd05b62-ac37-4f35-8339-a1bd43c19d66
+deployment_params['deployment_workspace_name'] = params.get('workspace_name', 'unknown')
