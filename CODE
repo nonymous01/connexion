@@ -1,136 +1,35 @@
-import base64
-import json
-import logging
-import traceback
+Status: Failed
+Test Event Name: event
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+Response:
+{
+  "errorMessage": "'workspace_name'",
+  "errorType": "KeyError",
+  "requestId": "1dd05b62-ac37-4f35-8339-a1bd43c19d66",
+  "stackTrace": [
+    "  File \"/var/task/model_function.py\", line 137, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 120, in dispatch_method\n    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 89, in _get_deployment_params\n    deployment_params['deployment_workspace_name'] = params['workspace_name']\n"
+  ]
+}
 
-DEPLOYMENT_PREFIX = "deployment_"
+Function Logs:
+[INFO]	2025-07-04T10:45:59.779Z		Found credentials in environment variables.
+START RequestId: 1dd05b62-ac37-4f35-8339-a1bd43c19d66 Version: $LATEST
+[INFO]	2025-07-04T10:46:00.047Z	1dd05b62-ac37-4f35-8339-a1bd43c19d66	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
+[WARNING]	2025-07-04T10:46:00.047Z	1dd05b62-ac37-4f35-8339-a1bd43c19d66	No requestContext or authorizer found in event. Proceeding with empty authorizer.
+[INFO]	2025-07-04T10:46:00.047Z	1dd05b62-ac37-4f35-8339-a1bd43c19d66	authorizer={}
+[INFO]	2025-07-04T10:46:00.047Z	1dd05b62-ac37-4f35-8339-a1bd43c19d66	Enriched_ _params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
+[INFO]	2025-07-04T10:46:00.047Z	1dd05b62-ac37-4f35-8339-a1bd43c19d66	####### 6051921418418893
+[ERROR] KeyError: 'workspace_name'
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 137, in lambda_handler
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+  File "/var/task/utils/dispatcher_helper.py", line 120, in dispatch_method
+    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)
+  File "/var/task/utils/dispatcher_helper.py", line 89, in _get_deployment_params
+    deployment_params['deployment_workspace_name'] = params['workspace_name']
+END RequestId: 1dd05b62-ac37-4f35-8339-a1bd43c19d66
+REPORT RequestId: 1dd05b62-ac37-4f35-8339-a1bd43c19d66	Duration: 2.84 ms	Billed Duration: 3 ms	Memory Size: 1024 MB	Max Memory Used: 151 MB	Init Duration: 2684.40 ms
 
-def _check_input_params(invokation_params, expected_keys):
-    if not all(k in invokation_params for k in expected_keys):
-        raise RuntimeError(f"Invalid input params, expected keys={expected_keys}")
-
-
-def _create_response(result: dict) -> dict:
-    """
-    Creates the response object.
-
-    Args:
-    - result: The result of the operation.
-
-    Returns:
-    - The response object.
-    """
-    r = result
-    return {
-        "statusCode": 200 if isinstance(r, str) or r["success"] else 500,
-        "isBase64Encoded": False,
-        "headers": {"Content-Type": "application/json"},
-        "body": json.dumps(r, default=str),
-    }
-
-
-def _get_request_context_authorizer(event: dict) -> dict:
-    """
-    Tries to extract the requestContext.authorizer if present.
-    Returns an empty dict if not found, useful for local/test events.
-    """
-    try:
-        node = event["context"] if "context" in event else event
-        request_context = node["requestContext"]
-        return request_context.get("authorizer", {})
-    except Exception:
-        logger.warning("No requestContext or authorizer found in event. Proceeding with empty authorizer.")
-        return {}
-
-
-
-def _get_params(event: dict) -> dict:
-    """
-    Gets the parameters from the event.
-
-    Args:
-    - event: The event object.
-
-    Returns:
-    - The parameters.
-    """
-    if "body" not in event:
-        if "body-json" not in event:
-            return event
-    body = event["body"] if "body" in event else event["body-json"]
-    try:
-        body = base64.b64decode(body, validate=True)
-    except:
-        pass
-    logger.info(f"Calculated 'body'={body}")
-    if body==None or body=={}:
-        return {}
-    return body if isinstance(body, dict) else json.loads(body)
-
-def _get_deployment_params(params: dict, prefix: str) -> tuple:
-
-    deployment_params = {}
-    client_params = {}
-    logger.info(f"####### {params['workspace_id']}")
-    for param in params:
-
-        if param.startswith(prefix):
-            deployment_params[param] = params[param]
-        else:
-            client_params[param] = params[param]            
-
-        #Adding workspace id and workspace name into deployment parameters
-        
-        deployment_params['deployment_workspace_id'] = params['workspace_id']
-        
-        deployment_params['deployment_workspace_name'] = params['workspace_name']
-
-    return client_params, deployment_params
-
-
-def dispatch_method(dispatch_table: dict, event: dict) -> dict:
-    """
-    Dispatches the method based on the action in the invocation parameters.
-
-    Args:
-    - invokation_params: The invocation parameters.
-
-    Returns:
-    - The response from the dispatched method.
-    """
-
-    DISPATCH_TABLE = dispatch_table
-
-    invokation_params = _get_params(event)
-
-    if invokation_params is None or len(invokation_params) == 0:
-        raise RuntimeError("Invalid input params, event={event}")
-
-    logger.info(f"Invokation params: {invokation_params}")
-
-    authorizer = _get_request_context_authorizer(event)
-    logger.info(f"{authorizer=}")
-    invokation_params |= authorizer
-
-    logger.info(f"Enriched_ _params: {invokation_params}")
-
-    client_parameters, deployment_parameters = _get_deployment_params(invokation_params, DEPLOYMENT_PREFIX)
-
-    logger.info(f"deployment_parameters : {deployment_parameters}")
-    logger.info(f"client_parameters : {client_parameters}")
-
-    result = {}
-    try:
-        _check_input_params(client_parameters, ["action", "workspace_id"])
-        action = client_parameters["action"]
-        result = DISPATCH_TABLE[action](client_parameters, deployment_parameters)
-
-    except Exception as e:
-        logger.error(traceback.format_exc())
-        result["success"] = False
-        result["error"] = repr(e)
-    logger.info(f"Finished dispatch with result={result}")
-    return _create_response(result)
+Request ID: 1dd05b62-ac37-4f35-8339-a1bd43c19d66
