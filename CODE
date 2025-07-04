@@ -36,22 +36,16 @@ def _create_response(result: dict) -> dict:
 
 def _get_request_context_authorizer(event: dict) -> dict:
     """
-    Gets the authorizer from the request context in the event.
-
-    Args:
-    - event: The event object.
-
-    Returns:
-    - The authorizer from the request context.
+    Tries to extract the requestContext.authorizer if present.
+    Returns an empty dict if not found, useful for local/test events.
     """
-    node = event["context"] if "context" in event else event
-    if "requestContext" not in node:
-        raise RuntimeError("Invalid event, no requestContext provided")
-    requestContext = node["requestContext"]
-
-    if "authorizer" not in requestContext:
-        raise RuntimeError("Invalid requestContext, no authorizer provided")
-    return requestContext["authorizer"]
+    try:
+        node = event["context"] if "context" in event else event
+        request_context = node["requestContext"]
+        return request_context.get("authorizer", {})
+    except Exception:
+        logger.warning("No requestContext or authorizer found in event. Proceeding with empty authorizer.")
+        return {}
 
 
 def _get_params(event: dict) -> dict:
