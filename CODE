@@ -1,294 +1,174 @@
-import os
+Status: Failed
+Test Event Name: event
+
+Response:
+{
+  "errorMessage": "Invalid event, no requestContext provided",
+  "errorType": "RuntimeError",
+  "requestId": "87745569-b72d-4295-9c7e-2ba903ea8b42",
+  "stackTrace": [
+    "  File \"/var/task/model_function.py\", line 137, in lambda_handler\n    result = dispatcher_helper.dispatch_method(dispatch_table, event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 119, in dispatch_method\n    authorizer = _get_request_context_authorizer(event)\n",
+    "  File \"/var/task/utils/dispatcher_helper.py\", line 47, in _get_request_context_authorizer\n    raise RuntimeError(\"Invalid event, no requestContext provided\")\n"
+  ]
+}
+
+Function Logs:
+[INFO]	2025-07-04T10:12:00.946Z		Found credentials in environment variables.
+START RequestId: 87745569-b72d-4295-9c7e-2ba903ea8b42 Version: $LATEST
+[INFO]	2025-07-04T10:12:01.174Z	87745569-b72d-4295-9c7e-2ba903ea8b42	Invokation params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': '6051921418418893', 'deployment_target': 'dev'}
+[ERROR] RuntimeError: Invalid event, no requestContext provided
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 137, in lambda_handler
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+  File "/var/task/utils/dispatcher_helper.py", line 119, in dispatch_method
+    authorizer = _get_request_context_authorizer(event)
+  File "/var/task/utils/dispatcher_helper.py", line 47, in _get_request_context_authorizer
+    raise RuntimeError("Invalid event, no requestContext provided")
+END RequestId: 87745569-b72d-4295-9c7e-2ba903ea8b42
+REPORT RequestId: 87745569-b72d-4295-9c7e-2ba903ea8b42	Duration: 2.44 ms	Billed Duration: 3 ms	Memory Size: 1024 MB	Max Memory Used: 151 MB	Init Duration: 2216.15 ms
+
+Request ID: 87745569-b72d-4295-9c7e-2ba903ea8b42
+
+
+import ast
 import json
+import traceback
+from datetime import date
+from dateutil.relativedelta import relativedelta
+
+import time
 import logging
 
-import mlflow
-
-import utils.databricks_api_helper as databricks_api_helper
-
-import utils.aws_secrets_manager_helper as aws_secrets_manager_helper
-from utils.common_entities import (
-    SubEnvironment,
-    Environment,
-    DeploymentMode,
-    DatabricksMlflowStages,
-)
-import tempfile
-import zipfile
-import subprocess
-import sys
+import utils.dispatcher_helper as dispatcher_helper
+import utils.databricks_model_registry_helper as databricks_model_registry_helper
+import utils.databricks_pipeline_helper as databricks_pipeline_helper
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-os.environ["MLFLOW_TRACKING_URI"] = "databricks://src"
 
-DEPLOYMENT_PARAMETERS = {}
-SRC_REGISTRY_URI = "databricks-uc://src"
-DST_REGISTRY_URI = "databricks-uc://target"
+def promote_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    model_name = client_parameters["model_name"]
+    model_version = client_parameters["model_version"]
+    model_source = client_parameters["model_source"]
 
-# TODO: Read mlops-common-librairies lambda layer => arn:aws:lambda:us-east-1:417854772506:layer:mlops_common_libraries:9
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
 
-
-def init(deployment_parameters: dict) -> None:
-    global DEPLOYMENT_PARAMETERS
-    DEPLOYMENT_PARAMETERS = deployment_parameters
-
-    databricks_api_helper.init(deployment_parameters)
-
-
-def set_databricks_environment(region, environment, automation_environment):
-    """Used to establish connection with databricks"""
-    databricks_host = f"https://formulaone-{region}-{environment.lower()}-ai-workspace.cloud.databricks.com"
-    os.environ["DATABRICKS_HOST"] = databricks_host
-    secret_name = f"f1ai/{automation_environment.lower()}"
-    secret_key = f"databricks_token_{environment.lower()}"
-    databricks_token = aws_secrets_manager_helper.get_secret_value_by_key(
-        secret_name=secret_name, secret_key=secret_key
-    )
-    os.environ["DATABRICKS_TOKEN"] = databricks_token
-    logger.info("credentials received")
-    mlflow.set_tracking_uri("databricks")
+        response = databricks_model_registry_helper.promote_model_registration(
+            model_name, model_version, model_source
+        )      
 
 
+        if response is not None:
+            if isinstance(response, tuple) and len(response) > 1:
+                result["message"] = response[1]
+                result["success"] = True
+            else:
+                result["success"] = False
 
-def _install_pip_dep(requirement, extra=None):
-
-    logger.info("====================================")
-    logger.info(requirement)
-    
-    base_cmd = [
-        sys.executable, "-m", "pip", "install", 
-        "--platform", "manylinux2014_x86_64", "--only-binary=:all:", "--no-deps" ,"-t", tempfile.gettempdir()
-    ]
-    if extra:
-        base_cmd.extend([requirement, extra])
-    else:
-        base_cmd.append(requirement)
-
-    subprocess.check_call(base_cmd)
-
-    logger.info("====================================")
-
-
-def promote_model_registration(model_name, model_version, model_source):
-    """
-    Promote model from a lower databricks workspace to a higher databricks workspace.
-
-    :param model_name: Name of source model from Unity Catalog.
-    :param model_version: Version of source model to be promoted.
-    :param model_source: Address of registry where to save model.
-    """
-
-    logger.info("Installing libraries")
-
-    packages_list = [
-        "mlflow-skinny==3.1.1",
-        "pandas==2.3.0"     
-    ]
-
-    for package in packages_list:
-        _install_pip_dep(package)
-
-    logger.info("Adding tmp to syspath")
-    sys.path.insert(1, "/tmp/")
-
-    workspace_id = DEPLOYMENT_PARAMETERS["deployment_workspace_id"]
-    src_host = DEPLOYMENT_PARAMETERS["deployment_databricks_host_lower_env"]
-    src_schema = DEPLOYMENT_PARAMETERS["deployment_databricks_schema_lower_env"]
-    target_host = DEPLOYMENT_PARAMETERS["deployment_databricks_host"]
-    target_schema = DEPLOYMENT_PARAMETERS["deployment_databricks_schema"]
-    target_env = DEPLOYMENT_PARAMETERS["deployment_environment"]
-
-    os.environ["MLFLOW_S3_UPLOAD_EXTRA_ARGS"] = json.dumps({"ServerSideEncryption": "aws:kms", "SSEKMSKeyId": DEPLOYMENT_PARAMETERS["deployment_aws_kms_arn"] })
-
-    logger.info(f"{src_host=}")
-    logger.info(f"{src_schema=}")
-    logger.info(f"{target_host=}")
-    logger.info(f"{target_schema=}")
-    logger.info(f"{target_env=}")
-
-    if DEPLOYMENT_PARAMETERS["deployment_environment"] == Environment.PROD:
-        src_env = Environment.QA
-    else:
-        src_env = Environment.DEV
-
-    user_id = DEPLOYMENT_PARAMETERS["deployment_databricks_user"]
-
-    _create_databricks_configuration_file(
-        src_host=src_host,
-        src_token=_get_databricks_token(src_env),
-        target_host=target_host,
-        target_token=_get_databricks_token(target_env),
-    )
-
-    result = _promote_model_artifacts(
-        src_model=f"{src_schema}.{model_name}",
-        src_version=model_version,
-        src_registry_uri=SRC_REGISTRY_URI,
-        dst_model=f"{target_schema}.{model_name}",
-        dst_registry_uri=DST_REGISTRY_URI,
-        dst_experiment_name=f"/Users/{user_id}/{model_name}",
-    )
-
-    logger.info(result)
+    except Exception as e:
+        logger.error(f"Error promoting model", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
 
     return result
 
 
-def _get_databricks_token(environment):
-    secret_name = f"f1ai/{environment.lower()}"
-    secret_key = f"databricks_token_{environment.lower()}"
-    return aws_secrets_manager_helper.get_secret_value_by_key(
-        secret_name=secret_name, secret_key=secret_key
-    )
+def describe_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    print("# Describe model")
 
+    model_name = client_parameters["model_name"]
+    model_version = client_parameters["model_version"]
 
-def _promote_model_artifacts(
-    src_model,
-    src_version,
-    src_registry_uri,
-    dst_model,
-    dst_registry_uri,
-    dst_experiment_name=None,
-    copy_permissions=False,
-    copy_stages_and_aliases=True,
-    copy_lineage_tags=True,
-    verbose=False,
-):
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
 
-    from mlflow_export_import.copy.copy_model_version import copy
+        model_version_response = (
+            databricks_model_registry_helper.get_model_registration(
+                model_name, model_version
+            )
+        )
 
-    def make_tracking_uri(registry_uri):
-        if not registry_uri:
-            return None
-        if registry_uri.startswith("databricks-uc"):
-            return registry_uri.replace("databricks-uc", "databricks")
+        if model_version_response:
+            if model_version_response["status"] == "READY":
+                result["status"] = "AVAILABLE"
+            else:
+                result["status"] = "UNAVAILABLE"
+
+            result["model_name"] = model_name
+            result["model_version"] = model_version
+            result["model_source"] = model_version_response["source"]
+            result["model_stage"] = model_version_response["current_stage"]
+
+            result["success"] = True
+
         else:
-            return registry_uri
+            result["success"] = False
+            result["error"] = (
+                f"Model {model_name} and {model_version} is not registered"
+            )
 
-    # TODO: can we ommit dst_expirment_name?
-    logger.info(
-        f"#model info model: {src_model}, version: {src_version}, source: {src_registry_uri}, target: {dst_registry_uri}"
-    )
-    src_tracking_uri = make_tracking_uri(src_registry_uri)
-    dst_tracking_uri = make_tracking_uri(dst_registry_uri)
+    except Exception as e:
+        logger.error(f"Error retrieving model information", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
 
-    logger.info("Initialize copying the model to the target workspace...")    
-
-    logger.info(f"{src_version=}")
-
-    logger.info(f"{dst_model=}")
-
-    logger.info(f"{dst_experiment_name=}")
-
-    logger.info(f"{src_tracking_uri=}")
-
-    logger.info(f"{dst_tracking_uri=}")
-
-    logger.info(f"{src_registry_uri=}")
-
-    logger.info(f"{dst_registry_uri=}")
-
-    logger.info(f"{copy_permissions=}")
-
-    logger.info(f"{copy_stages_and_aliases=}")
-
-    logger.info(f"{copy_lineage_tags=}")
-
-    logger.info(f"{verbose=}")
-
-    return copy(
-        src_model,
-        src_version,
-        dst_model,
-        dst_experiment_name,
-        src_tracking_uri,
-        dst_tracking_uri,
-        src_registry_uri,
-        dst_registry_uri,
-        copy_permissions,
-        copy_stages_and_aliases,
-        copy_lineage_tags,
-        verbose,
-    )
+    return result
 
 
-def _create_databricks_configuration_file(
-    src_host, src_token, target_host, target_token
-):
-    logger.info("Composing cfg file...")
-    content = f"""
-    [src]
-    host={src_host.strip()}
-    token={src_token.strip()}
-    [target]
-    host={target_host.strip()}
-    token={target_token.strip()}
-    """
-    config_path = "/tmp/.databrickscfg"
-    os.environ["DATABRICKS_CONFIG_FILE"] = config_path
+def get_latest_model_registration(client_parameters: dict, deployment_parameters: dict):
+    result = {}
+    print("# Get model registration")
 
-    with open(config_path, "w") as f:
-        f.write(content)
-        logger.info(f"Config file created at: {config_path}")
+    model_name = client_parameters["model_name"]
 
-    return config_path
+    stage = client_parameters.get("stage")
 
+    try:
+        databricks_model_registry_helper.init(deployment_parameters)
 
-def get_model_registration(model_name, model_version):
-    model_registration = databricks_api_helper.get_model_registration(
-        model_name, model_version
-    )
+        result["model_name"] = model_name
 
-    if model_registration:
-        return model_registration
+        model_version_response = (
+            databricks_model_registry_helper.get_latest_model_registration(
+                model_name, stage
+            )
+        )
 
-    return None
+        if model_version_response:
+            result["model_version"] = model_version_response["version"]
 
+            result["model_stage"] = model_version_response["current_stage"]
 
-def get_model_registration(model_name, model_version):
-    model_registration = databricks_api_helper.get_model_registration(
-        model_name, model_version
-    )
+            result["model_source"] = model_version_response["source"]
 
-    if model_registration:
-        return model_registration
+        else:
+            result["model_version"] = 0
 
-    return None
+        result["success"] = True
+
+    except Exception as e:
+        logger.error(f"Error retrieving model information", exc_info=True)
+        result["success"] = False
+        result["error"] = repr(e)
+
+    return result
 
 
-def get_latest_model_registration(model_name, stage=None):
-    registered_versions = databricks_api_helper.get_latest_model_registrations(
-        model_name
-    )
+def lambda_handler(event, context):
+    start = time.perf_counter()
+    dispatch_table = {
+        "describe_model_registry": describe_model_registration,
+        "get_latest_model_registration": get_latest_model_registration,
+        "promote_model_registration": promote_model_registration,
+    }
 
-    if not registered_versions or len(registered_versions) == 0:
-        return None
+    result = dispatcher_helper.dispatch_method(dispatch_table, event)
+    duration = time.perf_counter() - start
+    logger.info(f"handler completed in {duration:3f} seconds")
 
-    max_version = 0
-
-    max_model_item = None
-
-    def to_int(s):
-        try:
-            return int(s)
-        except:
-            return 0
-
-    for model_item in registered_versions:
-        if stage:
-            if model_item["current_stage"] == stage:
-                return model_item
-
-        elif model_item["current_stage"] != "Archived":
-            logger.info(f" model_item {model_item} ")
-
-            current_version = to_int(model_item["version"])
-
-            if current_version > max_version:
-                max_version = current_version
-
-                max_model_item = model_item
-
-    return max_model_item
+    return result
