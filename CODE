@@ -1,9 +1,56 @@
+Status: Succeeded
+Test Event Name: test
+
+Response:
 {
-  "action": "promote_model_registration",
-  "model_name": "irisclassifier",
-  "model_version": "1",
-  "model_source": "databricks_registry",
-  "workspace_id": "6051921418418893",
-  "workspace_name": "dev-ws",
-  "deployment_target": "dev"
+  "statusCode": 500,
+  "isBase64Encoded": false,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "{\"success\": false, \"error\": \"KeyError('deployment_databricks_host_lower_env')\"}"
 }
+
+Function Logs:
+0c8292c40d9	authorizer={}
+[INFO]	2025-07-07T11:17:22.148Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	Enriched_ _params: {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev'}
+[INFO]	2025-07-07T11:17:22.148Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	####### DWS0004069
+[INFO]	2025-07-07T11:17:22.148Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	deployment_parameters : {'deployment_workspace_id': 'DWS0004069', 'deployment_workspace_name': 'unknown', 'deployment_target': 'dev'}
+[INFO]	2025-07-07T11:17:22.148Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	client_parameters : {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069'}
+[INFO]	2025-07-07T11:17:22.154Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	Installing libraries
+[INFO]	2025-07-07T11:17:22.154Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	====================================
+[INFO]	2025-07-07T11:17:22.154Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	mlflow-skinny==3.1.1
+WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Collecting mlflow-skinny==3.1.1
+Downloading mlflow_skinny-3.1.1-py3-none-any.whl (1.9 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 17.0 MB/s eta 0:00:00
+Installing collected packages: mlflow-skinny
+Successfully installed mlflow-skinny-3.1.1
+[notice] A new release of pip is available: 23.0.1 -> 25.1.1
+[notice] To update, run: pip install --upgrade pip
+[INFO]	2025-07-07T11:17:26.279Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	====================================
+[INFO]	2025-07-07T11:17:26.279Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	====================================
+[INFO]	2025-07-07T11:17:26.279Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	pandas==2.3.0
+WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Collecting pandas==2.3.0
+Downloading pandas-2.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.3 MB)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.3/12.3 MB 59.4 MB/s eta 0:00:00
+Installing collected packages: pandas
+Successfully installed pandas-2.3.0
+[notice] A new release of pip is available: 23.0.1 -> 25.1.1
+[notice] To update, run: pip install --upgrade pip
+[INFO]	2025-07-07T11:17:38.110Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	====================================
+[INFO]	2025-07-07T11:17:38.110Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	Adding tmp to syspath
+[ERROR]	2025-07-07T11:17:38.110Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	Error promoting model
+Traceback (most recent call last):
+  File "/var/task/model_function.py", line 27, in promote_model_registration
+    response = databricks_model_registry_helper.promote_model_registration(
+  File "/var/task/utils/databricks_model_registry_helper.py", line 97, in promote_model_registration
+    src_host = DEPLOYMENT_PARAMETERS["deployment_databricks_host_lower_env"]
+KeyError: 'deployment_databricks_host_lower_env'
+[INFO]	2025-07-07T11:17:38.111Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	Finished dispatch with result={'success': False, 'error': "KeyError('deployment_databricks_host_lower_env')"}
+[INFO]	2025-07-07T11:17:38.111Z	4acea4cf-59e6-4af4-baaf-50c8292c40d9	handler completed in 15.963426 seconds
+END RequestId: 4acea4cf-59e6-4af4-baaf-50c8292c40d9
+REPORT RequestId: 4acea4cf-59e6-4af4-baaf-50c8292c40d9	Duration: 15965.41 ms	Billed Duration: 15966 ms	Memory Size: 1024 MB	Max Memory Used: 318 MB	Init Duration: 2785.64 ms
+
+Request ID: 4acea4cf-59e6-4af4-baaf-50c8292c40d9
