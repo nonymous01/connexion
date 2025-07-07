@@ -4,5 +4,6 @@
   "model_version": "1",
   "model_source": "databricks_registry",
   "workspace_id": "DWS0004069",
-  "deployment_target": "dev"
+  "deployment_target": "dev",
+  "deployment_databricks_host_lower_env": "https://dev.cloud.databricks.com"
 }
