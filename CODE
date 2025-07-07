@@ -1,3 +1,4 @@
+l'erreur
 Status: Succeeded
 Test Event Name: test
 
@@ -8,48 +9,62 @@ Response:
   "headers": {
     "Content-Type": "application/json"
   },
-  "body": "{\"success\": false, \"error\": \"KeyError('deployment_databricks_schema_lower_env')\"}"
+  "body": "{\"success\": false, \"error\": \"KeyError('deployment_databricks_host')\"}"
 }
 
 Function Logs:
-l_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev', 'deployment_databricks_host_lower_env': 'https://dev.cloud.databricks.com'}
-[INFO]	2025-07-07T11:25:42.564Z	7788248c-b9e5-41a8-a783-a6ca98753724	####### DWS0004069
-[INFO]	2025-07-07T11:25:42.564Z	7788248c-b9e5-41a8-a783-a6ca98753724	deployment_parameters : {'deployment_workspace_id': 'DWS0004069', 'deployment_workspace_name': 'unknown', 'deployment_target': 'dev', 'deployment_databricks_host_lower_env': 'https://dev.cloud.databricks.com'}
-[INFO]	2025-07-07T11:25:42.564Z	7788248c-b9e5-41a8-a783-a6ca98753724	client_parameters : {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069'}
-[INFO]	2025-07-07T11:25:42.570Z	7788248c-b9e5-41a8-a783-a6ca98753724	Installing libraries
-[INFO]	2025-07-07T11:25:42.570Z	7788248c-b9e5-41a8-a783-a6ca98753724	====================================
-[INFO]	2025-07-07T11:25:42.570Z	7788248c-b9e5-41a8-a783-a6ca98753724	mlflow-skinny==3.1.1
+stry', 'workspace_id': 'DWS0004069', 'deployment_target': 'dev', 'deployment_databricks_host_lower_env': 'https://dev.cloud.databricks.com', 'deployment_databricks_schema_lower_env': 'ml_model_dev'}
+[INFO]	2025-07-07T15:02:35.070Z	821d51c1-0ab1-46f5-b653-e0975038fff9	####### DWS0004069
+[INFO]	2025-07-07T15:02:35.070Z	821d51c1-0ab1-46f5-b653-e0975038fff9	deployment_parameters : {'deployment_workspace_id': 'DWS0004069', 'deployment_workspace_name': 'unknown', 'deployment_target': 'dev', 'deployment_databricks_host_lower_env': 'https://dev.cloud.databricks.com', 'deployment_databricks_schema_lower_env': 'ml_model_dev'}
+[INFO]	2025-07-07T15:02:35.070Z	821d51c1-0ab1-46f5-b653-e0975038fff9	client_parameters : {'action': 'promote_model_registration', 'model_name': 'irisclassifier', 'model_version': '1', 'model_source': 'databricks_registry', 'workspace_id': 'DWS0004069'}
+[INFO]	2025-07-07T15:02:35.075Z	821d51c1-0ab1-46f5-b653-e0975038fff9	Installing libraries
+[INFO]	2025-07-07T15:02:35.075Z	821d51c1-0ab1-46f5-b653-e0975038fff9	====================================
+[INFO]	2025-07-07T15:02:35.075Z	821d51c1-0ab1-46f5-b653-e0975038fff9	mlflow-skinny==3.1.1
 WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
 Collecting mlflow-skinny==3.1.1
 Downloading mlflow_skinny-3.1.1-py3-none-any.whl (1.9 MB)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 18.1 MB/s eta 0:00:00
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 17.2 MB/s eta 0:00:00
 Installing collected packages: mlflow-skinny
 Successfully installed mlflow-skinny-3.1.1
 [notice] A new release of pip is available: 23.0.1 -> 25.1.1
 [notice] To update, run: pip install --upgrade pip
-[INFO]	2025-07-07T11:25:46.695Z	7788248c-b9e5-41a8-a783-a6ca98753724	====================================
-[INFO]	2025-07-07T11:25:46.695Z	7788248c-b9e5-41a8-a783-a6ca98753724	====================================
-[INFO]	2025-07-07T11:25:46.695Z	7788248c-b9e5-41a8-a783-a6ca98753724	pandas==2.3.0
+[INFO]	2025-07-07T15:02:39.154Z	821d51c1-0ab1-46f5-b653-e0975038fff9	====================================
+[INFO]	2025-07-07T15:02:39.155Z	821d51c1-0ab1-46f5-b653-e0975038fff9	====================================
+[INFO]	2025-07-07T15:02:39.155Z	821d51c1-0ab1-46f5-b653-e0975038fff9	pandas==2.3.0
 WARNING: The directory '/home/sbx_user1051/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
 Collecting pandas==2.3.0
 Downloading pandas-2.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.3 MB)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.3/12.3 MB 65.9 MB/s eta 0:00:00
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.3/12.3 MB 25.0 MB/s eta 0:00:00
 Installing collected packages: pandas
 Successfully installed pandas-2.3.0
 [notice] A new release of pip is available: 23.0.1 -> 25.1.1
 [notice] To update, run: pip install --upgrade pip
-[INFO]	2025-07-07T11:25:58.617Z	7788248c-b9e5-41a8-a783-a6ca98753724	====================================
-[INFO]	2025-07-07T11:25:58.617Z	7788248c-b9e5-41a8-a783-a6ca98753724	Adding tmp to syspath
-[ERROR]	2025-07-07T11:25:58.617Z	7788248c-b9e5-41a8-a783-a6ca98753724	Error promoting model
+[INFO]	2025-07-07T15:02:50.990Z	821d51c1-0ab1-46f5-b653-e0975038fff9	====================================
+[INFO]	2025-07-07T15:02:50.990Z	821d51c1-0ab1-46f5-b653-e0975038fff9	Adding tmp to syspath
+[ERROR]	2025-07-07T15:02:50.990Z	821d51c1-0ab1-46f5-b653-e0975038fff9	Error promoting model
 Traceback (most recent call last):
   File "/var/task/model_function.py", line 27, in promote_model_registration
     response = databricks_model_registry_helper.promote_model_registration(
-  File "/var/task/utils/databricks_model_registry_helper.py", line 98, in promote_model_registration
-    src_schema = DEPLOYMENT_PARAMETERS["deployment_databricks_schema_lower_env"]
-KeyError: 'deployment_databricks_schema_lower_env'
-[INFO]	2025-07-07T11:25:58.618Z	7788248c-b9e5-41a8-a783-a6ca98753724	Finished dispatch with result={'success': False, 'error': "KeyError('deployment_databricks_schema_lower_env')"}
-[INFO]	2025-07-07T11:25:58.618Z	7788248c-b9e5-41a8-a783-a6ca98753724	handler completed in 16.054233 seconds
-END RequestId: 7788248c-b9e5-41a8-a783-a6ca98753724
-REPORT RequestId: 7788248c-b9e5-41a8-a783-a6ca98753724	Duration: 16055.98 ms	Billed Duration: 16056 ms	Memory Size: 1024 MB	Max Memory Used: 319 MB	Init Duration: 2642.60 ms
+  File "/var/task/utils/databricks_model_registry_helper.py", line 99, in promote_model_registration
+    target_host = DEPLOYMENT_PARAMETERS["deployment_databricks_host"]
+KeyError: 'deployment_databricks_host'
+[INFO]	2025-07-07T15:02:50.991Z	821d51c1-0ab1-46f5-b653-e0975038fff9	Finished dispatch with result={'success': False, 'error': "KeyError('deployment_databricks_host')"}
+[INFO]	2025-07-07T15:02:50.991Z	821d51c1-0ab1-46f5-b653-e0975038fff9	handler completed in 15.921659 seconds
+END RequestId: 821d51c1-0ab1-46f5-b653-e0975038fff9
+REPORT RequestId: 821d51c1-0ab1-46f5-b653-e0975038fff9	Duration: 15923.58 ms	Billed Duration: 15924 ms	Memory Size: 1024 MB	Max Memory Used: 321 MB	Init Duration: 2722.29 ms
 
-Request ID: 7788248c-b9e5-41a8-a783-a6ca98753724
+Request ID: 821d51c1-0ab1-46f5-b653-e0975038fff9
+
+
+
+mon code de test
+{
+  "action": "promote_model_registration",
+  "model_name": "irisclassifier",
+  "model_version": "1",
+  "model_source": "databricks_registry",
+  "workspace_id": "DWS0004069",
+  "deployment_target": "dev",
+  "deployment_databricks_host_lower_env": "https://dev.cloud.databricks.com",
+  "deployment_databricks_schema_lower_env": "ml_model_dev"
+  }
